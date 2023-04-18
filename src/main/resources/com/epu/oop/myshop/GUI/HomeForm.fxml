@@ -253,7 +253,7 @@
             </Pane>
          </children>
       </Pane>
-      <Pane fx:id="formPayProduct" layoutX="160.0" onMouseClicked="#click" prefHeight="527.0" prefWidth="1001.0" style="-fx-background-color: #FFFFCC;" styleClass="informationForm" stylesheets="@../StyleCSS/Home.css" visible="false" AnchorPane.leftAnchor="160.0" AnchorPane.topAnchor="100.0">
+      <Pane fx:id="formPayProduct" layoutX="160.0" onMouseClicked="#click" prefHeight="527.0" prefWidth="1001.0" style="-fx-background-color: #FFFFCC;" styleClass="informationForm" stylesheets="@../StyleCSS/Home.css" AnchorPane.leftAnchor="160.0" AnchorPane.topAnchor="100.0">
          <children>
             <Pane layoutX="14.0" layoutY="117.0" prefHeight="234.0" prefWidth="520.0" style="-fx-background-color: #FFFFCC; -fx-border-color: red;">
                <children>
@@ -286,7 +286,6 @@
                         <Font name="Times New Roman" size="15.0" />
                      </font>
                   </Label>
-                  <AnchorPane layoutX="165.0" layoutY="-86.0" prefHeight="200.0" prefWidth="200.0" />
                </children>
             </Pane>
             <Pane layoutX="14.0" prefHeight="109.0" prefWidth="520.0" style="-fx-background-color: #FFFFCC;">

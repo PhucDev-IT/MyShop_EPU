@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PageHomeController implements Initializable {
@@ -63,6 +64,9 @@ public class PageHomeController implements Initializable {
 
     @FXML
     private ImageView imgAvatar;
+
+    @FXML
+    private Pane paneUser;  //Chứa img user dẫn đến form thông tin
 
     //-------------------------- Navbar - MENU -------------------------------------------
     @FXML
@@ -233,9 +237,69 @@ public class PageHomeController implements Initializable {
     @FXML
     private Label closeInfromation;
 
+    @FXML
+    private JFXButton btnBuyProduct;
     private MyListener<Product> productMyListener;
 
     int numbersBuyProduct = 1;
+
+    //------------------------------ CHI TIẾT MUA HÀNG ---------------------------------------------------
+    @FXML
+    private AnchorPane paneOrderDetail;
+    @FXML
+    private ImageView imgProdOderDetail;
+
+    @FXML
+    private Text nameProdOrder_txt;
+
+    @FXML
+    private Label priceProOder_lb;
+
+    @FXML
+    private ImageView imgVoucherOrder;
+
+    @FXML
+    private Label VcSaleOrder_lb;
+
+    @FXML
+    private ImageView imgUserOrder;
+
+    @FXML
+    private Label nameUserOder_lb;
+
+    @FXML
+    private ImageView imgPhoneOrder;
+
+    @FXML
+    private Label phoneUserOder_lb;
+
+    @FXML
+    private ImageView imgAddressOrder;
+
+    @FXML
+    private JFXTextField AdressOrder_txt;
+
+    @FXML
+    private Label numbersProduct;
+
+    @FXML
+    private Label totalMoneyProd_lb;
+
+    @FXML
+    private Label VcShelfOrder_lb;
+
+    @FXML
+    private Label totalOrder_lb;
+
+    @FXML
+    private ImageView imgPayAtHome;
+
+    @FXML
+    private ImageView imgPayBank;
+
+    //----------------------------------------
+
+
 
     private final int maxProductsOfPage = 10; //1 trang tối đa 10 sản phẩm
 
@@ -418,7 +482,20 @@ public class PageHomeController implements Initializable {
         }
     }
 
+    public void BuyProduct(ActionEvent e)
+    {
+        if(e.getSource() == btnBuyProduct){
+            paneInformationProduct.setVisible(false);
+            paneOrderDetail.setVisible(true);
+            showOderDetail();
+        }
+    }
 
+    //---------------------------------- THÔNG TIN CHI TIẾT HÓA ĐƠN - MUA HÀNG -----------------------------------
+    public void showOderDetail()
+    {
+        imgProdOderDetail.setImage(new Image(SelectedProduct.getSrcImg()));
+    }
 
 
     //Khi hover vào các nav-item
@@ -578,7 +655,28 @@ public class PageHomeController implements Initializable {
     private void showImage(){
         img_iconSearch.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconSearch.png"));
         imgAvatar.setImage((new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/img1.jpg"))));
+
+
+        imgVoucherOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/voucher.png")));
+        imgUserOrder.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_user.png"))));
+        imgPhoneOrder.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconPhone.png"));
+        imgAddressOrder.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconAddress.png"));
+        imgPayAtHome.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"));
+        imgPayBank.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconThanhToan.jpg"))));
     }
+
+
+    public void defaultForm()
+    {
+        if(Temp.account == null){
+            authForm_pane.setVisible(true);
+            paneUser.setVisible(false);
+        }else{
+            authForm_pane.setVisible(false);
+            paneUser.setVisible(true);
+        }
+    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -589,7 +687,7 @@ public class PageHomeController implements Initializable {
             e.printStackTrace();
         }
 
-
+        defaultForm();
         clickPage();
         showImage();
 
