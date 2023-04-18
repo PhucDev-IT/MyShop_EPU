@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane onMouseClicked="#click" prefHeight="221.0" prefWidth="247.0" styleClass="item-product" stylesheets="@../StyleCSS/pageHome.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ProductsOfMarketController">
+   <children>
+      <VBox layoutX="3.0" layoutY="3.0" prefHeight="216.0" prefWidth="242.0">
+         <children>
+            <ImageView fx:id="imgProducts" fitHeight="124.0" fitWidth="150.0" pickOnBounds="true">
+               <VBox.margin>
+                  <Insets left="46.0" top="10.0" />
+               </VBox.margin>
+            </ImageView>
+            <Text fx:id="nameProduct_txt" lineSpacing="0.5" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="239.6708984375">
+               <font>
+                  <Font name="Arial Bold" size="17.0" />
+               </font>
+               <VBox.margin>
+                  <Insets top="4.0" />
+               </VBox.margin>
+            </Text>
+            <Pane prefHeight="26.0" prefWidth="242.0">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+               <children>
+                  <Label layoutX="9.0" layoutY="3.0" text="đ" textFill="#f20000" underline="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="price" layoutX="21.0" layoutY="3.0" prefHeight="21.0" prefWidth="126.0" text="50.000" textFill="#fc0000">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font></Label>
+               </children>
+            </Pane>
+            <Pane prefHeight="25.0" prefWidth="240.0">
+               <children>
+                  <Label layoutX="7.0" layoutY="2.0" text="Đã bán:">
+                     <font>
+                        <Font name="Times New Roman" size="16.0" />
+                     </font></Label>
+                  <Label fx:id="sold" layoutX="64.0" layoutY="1.0" prefHeight="21.0" prefWidth="93.0" text="1000" textFill="#5eb961" />
+               </children>
+               <VBox.margin>
+                  <Insets top="1.0" />
+               </VBox.margin>
+            </Pane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

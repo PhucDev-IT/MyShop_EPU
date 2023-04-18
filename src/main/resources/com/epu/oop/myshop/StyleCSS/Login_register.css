@@ -1,0 +1,17 @@
+.dichuot:hover{
+	-fx-background-color: red;
+}
+.button{
+	-fx-background-radius: 5;
+	-fx-background-color: #AEA2C5;
+	
+}
+
+.button:hover{
+	-fx-background-color: green;
+}
+/*Khi nhấn vào thì nó sẽ đổi màu: kiểu báo hiệu cho mình biết đã click vào đâu */
+.dichuot:pressed{
+	-fx-background-color: #3333CC;
+}
+

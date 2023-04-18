@@ -1,0 +1,84 @@
+.header{
+	-fx-background-color: #FC5731;
+}
+/*Những thành phần bên lề */
+.item_aside{
+	-fx-border-color: #FFFFFF;
+}
+.item_aside:hover{
+	-fx-background-color: green;
+}
+.Pane{
+	-fx-background-radius: 20;
+	-fx-background-color: white;
+}
+.button-banHag{
+	-fx-background-color:#336699;
+	-fx-boder-radius:13;
+	-fx-background-radius:13;
+}
+.button-banHag:hover{
+	-fx-background-color:#99CC66;
+}
+.button-aside{
+	-fx-background-color:#9900FF;
+	-fx-border-color:#EEEEEE;
+}
+
+.button-aside:hover{
+	-fx-background-color:#99CC99;
+}
+.button-aside:focused{
+	-fx-background-color:#CAE1FF;
+}
+#myshop{
+	-fx-font: italic small-caps bold 26px/2 cursive;
+	-fx-stroke: GREEN;	/* được sử dụng để thiết lập màu cho viền */
+	-fx-stroke-width: 2px;	/* Thiết lập độ rộng của viền */
+	-fx-stroke-type: OUTSIDE;	/* được sử dụng để tạo ra viền bên ngoài văn bản. */
+}
+
+#myshop:hover{
+
+	-fx-text-fill: white;
+	-fx-stroke: #EEEEEE;
+	-fx-stroke-width: 1px;
+}
+.item-text BanHangForm{
+	-fx-text-fill: white;
+
+}
+.date-picker > .arrow-button > .arrow {
+	-fx-background-color: white;
+}
+.date-picker > .padded-button {
+	-fx-background-color: green; /* Thay đổi màu sắc ở đây */
+}
+.date-picker > .text-field {
+	-fx-background-color: #FFFFCC; /* Thay đổi màu sắc ở đây */
+}
+.date-picker .arrow-button {
+	-fx-background-color: #c26000;
+	-fx-background-radius: 0;
+}
+/*Đổi màu Các ô ngày */
+.date-picker .cell {
+	-fx-background-color: #EEEEEE	;
+}
+/*Di chột chọn ngày*/
+.date-picker .cell:hover {
+	-fx-background-color: #c26000;
+}
+/*Sau khi chọn ngày*/
+.date-picker .cell:focused {
+	-fx-background-color: #c26000;
+}
+/*Đổi màu thanh header của datepicker*/
+.date-picker-popup .month-year-pane {
+	-fx-background-color: #c26000;
+}
+/*Phần tử bên trong thanh header*/
+.date-picker-popup .month-year-pane .label {
+	-fx-text-fill: white;
+}
+

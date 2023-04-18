@@ -1,0 +1,68 @@
+.panel{
+	-fx-border-color: #808080;
+	
+}
+.root{
+	-fx-border-radius: 25.0;
+}
+
+.products{
+	
+		-fx-border-size:10.0;
+	    -fx-background-color: #EEEEEE;
+        -fx-background-radius: 20.0;
+        -fx-border-color:#FFFFFF;
+        -fx-background-position: center;
+        -fx-outer-border: white;
+  		-fx-body-color: linear-gradient(to bottom, #DD0000, #00FF00);
+  		-fx-background-color:
+       	-fx-outer-border,
+       	-fx-body-color;
+         -fx-background-insets: 0.0, 4.0;
+          -fx-background-repeat: no-repeat;
+ 
+        
+}
+.shadow{
+    -fx-effect: dropShadow(three-pass-box,rgba(0.0,0.0,0.0,0.0), 10.0 , 0.0 , 0.0 ,10.0);
+}
+.test{
+
+  -fx-outer-border: white;
+  -fx-body-color: linear-gradient(to bottom, #FAFAFA, #EAEAEA);
+  -fx-background-color: 
+       -fx-outer-border, 
+       -fx-body-color;
+  -fx-background-insets: 0.0, 6.0;
+  -fx-background-radius: 6.0px, 0.0px;
+  -fx-background-image: url('http://icons.iconarchive.com/icons/appicns/simplified-app/64/appicns-Chrome-icon.png');
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+}
+.itemSearch{
+
+    -fx-border-radius: 0px;
+    -fx-border-color: #C0C0C0;
+}
+.itemSearch:hover{
+    -fx-background-color: #CCFF99;
+}
+.text-Resultsearch{
+    -fx-font: italic small-caps bold 16px/2 cursive;
+}
+.purchaseProduct{
+    -fx-border-radius: 1%;
+    -fx-border-color: #B0C1D9;
+}
+.purchaseProduct:hover{
+    -fx-background-radius: 1%;
+    -fx-background-color: #FFCC99;
+    -fx-border-color: green;
+}
+.purchaseProduct:focused{
+    -fx-background-color: red;
+    -fx-opacity: 0.5;
+    -fx-border-radius: 1%;
+    -fx-border-color: white;
+}
+

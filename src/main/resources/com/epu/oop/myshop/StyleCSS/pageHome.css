@@ -1,0 +1,49 @@
+
+.nav-button:hover{
+    -fx-pref-height: 30px;
+    -fx-background-color: #dfe7de;
+
+}
+.nav-container-list-item{
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-effect: dropShadow(three-pass-box,rgba(0,0.0,0.0,0.3), 10.0 , 0.2 , 0.0 ,10.0);
+}
+.nav-list-item:hover{
+
+    -fx-text-fill: red;
+    -fx-border-color: #c8f7d5;
+}
+.item-auth:hover
+{
+    -fx-font-weight: bold;
+    -fx-text-fill: red;
+}
+
+.item-product
+{
+    -fx-border-color:  #808080;
+    -fx-border-radius: 5px;
+}
+.item-product:hover{
+    -fx-background-color: #FFFAFA;
+}
+#myshop{
+    -fx-font: italic small-caps bold 26px/2 cursive;
+    -fx-stroke: GREEN;	/* được sử dụng để thiết lập màu cho viền */
+    -fx-stroke-width: 2px;	/* Thiết lập độ rộng của viền */
+    -fx-stroke-type: OUTSIDE;	/* được sử dụng để tạo ra viền bên ngoài văn bản. */
+}
+#myshop:hover{
+
+    -fx-text-fill: white;
+    -fx-stroke: #9d0404;
+    -fx-stroke-width: 1px;
+}
+
+.pane-Infor-Product{
+    -fx-boder-radius:14;
+    -fx-background-radius: 14;
+    -fx-boder-color:red;
+    -fx-effect: dropShadow(three-pass-box,rgba(0.0,0.0,0.0,0.1), 10.0 , 0.5 , 0.0 ,10.0);
+}

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="183.0" prefWidth="748.0" styleClass="purchaseProduct" stylesheets="@../StyleCSS/Item.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ItemPurcharsedProduct">
+   <children>
+      <ImageView fx:id="imgProduct" fitHeight="96.0" fitWidth="106.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+      <Text fx:id="nameProduct_lb" layoutX="130.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="373.6708984375">
+         <font>
+            <Font name="Times New Roman Bold" size="17.0" />
+         </font>
+      </Text>
+      <Label fx:id="SellerProduct_label" layoutX="130.0" layoutY="91.0" prefHeight="21.0" prefWidth="182.0">
+         <font>
+            <Font name="Times New Roman Italic" size="14.0" />
+         </font>
+      </Label>
+      <Separator layoutX="541.0" orientation="VERTICAL" prefHeight="120.0" prefWidth="5.0" />
+      <Separator layoutY="121.0" prefHeight="1.0" prefWidth="748.0" />
+      <Label layoutX="648.0" layoutY="32.0" text="x1">
+         <font>
+            <Font name="Times New Roman" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="price_label" alignment="CENTER" layoutX="567.0" layoutY="76.0" prefHeight="27.0" prefWidth="182.0" text="000" textFill="#cd0505">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="Quantity_label" alignment="CENTER" layoutX="23.0" layoutY="132.0" prefHeight="21.0" prefWidth="43.0" text="1" />
+      <Label layoutX="67.0" layoutY="133.0" text="Sản phẩm">
+         <font>
+            <Font name="Times New Roman" size="15.0" />
+         </font></Label>
+      <Label layoutX="487.0" layoutY="130.0" text="Thành tiền:">
+         <font>
+            <Font name="Times New Roman Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="ToTal_label" alignment="CENTER" layoutX="579.0" layoutY="126.0" prefHeight="27.0" prefWidth="165.0" text="đ100.000" textFill="#da1616">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="ngayMua_label" alignment="CENTER" layoutX="264.0" layoutY="140.0" prefHeight="21.0" prefWidth="174.0" text="2003-05-06" />
+      <ImageView fx:id="img_ThanhTien" fitHeight="20.0" fitWidth="20.0" layoutX="464.0" layoutY="130.0" pickOnBounds="true" preserveRatio="true" />
+   </children>
+</AnchorPane>

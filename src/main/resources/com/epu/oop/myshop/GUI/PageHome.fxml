@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="730.0" prefWidth="1300.0" stylesheets="@../StyleCSS/pageHome.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.PageHomeController">
+   <children>
+      <BorderPane layoutX="397.0" layoutY="250.0" prefHeight="700.0" prefWidth="1300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <Pane onMouseMoved="#hiddenListItemOfMenu" prefHeight="70.0" prefWidth="1484.0" style="-fx-background-color: #f5deba;" BorderPane.alignment="CENTER">
+               <children>
+                  <TextField fx:id="SearchProduct_txt" layoutX="453.0" layoutY="18.0" prefHeight="38.0" prefWidth="507.0" promptText="Tìm kiếm" style="-fx-border-radius: 10px; -fx-background-radius: 10px; -fx-background-color: #f4f4f4;">
+                     <padding>
+                        <Insets left="50.0" />
+                     </padding>
+                     <font>
+                        <Font name="Arial" size="15.0" />
+                     </font></TextField>
+                  <Pane fx:id="authForm_pane" layoutX="1086.0" layoutY="10.0" prefHeight="51.0" prefWidth="213.0" visible="false">
+                     <children>
+                        <Label fx:id="SignUp_lb" layoutX="11.0" layoutY="15.0" onMouseClicked="#EventAuthForm" prefHeight="21.0" prefWidth="98.0" styleClass="item-auth" stylesheets="@../StyleCSS/pageHome.css" text="Đăng ký" textFill="#8a8484">
+                           <font>
+                              <Font name="Times New Roman" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="SignIn_lb" layoutX="112.0" layoutY="15.0" onMouseClicked="#EventAuthForm" prefHeight="21.0" prefWidth="98.0" styleClass="item-auth" stylesheets="@../StyleCSS/pageHome.css" text="Đăng nhập" textFill="#8a8484">
+                           <font>
+                              <Font name="Times New Roman" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+                  <ImageView fx:id="img_iconSearch" fitHeight="25.0" fitWidth="25.0" layoutX="460.0" layoutY="25.0" pickOnBounds="true" />
+                  <Pane layoutX="1020.0" layoutY="1.0" prefHeight="70.0" prefWidth="279.0" style="-fx-background-color: violet;">
+                     <children>
+                        <ImageView fx:id="imgAvatar" fitHeight="56.0" fitWidth="63.0" layoutX="133.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                  </Pane>
+                  <Text id="myshop" fill="WHITESMOKE" layoutX="43.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="MyShop" />
+               </children>
+            </Pane>
+         </top>
+         <center>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <Pane layoutY="-2.0" onMouseClicked="#hiddenListItemOfMenu" prefHeight="36.0" prefWidth="1300.0">
+                     <children>
+                        <JFXButton id="nav-item-one" fx:id="menu1_btn" layoutX="86.0" layoutY="5.0" onMouseMoved="#HoverMenuNavbar" prefHeight="26.0" prefWidth="161.0" ripplerFill="#b55353" stylesheets="@../StyleCSS/pageHome.css" text="Thiết bị điện tử">
+                           <font>
+                              <Font name="Calibri Bold" size="16.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="nav-button" />
+                              <String fx:value="nav-item-one" />
+                           </styleClass>
+                        </JFXButton>
+                        <JFXButton fx:id="menu2_btn" layoutX="246.0" layoutY="5.0" onMouseMoved="#HoverMenuNavbar" prefHeight="28.0" prefWidth="161.0" styleClass="nav-button" stylesheets="@../StyleCSS/pageHome.css" text="Sức khỏe &amp; Làm đẹp">
+                           <font>
+                              <Font name="Calibri Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton fx:id="menu3_btn" layoutX="406.0" layoutY="5.0" onMouseMoved="#HoverMenuNavbar" prefHeight="26.0" prefWidth="161.0" styleClass="nav-button" stylesheets="@../StyleCSS/pageHome.css" text="Thời trang nam">
+                           <font>
+                              <Font name="Calibri Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton fx:id="menu4_btn" layoutX="566.0" layoutY="5.0" onMouseMoved="#HoverMenuNavbar" prefHeight="26.0" prefWidth="161.0" styleClass="nav-button" stylesheets="@../StyleCSS/pageHome.css" text="Thời trang nữ">
+                           <font>
+                              <Font name="Calibri Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton fx:id="menu5_btn" layoutX="727.0" layoutY="5.0" onMouseMoved="#HoverMenuNavbar" prefHeight="26.0" prefWidth="161.0" styleClass="nav-button" stylesheets="@../StyleCSS/pageHome.css" text="Phương tiện đi lại">
+                           <font>
+                              <Font name="Calibri Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton fx:id="menu6_btn" layoutX="888.0" layoutY="5.0" onMouseMoved="#HoverMenuNavbar" prefHeight="28.0" prefWidth="162.0" styleClass="nav-button" stylesheets="@../StyleCSS/pageHome.css" text="Thể thao &amp; Du lịch">
+                           <font>
+                              <Font name="Calibri Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton fx:id="menu7_btn" layoutX="1052.0" layoutY="5.0" onMouseClicked="#displayBackgroundItemNav" onMouseMoved="#HoverMenuNavbar" onMousePressed="#clickCategory" prefHeight="26.0" prefWidth="161.0" styleClass="nav-button" stylesheets="@../StyleCSS/pageHome.css" text="Sản phẩm khác">
+                           <font>
+                              <Font name="Calibri Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                     </children>
+                  </Pane>
+                  <AnchorPane fx:id="paneProductMarket" layoutY="53.0" onMouseExited="#hiddenListItemOfMenu" prefHeight="577.0" prefWidth="1300.0" style="-fx-background-color: white;" visible="false">
+                     <children>
+                        <AnchorPane prefHeight="577.0" prefWidth="1326.0">
+                           <children>
+                              <Pagination fx:id="pagination" layoutX="-2.0" layoutY="-4.0" pageCount="1" prefHeight="608.0" prefWidth="1300.0">
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                              </Pagination>
+                              <GridPane fx:id="grid_Products" hgap="8.0" layoutY="14.0" prefHeight="0.0" prefWidth="0.0" stylesheets="@../StyleCSS/pageHome.css" vgap="8.0">
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                              </GridPane>
+                              <Label fx:id="lbNoData" layoutX="543.0" layoutY="258.0" prefHeight="35.0" prefWidth="188.0" text="Không có dữ liệu" visible="false">
+                                 <font>
+                                    <Font size="24.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+                  <Pane fx:id="main" layoutX="406.0" layoutY="236.0" prefHeight="288.0" prefWidth="519.0" style="-fx-background-color: #cbd6d4;" visible="false">
+                     <children>
+                        <ImageView fx:id="img_slider" fitHeight="287.0" fitWidth="520.0" layoutY="1.0" pickOnBounds="true" />
+                     </children></Pane>
+                  <Pane fx:id="item1_pane" layoutX="121.0" layoutY="34.0" onMouseClicked="#displayBackgroundItemNav" onMouseExited="#hiddenListItemOfMenu" prefHeight="76.0" prefWidth="166.0" style="-fx-background-color: #f2ebeb;" styleClass="nav-container-list-item" stylesheets="@../StyleCSS/pageHome.css" visible="false">
+                     <children>
+                        <VBox layoutX="4.0" layoutY="-1.0" prefHeight="74.0" prefWidth="163.0">
+                           <children>
+                              <Label fx:id="itemPhone_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Điện thoại">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemLaptop_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="163.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Laptop">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemMayChoiGame_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="171.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Máy chơi game">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+                  <Pane id="list-item-one" fx:id="item2_pane" layoutX="267.0" layoutY="34.0" onMouseClicked="#displayBackgroundItemNav" onMouseExited="#hiddenListItemOfMenu" prefHeight="107.0" prefWidth="166.0" style="-fx-background-color: #f2ebeb;" styleClass="nav-container-list-item" stylesheets="@../StyleCSS/pageHome.css" visible="false">
+                     <children>
+                        <VBox layoutX="4.0" layoutY="-1.0" prefHeight="108.0" prefWidth="163.0">
+                           <children>
+                              <Label fx:id="itemChamSocDa_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Chăm sóc da">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemTrangDiem_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="163.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Trang điểm">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemNuocHoa_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="171.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Nước hoa">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemThucPhamChucNang_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" text="Thực phẩm chức năng">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font></Label>
+                              <Label fx:id="itemThietBiYTe_lb" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="162.0" styleClass="nav-list-item" text="Thiết bị y tế">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font></Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+                  <Pane id="list-item-one" fx:id="item3_pane" layoutX="445.0" layoutY="34.0" onMouseClicked="#displayBackgroundItemNav" onMouseExited="#hiddenListItemOfMenu" prefHeight="95.0" prefWidth="166.0" style="-fx-background-color: #f2ebeb;" styleClass="nav-container-list-item" stylesheets="@../StyleCSS/pageHome.css" visible="false">
+                     <children>
+                        <VBox layoutX="4.0" layoutY="-1.0" prefHeight="92.0" prefWidth="163.0">
+                           <children>
+                              <Label fx:id="itemTrangPhucNam" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Trang phục nam">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="ItemGiayDepNam" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="163.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Giày dép nam">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemDongHoNam" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="171.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Đồng hồ nam">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemDoLotNam" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" text="Đồ lót nam">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font></Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+                  <Pane id="list-item-one" fx:id="item4_pane" layoutX="611.0" layoutY="34.0" onMouseClicked="#displayBackgroundItemNav" onMouseExited="#hiddenListItemOfMenu" prefHeight="95.0" prefWidth="166.0" style="-fx-background-color: #f2ebeb;" styleClass="nav-container-list-item" stylesheets="@../StyleCSS/pageHome.css" visible="false">
+                     <children>
+                        <VBox layoutX="4.0" layoutY="-1.0" prefHeight="92.0" prefWidth="163.0">
+                           <children>
+                              <Label fx:id="itemTrangPhucNu" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Trang phục nữ">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemTuiXachNu" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="163.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Túi xách nữ">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemNoiYNu" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="171.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Đồ ngủ &amp; Nội y">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemTrangSucNu" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" text="Trang sức nữ">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font></Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+                  <Pane id="list-item-one" fx:id="item5_pane" layoutX="759.0" layoutY="34.0" onMouseClicked="#displayBackgroundItemNav" onMouseExited="#hiddenListItemOfMenu" prefHeight="73.0" prefWidth="166.0" style="-fx-background-color: #f2ebeb;" styleClass="nav-container-list-item" stylesheets="@../StyleCSS/pageHome.css" visible="false">
+                     <children>
+                        <VBox layoutX="4.0" layoutY="-1.0" prefHeight="72.0" prefWidth="163.0">
+                           <children>
+                              <Label fx:id="itemXeMayMoto" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Xe máy &amp; Moto">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemXeOto" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="163.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Xe ô tô">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemXeDiaHinh" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="171.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Xe địa hình">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+                  <Pane id="list-item-one" fx:id="item6_pane" layoutX="925.0" layoutY="34.0" onMouseClicked="#displayBackgroundItemNav" onMouseExited="#hiddenListItemOfMenu" prefHeight="107.0" prefWidth="166.0" style="-fx-background-color: #f2ebeb;" styleClass="nav-container-list-item" stylesheets="@../StyleCSS/pageHome.css" visible="false">
+                     <children>
+                        <VBox layoutX="4.0" layoutY="-1.0" prefHeight="108.0" prefWidth="163.0">
+                           <children>
+                              <Label fx:id="itemPhuKienTheThao" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Phụ kiện thể thao">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemDoTheThao" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="163.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Đồ thể thao nam - nữ">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemValiTuiXach" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="171.0" styleClass="nav-list-item" stylesheets="@../StyleCSS/pageHome.css" text="Vali &amp; Túi du lịch">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="itemKinhMat" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="164.0" styleClass="nav-list-item" text="Kính mát">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font></Label>
+                              <Label fx:id="itemHoatDongDaNgoai" onMouseClicked="#clickCategory" prefHeight="21.0" prefWidth="162.0" styleClass="nav-list-item" text="Hoạt động dã ngoại">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font></Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+                  <Pane fx:id="paneInformationProduct" layoutX="855.0" layoutY="68.0" prefHeight="570.0" prefWidth="391.0" style="-fx-background-color: #f5f5f2;" styleClass="pane-Infor-Product">
+                     <children>
+                        <Label fx:id="closeInfromation" layoutX="369.0" layoutY="7.0" onMouseClicked="#closeForm" text="x" textFill="#fc0d0d">
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="imgProdInfor" fitHeight="125.0" fitWidth="144.0" layoutX="14.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="nameProdInfor_txt" layoutX="171.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="212.6708984375">
+                           <font>
+                              <Font name="Times New Roman Bold" size="20.0" />
+                           </font>
+                        </Text>
+                        <Label layoutX="28.0" layoutY="161.0" text="Gía bán:">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="priceProdInfor" layoutX="91.0" layoutY="160.0" prefHeight="21.0" prefWidth="194.0" text="100.000đ" textFill="#ee0000">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="28.0" layoutY="191.0" text="Đã bán:">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="sold" layoutX="91.0" layoutY="190.0" prefHeight="21.0" prefWidth="107.0" text="100.000đ" textFill="#574949">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="264.0" layoutY="191.0" text="Kho:">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="remainInfor_lb" layoutX="302.0" layoutY="190.0" prefHeight="21.0" prefWidth="85.0" text="0" textFill="#0d0d0d">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="28.0" layoutY="223.0" text="Người bán:">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="nameSeller_Infor_lb" layoutX="110.0" layoutY="222.0" prefHeight="21.0" prefWidth="253.0" text="Nguyễn Văn phúc">
+                           <font>
+                              <Font name="Times New Roman" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="14.0" layoutY="254.0" text="Mô tả:">
+                           <font>
+                              <Font name="Times New Roman Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Separator layoutX="10.0" layoutY="279.0" prefHeight="3.0" prefWidth="372.0" />
+                        <JFXTextArea fx:id="contentProInfor_txa" editable="false" focusColor="#ebebeb" layoutX="3.0" layoutY="285.0" prefHeight="199.0" prefWidth="384.0" />
+                        <JFXButton fx:id="BtndownNumber" buttonType="RAISED" layoutX="78.0" layoutY="522.0" onAction="#upDownNumber" prefHeight="26.0" prefWidth="28.0" style="-fx-background-color: white;" text="-">
+                           <font>
+                              <Font name="Arial Bold" size="14.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton fx:id="BtnUpNumber" buttonType="RAISED" layoutX="218.0" layoutY="523.0" onAction="#upDownNumber" style="-fx-background-color: white;" text="+">
+                           <font>
+                              <Font name="Arial Bold" size="14.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXTextField fx:id="txtNumber" alignment="CENTER" layoutX="118.0" layoutY="520.0" onKeyPressed="#removeCharInput" prefHeight="31.0" prefWidth="94.0" text="1" />
+                        <JFXButton layoutX="285.0" layoutY="520.0" style="-fx-background-color: #fff;" text="Mua" />
+                     </children>
+                  </Pane>
+               </children>
+            </AnchorPane>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>

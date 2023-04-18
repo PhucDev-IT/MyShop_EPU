@@ -1,0 +1,72 @@
+.root{
+	-fx-background-color: linear-gradient(#f63,#f63,#f63);
+
+}
+
+.vbox:pressed{
+	-fx-border-color:white;
+}
+.click:pressed{
+	-fx-background-color: #CCFFCC	;
+}
+.click:hover{
+	-fx-background-color: #FFFFCC	;
+}
+/*Những thành phần bên lề */
+.aside{
+	-fx-border-color: #EEEEEE;
+	-fx-background-color: #EEEEEE	;
+}
+
+/*Nội dung chính của app */
+.main{
+	
+}
+
+.threadNotification{
+	-fx-background-radius: 20;
+	-fx-background-color: #EEEE;
+}
+
+.search{
+	font-family: cursive;
+	-fx-boder-radius:20;
+}
+
+
+.search:focused{
+	-fx-background-color:rgba(255, 255, 255,0.4);
+	/*-fx-background-color: white;*/
+}
+
+.informationForm{
+	-fx-boder-radius:14;
+	-fx-background-radius: 14;
+	-fx-boder-color:red;
+	-fx-effect: dropShadow(three-pass-box,rgba(0.0,0.0,0.0,0.1), 10.0 , 0.5 , 0.0 ,10.0);
+}
+
+#myshop{
+	-fx-font: italic small-caps bold 26px/2 cursive;
+	-fx-stroke: GREEN;	/* được sử dụng để thiết lập màu cho viền */
+	-fx-stroke-width: 2px;	/* Thiết lập độ rộng của viền */
+	-fx-stroke-type: OUTSIDE;	/* được sử dụng để tạo ra viền bên ngoài văn bản. */
+}
+#myshop:hover{
+
+	-fx-text-fill: white;
+	-fx-stroke: #EEEEEE;
+	-fx-stroke-width: 1px;
+}
+
+.pane-search{
+	-fx-border-radius: 6px;
+	-fx-border-color: green;
+	-fx-effect: dropShadow(three-pass-box,rgba(0.1,0.0,0.0,0.1), 10.0 , 0.5 , 0.0 ,10.0);
+}
+.pane-search-scrolGrid{
+	-fx-background-color: white;
+	-fx-border-radius: 6px;
+	-fx-background-radius: 6px;
+
+}

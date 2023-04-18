@@ -1,0 +1,19 @@
+CREATE TRIGGER TRIG_Update_TotalMoney ON CTHOADON
+FOR INSERT
+AS
+BEGIN
+	UPDATE HoaDon
+	SET ThanhTien =(SELECT SUM(Quantity*Price) FROM inserted)
+	WHERE HoaDon.ID = (Select HoaDon_ID FROM inserted)
+
+	Update Account
+	SET Currency = Currency+(SELECT SUM(Quantity*Price) FROM inserted)
+	where Account.ID = (SELECT ps.Users_ID FROM inserted cthd JOIN Product p
+						ON p.ID = cthd.Product_ID
+						JOIN ProductSeller ps
+						ON p.ID = ps.Product_ID)
+
+	UPDATE Product
+	SET SoLuong = SoLuong - (Select Quantity From inserted)
+	WHERE Product.ID = (select Product_ID from inserted)
+END
