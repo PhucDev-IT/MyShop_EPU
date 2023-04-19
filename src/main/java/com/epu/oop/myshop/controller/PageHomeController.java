@@ -1,23 +1,24 @@
 package com.epu.oop.myshop.controller;
 
 
+import com.epu.oop.myshop.Dao.Bank_Dao;
 import com.epu.oop.myshop.Dao.Product_Dao;
+import com.epu.oop.myshop.Dao.UserDao;
+import com.epu.oop.myshop.Dao.VoucherDao;
 import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.Label;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -32,21 +33,25 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PageHomeController implements Initializable {
+    @FXML
+    private ImageView imgLoading;
 
     //------------------------------- HEADER----------------------------------------------------------------------
+    @FXML
+    private Text myShop_logo;
     @FXML
     private TextField SearchProduct_txt;
 
@@ -297,6 +302,23 @@ public class PageHomeController implements Initializable {
     @FXML
     private ImageView imgPayBank;
 
+    @FXML
+    private Pane paneVoucher;
+
+    @FXML
+    private GridPane gridVoucher;
+
+    @FXML
+    private JFXButton btnAddVoucher;
+
+    @FXML
+    private Label closeOrderDetail;
+
+    @FXML
+    private Pane payAtHome;
+
+    @FXML
+    private Pane payByBank;
     //----------------------------------------
 
 
@@ -309,7 +331,15 @@ public class PageHomeController implements Initializable {
 
     private Product SelectedProduct;    //Lưu giá trị product vừa được click
 
+    private VoucherModel voucherSelected = null;
+
+    private List<VoucherModel> listvoucher;
     private Product_Dao product_Dao = Product_Dao.getInstance();
+    private VoucherDao voucherDao = VoucherDao.getInstance();
+
+    private UserDao userDao = UserDao.getInstance();
+
+    private Bank_Dao bank_dao = Bank_Dao.getInstance();
 
     //-------------------------------------------- HIỂN THỊ CÁC SẢN PHẨM THUỘC DANH MUC ?------------
 
@@ -333,6 +363,7 @@ public class PageHomeController implements Initializable {
         }
         pagination.setPageCount(totalPages>0?totalPages:1);
         pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1
+
         selectDataProducts();
 
     }
@@ -363,13 +394,14 @@ public class PageHomeController implements Initializable {
         row = 1;
         col = 0;
         grid_Products.getChildren().clear();
-
+        cachedProducts.beforeFirst();    //Đặt lại con trỏ đọc của CachedRowSet vào vị trí đầu tiên
+        //CachedRowSet.next() để di chuyển con trỏ đến hàng đầu tiên của CachedRowSet.
         int offset = (pageSelected - 1) * maxProductsOfPage;
         int limit = maxProductsOfPage;
         Product pro;
         cachedProducts.absolute(offset + 1);
-        cachedProducts.beforeFirst();    //Đặt lại con trỏ đọc của CachedRowSet vào vị trí đầu tiên
-        //CachedRowSet.next() để di chuyển con trỏ đến hàng đầu tiên của CachedRowSet.
+
+
         while (cachedProducts.next() && limit-- > 0) {
             int ID = cachedProducts.getInt("ID");
             String TenSP = cachedProducts.getString("TenSP");
@@ -386,6 +418,7 @@ public class PageHomeController implements Initializable {
     int col = 0;
     public void setDataProduct(Product prod)
     {
+        paneProductMarket.setVisible(true);
         clickProduct();
         try {
                 FXMLLoader fxmlLoader = new FXMLLoader();
@@ -415,7 +448,48 @@ public class PageHomeController implements Initializable {
 
     }
 
-    //------------------------------------- HIỂN THỊ THÔNG TIN SẢNPHAAMRM VỪA CHỌN--------------------------------
+    public void loadData()
+    {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Platform.runLater(() -> imgLoading.setVisible(true));
+                Thread.sleep(100); // giảm độ trễ cho phép cho JavaFX làm việc
+                Platform.runLater(() -> {
+                    if (!isCancelled()) { // Kiểm tra task có bị hủy hay không
+                        try {
+                            calculatePage();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                });
+
+                Thread.sleep(1000);
+                Platform.runLater(() -> {
+                    imgLoading.setVisible(false);
+                });
+                return null;
+            }
+        };
+
+
+//        task.setOnRunning(e -> {
+//            Platform.runLater(() -> imgLoading.setVisible(true));
+//        });
+//
+//        task.setOnSucceeded(e -> {
+//            Platform.runLater(() -> {
+//                imgLoading.setVisible(false);
+//                paneProductMarket.setVisible(true);
+//            });
+//        });
+
+        new Thread(task).start();
+    }
+
+    //------------------------------------- HIỂN THỊ THÔNG TIN SẢN Phẩm VỪA CHỌN--------------------------------
     public void clickProduct()
     {
         productMyListener = new MyListener<Product>() {
@@ -453,24 +527,19 @@ public class PageHomeController implements Initializable {
     //Kiểm tra người dùng nhập số lượng có chữ cái và xoóa
     public void removeCharInput(KeyEvent e)
     {
-        // Tạo một TextFormatter có sẵn để giới hạn giá trị chỉ là số
-        TextFormatter<String> formatter = new TextFormatter<String>(change -> {
-            if (change.getControlNewText().matches("\\d*")) {
-                return change;
-            } else {
-                return null;
-            }
-        });
-
-        // Thiết lập text formatter cho TextField
-        txtNumber.setTextFormatter(formatter);
-
-        // Thêm sự kiện TextChange vào để xóa các kí tự không phải là số
         txtNumber.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                txtNumber.setText(newValue.replaceAll("[^\\d]", ""));
+            if (newValue.matches(".*[^0-9].*")) {
+                txtNumber.setText(oldValue);
             }
         });
+        if(txtNumber.getText().length() >0 && txtNumber.getText().charAt(0)=='0')
+        {
+            txtNumber.setText(txtNumber.getText().replace("0",""));
+            numbersBuyProduct = Integer.parseInt(txtNumber.getText());
+        }
+        System.out.println(txtNumber.getText());
+
+
     }
 
     //Nhấn cloes information
@@ -479,24 +548,228 @@ public class PageHomeController implements Initializable {
     {
         if(event.getSource() == closeInfromation){
             paneInformationProduct.setVisible(false);
+        }else if(event.getSource() == closeOrderDetail){
+            paneOrderDetail.setVisible(false);
         }
     }
 
-    public void BuyProduct(ActionEvent e)
-    {
+    public void BuyProduct(ActionEvent e) throws IOException {
         if(e.getSource() == btnBuyProduct){
-            paneInformationProduct.setVisible(false);
-            paneOrderDetail.setVisible(true);
-            showOderDetail();
+            if(Temp.account!=null){
+
+                if(SelectedProduct.getSoLuong()<=0){
+                    AlertNotification.showAlertWarning("","Sản phẩm này tạm hết!");
+                }else if(Integer.parseInt(txtNumber.getText()) > SelectedProduct.getSoLuong()){
+                    AlertNotification.showAlertWarning("","Số lượng hàng không đủ");
+                }else {
+                    paneInformationProduct.setVisible(false);
+                    paneOrderDetail.setVisible(true);
+                    showOderDetail();
+                }
+            }else{
+                if(AlertNotification.showAlertConfirmation("Bạn chưa đăng nhập","Đăng nhập để mua hàng?")){
+                    ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/LoginForm.fxml");
+                }
+            }
         }
     }
 
     //---------------------------------- THÔNG TIN CHI TIẾT HÓA ĐƠN - MUA HÀNG -----------------------------------
-    public void showOderDetail()
-    {
-        imgProdOderDetail.setImage(new Image(SelectedProduct.getSrcImg()));
+
+    private BigDecimal tongTien ;   //Sau khi nhấn mua hàng thì sẽ tính tiền vì khi đó mới có dữ liệu của product
+    private BigDecimal thanhTien;
+
+    //Thanh toán - Mua Hàng
+    @FXML
+    public void PayProduct(MouseEvent e) throws SQLException {
+        HoaDon hoaDon = new HoaDon(new Date(System.currentTimeMillis()),tongTien,voucherSelected,thanhTien,Temp.user);
+        CTHoaDon ctHoaDon = new CTHoaDon(SelectedProduct,numbersBuyProduct,SelectedProduct.getDonGia());
+
+
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Platform.runLater(() ->imgLoading.setVisible(true));
+
+                Thread.sleep(200);
+
+
+                    if(e.getSource()==payAtHome){
+                        PayProductAtHome(hoaDon,ctHoaDon);
+                    }else if(e.getSource() == payByBank) {
+                        payProductByBank(hoaDon, ctHoaDon);
+                    }
+
+                Thread.sleep(100);
+
+                if (cachedProducts.first()) {
+                    do{
+                        int productID = cachedProducts.getInt("ID");
+                        if(productID==SelectedProduct.getID()){
+                            cachedProducts.updateDouble("SoLuong",SelectedProduct.getSoLuong() - numbersBuyProduct);
+                            cachedProducts.updateRow();
+                            break;
+                        }
+                    }while (cachedProducts.next());
+                }
+                pageSelected = 1;
+
+                Platform.runLater(() -> {
+                    try {
+                        selectDataProducts();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+
+                Platform.runLater(() -> imgLoading.setVisible(false));
+                return null;
+            }
+        };
+
+        new Thread(task).start();
+
+    }
+    public void PayProductAtHome(HoaDon hoaDon,CTHoaDon ctHoaDon){
+            if(Temp.hoaDon_dao.OrderDetailsPayAtHome(hoaDon,ctHoaDon)){
+                AlertNotification.showAlertSucces("Mua hàng thành công!","Cảm ơn bạn đã mua hàng");
+                paneOrderDetail.setVisible(false);
+//                if (cachedProducts.first()) {
+//                    do{
+//                        int productID = cachedProducts.getInt("ID");
+//                        if(productID==SelectedProduct.getID()){
+//                            System.out.println(productID);
+//                            cachedProducts.refreshRow();
+//                            break;
+//                        }
+//                    }while (cachedProducts.next());
+//                }
+            }else{
+                AlertNotification.showAlertError("","Có lỗi xảy ra");
+            }
     }
 
+    public void payProductByBank(HoaDon hoaDon,CTHoaDon ctHoaDon)
+    {
+        Temp.bank = bank_dao.SelectByID(new Bank(Temp.user));
+        if(Temp.bank!=null){
+            if(Temp.account.getMoney().compareTo(thanhTien)<=0){
+                AlertNotification.showAlertWarning("Số dư không đủ!","Vui lòng nạp thêm tiền...");
+            }else{
+                PaymentHistory paymentBank = new PaymentHistory("Mua Hàng","Thanh toán cho MyShop",thanhTien,
+                        new Date(System.currentTimeMillis()),"/com/epu/oop/myshop/image/iconThanhToan.jpg",Temp.user,null);
+                Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
+                if(Temp.hoaDon_dao.OrderDetailsPayByBank(hoaDon,ctHoaDon,paymentBank,Temp.account)){
+                    AlertNotification.showAlertSucces("Mua hàng thành công!","Cảm ơn bạn đã mua hàng");
+                    paneOrderDetail.setVisible(false);
+                }else{
+                    AlertNotification.showAlertError("","Có lỗi xảy ra");
+                }
+            }
+        }else {
+            AlertNotification.showAlertWarning("","Liên kết ngân hàng trước khi thanh toán!");
+        }
+    }
+    public void caculateOrderDetail()
+    {
+        tongTien = SelectedProduct.getDonGia().multiply(BigDecimal.valueOf(Long.parseLong(txtNumber.getText())));
+
+        if(voucherSelected!=null)
+        {
+            if(voucherSelected.getTiLeGiamGia()>0.0){
+                VcSaleOrder_lb.setText(voucherSelected.getTiLeGiamGia()+"%");
+                thanhTien = tongTien.subtract(tongTien.multiply(BigDecimal.valueOf(voucherSelected.getTiLeGiamGia()).divide(BigDecimal.valueOf(100))));
+            }else if(voucherSelected.getSoTienGiam()!=null || voucherSelected.getSoTienGiam().compareTo(BigDecimal.ZERO)>0){
+                VcSaleOrder_lb.setText(App.numf.format(voucherSelected.getSoTienGiam())+"đ");
+                thanhTien = tongTien.subtract(voucherSelected.getSoTienGiam());
+                if(thanhTien.compareTo(BigDecimal.ZERO)<0)  //Tránh trường hợp giảm giá âm tiền
+                    thanhTien = new BigDecimal("0");
+            }
+        }else{
+            thanhTien = tongTien;
+            VcSaleOrder_lb.setText("");
+        }
+
+        VcShelfOrder_lb.setText(VcSaleOrder_lb.getText());
+        totalOrder_lb.setText(App.numf.format(thanhTien)+"đ");
+        totalMoneyProd_lb.setText(App.numf.format(tongTien)+"đ");
+    }
+    public void showOderDetail()
+    {
+        System.out.println(numbersBuyProduct);
+        //Lấy thông tin người dungf
+        Temp.user = userDao.SelectByID(new User(Temp.account.getID()));
+        nameUserOder_lb.setText(Temp.user.getFullName());
+        phoneUserOder_lb.setText(Temp.user.getNumberPhone());
+        AdressOrder_txt.setText(Temp.user.getAddress());
+
+        imgProdOderDetail.setImage(new Image(SelectedProduct.getSrcImg()));
+        nameProdOrder_txt.setText(SelectedProduct.getTenSP());
+        priceProOder_lb.setText(App.numf.format(SelectedProduct.getDonGia())+"đ");
+        numbersProduct.setText(txtNumber.getText());
+
+        //Tổng tiền hàng
+        caculateOrderDetail();
+
+    }
+
+    private MyListener<VoucherModel> myListener_Voucher;
+    @FXML
+    public void addVoucher(ActionEvent e){
+        if(btnAddVoucher.getText().equals("+")){
+            paneVoucher.setVisible(true);
+            setDataVoucher();
+        }else{
+            voucherSelected = null;
+            btnAddVoucher.setText("+");
+            caculateOrderDetail();
+        }
+    }
+
+    public void clickVoucher()
+    {
+        myListener_Voucher = new MyListener<VoucherModel>() {
+            @Override
+            public void onClickListener(VoucherModel voucherModel) {
+                voucherSelected = voucherModel;
+                paneVoucher.setVisible(false);
+                caculateOrderDetail();
+                btnAddVoucher.setText("-");
+            }
+        };
+    }
+    public void setDataVoucher()
+    {
+        if(listvoucher==null)
+        {
+            listvoucher = voucherDao.getVoucherConTime(Temp.user.getID());
+        }
+        gridVoucher.getChildren().clear();
+        clickVoucher();
+        for(VoucherModel vc : listvoucher)
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/Voucher.fxml"));
+                AnchorPane anchorPane = fxmlLoader.load();
+
+                VoucherController itemCategory = fxmlLoader.getController();
+                itemCategory.setData(myListener_Voucher,vc);
+
+                gridVoucher.add(anchorPane, col, ++row); // (child,column,row)
+                // set grid width
+                gridVoucher.setMinWidth(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setMaxWidth(Region.USE_PREF_SIZE);
+
+                // set grid height
+                gridVoucher.setMinHeight(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setPrefHeight(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setMaxHeight(Region.USE_PREF_SIZE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    }
+    //-------------------------------------------------------------------------------
 
     //Khi hover vào các nav-item
     @FXML
@@ -568,6 +841,14 @@ public class PageHomeController implements Initializable {
     }
     private Category category = new Category();
     private int keyCategory=-1;
+    /* OldKey..
+   -Mục đích để kiểm tra nếu truy vấn danh mục khác nếu gặp giá trị rỗng thì k bị loi pointer
+   -Do set lên GUI nên  cachedRow đang ở vị trí dòng bất kỳ, nếu: cachedProducts.beforeFirst(); dẫn đến các trang đều bị set giống nhau
+   -Không có thì khi chọn danh mục khác bị null thì lỗi con trỏ
+    */
+    private int oldKeyCategory = -1;
+
+
     public void clickCategory(MouseEvent e) throws SQLException {
         if(e.getSource() == itemPhone_lb)
         {
@@ -647,8 +928,10 @@ public class PageHomeController implements Initializable {
         }
         if(keyCategory!=-1)
         {
-            paneProductMarket.setVisible(true);
-            calculatePage();
+           // paneProductMarket.setVisible(true);
+            //calculatePage();
+            loadData();
+
         }
 
     }
@@ -656,7 +939,7 @@ public class PageHomeController implements Initializable {
         img_iconSearch.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconSearch.png"));
         imgAvatar.setImage((new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/img1.jpg"))));
 
-
+        imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
         imgVoucherOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/voucher.png")));
         imgUserOrder.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_user.png"))));
         imgPhoneOrder.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconPhone.png"));
@@ -677,6 +960,13 @@ public class PageHomeController implements Initializable {
         }
     }
 
+    public void click(MouseEvent e) throws IOException {
+        if(e.getSource() == imgAvatar)
+        {
+            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/ProfileUser.fxml");
+        }
+
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

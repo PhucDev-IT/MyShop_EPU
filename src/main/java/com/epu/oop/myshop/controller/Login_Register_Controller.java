@@ -73,16 +73,13 @@ public class Login_Register_Controller implements Initializable{
             AlertNotification.showAlertWarning("","Vui lòng nhập thông tin đầy đủ");
             return;
         }
-
-
-
         //Do user name k phải khóa chính nên phải tạo obj lấy đối tượng trong db để truy vấn ng dùng
         Account resul = accountDao.checkLogin(new Account(0,userName,Pass));
         if(resul!=null) {
 
             Temp.account = resul;
             try{
-                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/HomeForm.fxml");
+                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

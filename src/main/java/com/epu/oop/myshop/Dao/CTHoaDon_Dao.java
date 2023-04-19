@@ -96,6 +96,28 @@ public class CTHoaDon_Dao implements Dao_Interface<CTHoaDon> {
     }
 
 
+    //Chi tiết hóa đơn, sử dụng transaction
+    public boolean insertVoucher(CTHoaDon t, int IDHoaDon){
+        int results = 0;
 
+        String sql = "INSERT INTO CTHoaDon(Product_ID,HoaDon_ID,Quantity,Price)" +
+                " VALUES (?,?,?,?)";
+        try(Connection connection = JDBCUtil.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1,t.getProduct().getID());
+            statement.setInt(2,IDHoaDon);
+            statement.setFloat(3,t.getQuantity());
+            statement.setBigDecimal(4,new BigDecimal(t.getPrice()+""));
+
+            //Bước 3:Thực thi câu lệnh
+            results = statement.executeUpdate();
+            System.out.println("Thêm thành công bảng chi tiết hóa đơn");
+            statement.close();
+            JDBCUtil.CloseConnection(connection);
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return results>0;
+    }
 
 }

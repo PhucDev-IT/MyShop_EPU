@@ -163,7 +163,6 @@ public class HomeController implements Initializable {
     private Label giaGocInMuaHang_txt;
 
 
-
     @FXML
     private Label soSanPhamBuy_lb;
 
@@ -406,11 +405,11 @@ public class HomeController implements Initializable {
     public void ThanhToan(){
         HoaDon hoadon = new HoaDon(new Date(System.currentTimeMillis()),tongTien,voucherClicked,thanhTien, new User(Temp.account.getID()));
         CTHoaDon cthoadon = new CTHoaDon(product,soluong,product.getDonGia());
-        int check;
+        int check = 0;
         if(voucherClicked!=null){
             check =  hoaDon_Dao.Insert(hoadon);
         }else{
-            check=  hoaDon_Dao.HoaDonNotVoucher(hoadon);
+            //check=  hoaDon_Dao.HoaDonNotVoucher(hoadon);
         }
 
         if(check>0)

@@ -99,12 +99,13 @@ public class Product_Dao implements Dao_Interface<Product>{
     }
 
     //Phân trang, truy vấn dữ liệu luưu vào bộ nhớ đệm cachedrowset
-    public CachedRowSet CachedProduct(int idCate)
+    public synchronized CachedRowSet CachedProduct(int idCate)
     {
         try (Connection conn = JDBCUtil.getConnection()) {
             CachedRowSet cachedRowSet = RowSetProvider.newFactory().createCachedRowSet();
             cachedRowSet.setCommand("SELECT * FROM Product WHERE Category_ID = ?");
             cachedRowSet.setInt(1, idCate);
+
             cachedRowSet.execute(conn);
             JDBCUtil.CloseConnection(conn);
 

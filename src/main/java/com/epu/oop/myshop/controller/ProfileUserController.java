@@ -1116,7 +1116,7 @@ public class ProfileUserController implements Initializable {
 
             if (AlertNotification.showAlertConfirmation("", "Bạn muốn đăng xuất?")) {
                 Temp.account = null;
-                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/LoginForm.fxml");
+                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
             }
         } else if (e.getSource() == MyShop_txt) {
 

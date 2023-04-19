@@ -16,6 +16,7 @@ public class UserDao implements Dao_Interface<User> {
     public static UserDao getInstance() {
         if (instance == null) {
             instance = new UserDao();
+            System.out.println("Tạo đối tượng userDao");
         }
         return instance;
     }

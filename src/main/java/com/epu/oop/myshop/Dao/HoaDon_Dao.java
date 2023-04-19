@@ -43,28 +43,207 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
         return results;
     }
 
-    //Thanh toán khi không có voucher
-    public int HoaDonNotVoucher(HoaDon t) {
-        int results = 0;
 
-        String sql = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID)" +
-                " VALUES (?,?,?,?)";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setDate(1,t.getNgayLapHD());
-            statement.setBigDecimal(2,t.getTongTien());
-            statement.setBigDecimal(3,t.getThanhTien());
-            statement.setInt(4,t.getUser().getID());
+    //Thanh toán hóa đơn băn ngân hàng
+    public boolean OrderDetailsPayByBank(HoaDon hoaDon, CTHoaDon cthd,PaymentHistory paymentHistory,Account account) {
+        PreparedStatement preOrder = null;
+        PreparedStatement preDetails = null;
+        PreparedStatement prePaymentHistory = null;
+        PreparedStatement preAccount = null;
 
-            //Bước 3:Thực thi câu lệnh
-            results = statement.executeUpdate();
-            System.out.println("Có "+results +" thay đổi");
-            statement.close();
+        Connection connection = null;
+        try {
+            connection = JDBCUtil.getConnection();
+            connection.setAutoCommit(false); // Bắt đầu transaction
+            String sqlOrder = null;
+            if(hoaDon.getVoucher()!=null) {
+                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID,MaVoucher)" +
+                        " VALUES (?,?,?,?,?)";
+                preOrder = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
+                preOrder.setString(5,hoaDon.getVoucher().getMaVoucher());
+            }else{
+                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID)" +
+                        " VALUES (?,?,?,?)";
+                //để thiết lập cho PreparedStatement trả về giá trị của khóa chính được tạo ra
+                preOrder = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
+            }
+
+            String sqlOrderDtails = "INSERT INTO CTHoaDon(Product_ID,HoaDon_ID,Quantity,Price)" +
+                    " VALUES (?,?,?,?)";
+
+            String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
+
+            String sqlAccount = "UPDATE Account SET " +
+                    "Passwords=?," +
+                    " Currency=?," +
+                    " Statuss=?," +
+                    " PhanQuyen=?" +
+                    " WHERE UserName=?";
+
+
+            preOrder.setDate(1, hoaDon.getNgayLapHD());
+            preOrder.setBigDecimal(2, hoaDon.getTongTien());
+            preOrder.setBigDecimal(3, hoaDon.getThanhTien());
+            preOrder.setInt(4, hoaDon.getUser().getID());
+
+            preOrder.executeUpdate();
+
+            int hoaDonId;
+            //phương thức getGeneratedKeys() để lấy giá trị ID của bản ghi vừa được chèn vào.
+            try (ResultSet generatedKeys = preOrder.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    hoaDonId = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Creating order failed, no ID obtained.");
+                }
+            }
+            preDetails = connection.prepareStatement(sqlOrderDtails);
+            preDetails.setInt(1, cthd.getProduct().getID());
+            preDetails.setInt(2, hoaDonId);
+            preDetails.setFloat(3, cthd.getQuantity());
+            preDetails.setBigDecimal(4, new BigDecimal(cthd.getPrice() + ""));
+
+            preDetails.executeUpdate();
+
+            prePaymentHistory = connection.prepareStatement(sqlPayment);
+            prePaymentHistory.setString(1, paymentHistory.getTenGiaoDich());
+            prePaymentHistory.setString(2, paymentHistory.getNoiDung());
+            prePaymentHistory.setBigDecimal(3, paymentHistory.getSoTien());
+            prePaymentHistory.setDate(4, paymentHistory.getNgayGiaoDich());
+            prePaymentHistory.setString(5, paymentHistory.getImgSrcIcon());
+            prePaymentHistory.setInt(6, paymentHistory.getUser().getID());
+
+            prePaymentHistory.executeUpdate();
+
+            preAccount = connection.prepareStatement(sqlAccount) ;
+                preAccount.setString(1, account.getPassword());
+                preAccount.setBigDecimal(2, account.getMoney());
+                preAccount.setString(3, account.getStatus());
+                preAccount.setString(4, account.getPhanQuyen());
+                preAccount.setString(5, account.getUserName());
+            preAccount.executeUpdate();
+
+                connection.commit();
+                return true;
+            } catch(SQLException ex){
+                if (connection != null) {
+                    try {
+                        connection.rollback();
+                        System.out.println("Rolled back.");
+                    } catch (SQLException exrb) {
+                        exrb.printStackTrace();
+                    }
+                }
+            } finally{
+                try {
+                    if (preOrder != null) {
+                        preOrder.close();
+                    }
+
+                    if (preDetails != null) {
+                        preDetails.close();
+                    }
+                    if(prePaymentHistory!=null){
+                        prePaymentHistory.close();
+                    }
+
+                    if(preAccount!=null){
+                        preAccount.close();
+                    }
+
+                    connection.setAutoCommit(true);
+                } catch (SQLException excs) {
+                    excs.printStackTrace();
+                }
+                JDBCUtil.CloseConnection(connection);
+            }
+
+        return false;
+    }
+
+        //Hóa đơn có tại nhà
+    public boolean OrderDetailsPayAtHome(HoaDon hoaDon,CTHoaDon cthd)
+    {
+        PreparedStatement orderDetails = null;
+        PreparedStatement order = null;
+        int checkOrder = 0;
+        int checkDetails=0;
+        Connection connection = null;
+        try {
+            connection = JDBCUtil.getConnection();
+            connection.setAutoCommit(false); // Bắt đầu transaction
+            String sqlOrder = null;
+
+            if(hoaDon.getVoucher()!=null) {
+                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID,MaVoucher)" +
+                        " VALUES (?,?,?,?,?)";
+                order = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
+                order.setString(5,hoaDon.getVoucher().getMaVoucher());
+            }else{
+                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID)" +
+                        " VALUES (?,?,?,?)";
+                order = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
+            }
+
+            String sqlOrderDtails = "INSERT INTO CTHoaDon(Product_ID,HoaDon_ID,Quantity,Price)" +
+                    " VALUES (?,?,?,?)";
+
+            //để thiết lập cho PreparedStatement trả về giá trị của khóa chính được tạo ra
+
+            order.setDate(1,hoaDon.getNgayLapHD());
+            order.setBigDecimal(2,hoaDon.getTongTien());
+            order.setBigDecimal(3,hoaDon.getThanhTien());
+            order.setInt(4,hoaDon.getUser().getID());
+
+            checkOrder = order.executeUpdate();
+
+            int hoaDonId;
+            //phương thức getGeneratedKeys() để lấy giá trị ID của bản ghi vừa được chèn vào.
+            try (ResultSet generatedKeys = order.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    hoaDonId = generatedKeys.getInt(1);
+                }
+                else {
+                    throw new SQLException("Creating order failed, no ID obtained.");
+                }
+            }
+            orderDetails = connection.prepareStatement(sqlOrderDtails);
+            orderDetails.setInt(1,cthd.getProduct().getID());
+            orderDetails.setInt(2,hoaDonId);
+            orderDetails.setFloat(3,cthd.getQuantity());
+            orderDetails.setBigDecimal(4,new BigDecimal(cthd.getPrice()+""));
+
+
+            checkDetails = orderDetails.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException ex) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    System.out.println("Rolled back.");
+                } catch (SQLException exrb) {
+                    exrb.printStackTrace();
+                }
+            }
+        } finally {
+            try {
+                if (order != null) {
+                    order.close();
+                }
+
+                if (orderDetails != null) {
+                    orderDetails.close();
+                }
+
+                connection.setAutoCommit(true);
+            } catch (SQLException excs) {
+                excs.printStackTrace();
+            }
             JDBCUtil.CloseConnection(connection);
-        }catch (SQLException e) {
-            e.printStackTrace();
         }
-        return results;
+        return checkOrder>0 && checkDetails>0;
     }
 
     @Override
