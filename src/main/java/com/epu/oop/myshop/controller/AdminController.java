@@ -412,9 +412,9 @@ public class AdminController implements Initializable {
             VoucherModel voucher = new VoucherModel(maVoucher_txt.getText(), tilegiamgia, SoTienGiamGia,
                     (Integer.parseInt(soLuong_txt.getText())), noiDung_txa.getText(), imgVoucherTemp,
                     Date.valueOf(ngayBatDau_date.getValue()), Date.valueOf(ngayKTDate.getValue()));
-            int check = voucherDao.Insert(voucher);
 
-            if (check>0) {
+
+            if (voucherDao.Insert(voucher)) {
                 AlertNotification.showAlertSucces("", "Thêm thành công");
                 if (!isStringEmpty(EmailUserVoucher_txt.getText())) {
                     if (voucherDao.GiftVoucher(voucher, EmailUserVoucher_txt.getText()) <= 0) {

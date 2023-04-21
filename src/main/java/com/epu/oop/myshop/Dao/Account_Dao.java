@@ -3,6 +3,7 @@ package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.Database.JDBCUtil;
 import com.epu.oop.myshop.model.Account;
+import com.epu.oop.myshop.model.User;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -21,15 +22,16 @@ public class Account_Dao implements Dao_Interface<Account> {
     }
 
     @Override
-    public int Insert(Account t) {
+    public boolean Insert(Account t) throws SQLException {
         int results = 0;
-        String sql = "INSERT INTO Account(UserName,Passwords,Currency,Statuss,PhanQuyen)" +
+        String sql = "INSERT INTO Account(UserName,Passwords,Currency,Activity,PhanQuyen)" +
                 " VALUES (?,?,?,?,?)";
             //Try - catch - resources : giúp tự động close, tránh rò rĩ tài nguyên
-
-           try(Connection connection = JDBCUtil.getConnection();
-               PreparedStatement statement = connection.prepareStatement(sql)){
-
+        Connection connection = null;
+           try{
+               connection = JDBCUtil.getConnection();
+               connection.setAutoCommit(false);
+               PreparedStatement statement = connection.prepareStatement(sql);
                statement.setString(1,t.getUserName());
                statement.setString(2,t.getPassword());
                statement.setBigDecimal(3,new BigDecimal(0));
@@ -39,11 +41,17 @@ public class Account_Dao implements Dao_Interface<Account> {
                //Bước 3:Thực thi câu lệnh
                results =  statement.executeUpdate();
                statement.close();
-               JDBCUtil.CloseConnection(connection);
+               connection.commit();
        }catch (SQLException e) {
+               if(connection!=null){
+                   connection.rollback();
+               }
            e.printStackTrace();
-       }
-        return results;
+       }finally {
+              connection.setAutoCommit(true);
+              connection.close();
+           }
+        return results>0;
     }
 
     @Override
@@ -61,7 +69,7 @@ public class Account_Dao implements Dao_Interface<Account> {
                 String UserName = rs.getString("UserName");
                 String Passwords = rs.getString("Passwords");
                 BigDecimal money = rs.getBigDecimal("Currency");
-                String Statuss = rs.getString("Statuss");
+                String Statuss = rs.getString("Activity");
                 String PhanQuyen = rs.getString("PhanQuyen");
 
                 list.add(new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen));
@@ -90,7 +98,7 @@ public class Account_Dao implements Dao_Interface<Account> {
                 String UserName = rs.getString("UserName");
                 String Passwords = rs.getString("Passwords");
                 BigDecimal money = rs.getBigDecimal("Currency");
-                String Statuss = rs.getString("Statuss");
+                String Statuss = rs.getString("Activity");
                 String PhanQuyen = rs.getString("PhanQuyen");
 
                 account =  new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen);
@@ -109,7 +117,7 @@ public class Account_Dao implements Dao_Interface<Account> {
             String sql = "UPDATE Account SET " +
                     "Passwords=?," +
                     " Currency=?," +
-                    " Statuss=?," +
+                    " Activity=?," +
                     " PhanQuyen=?" +
                     " WHERE UserName=?";
         try (Connection connection = JDBCUtil.getConnection();
@@ -153,13 +161,22 @@ public class Account_Dao implements Dao_Interface<Account> {
 
     public boolean checkRegister(Account account)
     {
-        Account a = SelectByID(account);
+        int check = 0;
+        String sql = "SELECT COUNT(*) AS number FROM Account WHERE ID = ?";
+        try(Connection conn = JDBCUtil.getConnection();
+        PreparedStatement statement = conn.prepareStatement(sql)){
+            statement.setInt(1,account.getID());
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                check = resultSet.getInt("number");
+            }
 
-        if(a!=null)
-        {
-            return true;
-        }else
-            return false;
+            statement.close();
+            JDBCUtil.CloseConnection(conn);
+        }catch (SQLException e){
+            System.out.println("Có lỗi xảy ra: "+e.getMessage());
+        }
+        return  check>0;
     }
 
     //Kiểm tra đăng nhập
@@ -181,7 +198,7 @@ public class Account_Dao implements Dao_Interface<Account> {
                 String UserName = rs.getString("UserName");
                 String Passwords = rs.getString("Passwords");
                 BigDecimal money = rs.getBigDecimal("Currency");
-                String Statuss = rs.getString("Statuss");
+                String Statuss = rs.getString("Activity");
                 String PhanQuyen = rs.getString("PhanQuyen");
 
                 a = new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen);
@@ -196,26 +213,57 @@ public class Account_Dao implements Dao_Interface<Account> {
        return a;
     }
 
-    //Lấy giá trị lớn nhất (ID mới được thêm) trong bảng Account để đặt khóa ngoại cho Bảng User
-    public int IndexNewInsert()
-    {
-        int maxID = 0;
+    //Đăng ký thông tin người dùng
+    public boolean signUpUser(Account account, User user) throws SQLException {
+        int check = 0;
+        Connection connection = null;
+        PreparedStatement preAccount = null;
+        PreparedStatement preUser = null;
+        try{
 
-            String sql = "SELECT MAX(ID) FROM Account";
-        try (Connection connection = JDBCUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
-            ResultSet result = statement.executeQuery();
+            String sql = "INSERT INTO Account(UserName,Passwords,Currency,Activity,PhanQuyen)" +
+                    " VALUES (?,?,?,?,?)";
+            String sqlUs = "INSERT INTO Users(Account_ID,FullName,Email)" +
+                    " VALUES (?,?,?)";
 
-            if (result.next()) {
-                maxID = result.getInt(1);
+            connection = JDBCUtil.getConnection();
+            connection.setAutoCommit(false);
+            preAccount = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
+            preAccount.setString(1,account.getUserName());
+            preAccount.setString(2,account.getPassword());
+            preAccount.setBigDecimal(3,new BigDecimal(0));
+            preAccount.setString(4,"ON");
+            preAccount.setString(5,"Member");
+            preAccount.executeUpdate();
+
+            int index = 0;
+            try(ResultSet rs = preAccount.getGeneratedKeys()){
+                if(rs.next()){
+                    rs.getInt(1);
+                }else {
+                    throw new SQLException("Không thể đăng ký");
+                }
             }
-            statement.close();
+            preUser = connection.prepareStatement(sqlUs);
+            preUser.setInt(1,index);
+            preUser.setString(2,user.getFullName());
+            preUser.setString(3,user.getEmail());
+            check = preUser.executeUpdate();
+
+            connection.commit();
+        }catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+            }
+            e.printStackTrace();
+        }finally {
+            if(preUser!=null)   preUser.close();
+
+            if(preAccount!=null) preAccount.close();
+            connection.setAutoCommit(true);
             JDBCUtil.CloseConnection(connection);
-        }catch (SQLException e)
-        {
-            System.out.println("Có lỗi xảy ra, Không thể lấy index Account mới thêm: "+e.getMessage());
         }
-        return maxID;
+        return check>0;
     }
 
 

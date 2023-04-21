@@ -536,7 +536,7 @@
                      </children>
                   </AnchorPane>
                   <ImageView fx:id="imgLoading" fitHeight="48.0" fitWidth="62.0" layoutX="611.0" layoutY="282.0" pickOnBounds="true" preserveRatio="true" visible="false" />
-                  <Pane layoutX="411.0" layoutY="-9.0" prefHeight="200.0" prefWidth="602.0" style="-fx-background-color: red;" />
+                  <Pane layoutX="411.0" layoutY="-9.0" prefHeight="200.0" prefWidth="602.0" style="-fx-background-color: red;" visible="false" />
                </children>
             </AnchorPane>
          </center>

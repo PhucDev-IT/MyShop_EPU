@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -325,9 +326,8 @@ public class PageHomeController implements Initializable {
 
     private final int maxProductsOfPage = 10; //1 trang tối đa 10 sản phẩm
 
-
+    List<Product> listProductByPage = new ArrayList<>();
     int pageSelected ;
-    private CachedRowSet cachedProducts;
 
     private Product SelectedProduct;    //Lưu giá trị product vừa được click
 
@@ -348,22 +348,17 @@ public class PageHomeController implements Initializable {
     public void calculatePage() throws SQLException {
         int totalPages = 0;
         int totalProducts = 0;
-
-        cachedProducts = product_Dao.CachedProduct(keyCategory);
-
-        if(cachedProducts != null && cachedProducts.size() > 0) {   //TRánh việc chia cho 0
-            totalProducts = cachedProducts.size();
-            totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / maxProductsOfPage) : 0;
-        }
-
+        totalProducts = product_Dao.getNumbersPages(keyCategory);
+        totalPages =  (int) Math.ceil((double) totalProducts / maxProductsOfPage);
         if(totalProducts<=0){
             lbNoData.setVisible(true);
         }else{
             lbNoData.setVisible(false);
         }
         pagination.setPageCount(totalPages>0?totalPages:1);
-        pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1
 
+        pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1
+        listProductByPage = product_Dao.getProductsByPage(keyCategory,pageSelected,maxProductsOfPage);
         selectDataProducts();
 
     }
@@ -394,25 +389,10 @@ public class PageHomeController implements Initializable {
         row = 1;
         col = 0;
         grid_Products.getChildren().clear();
-        cachedProducts.beforeFirst();    //Đặt lại con trỏ đọc của CachedRowSet vào vị trí đầu tiên
-        //CachedRowSet.next() để di chuyển con trỏ đến hàng đầu tiên của CachedRowSet.
-        int offset = (pageSelected - 1) * maxProductsOfPage;
-        int limit = maxProductsOfPage;
-        Product pro;
-        cachedProducts.absolute(offset + 1);
-
-
-        while (cachedProducts.next() && limit-- > 0) {
-            int ID = cachedProducts.getInt("ID");
-            String TenSP = cachedProducts.getString("TenSP");
-            float soLuong = cachedProducts.getFloat("SoLuong");
-            BigDecimal donGia = cachedProducts.getBigDecimal("DonGia");
-            String MoTa = cachedProducts.getString("MoTa");
-            String SrcImg = cachedProducts.getString("SrcImg");
-            int DanhMuc = cachedProducts.getInt("Category_ID");
-            pro = new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,DanhMuc);
-            setDataProduct(pro);
+        for (Product product : listProductByPage){
+            setDataProduct(product);
         }
+
     }
     int row = 1;
     int col = 0;
@@ -463,7 +443,6 @@ public class PageHomeController implements Initializable {
                             throw new RuntimeException(e);
                         }
                     }
-
                 });
 
                 Thread.sleep(1000);
@@ -505,8 +484,8 @@ public class PageHomeController implements Initializable {
     {
         imgProdInfor.setImage(new Image(SelectedProduct.getSrcImg()));
         nameProdInfor_txt.setText(SelectedProduct.getTenSP());
-        priceProdInfor.setText(App.numf.format(SelectedProduct.getDonGia())+"đ");
-        remainInfor_lb.setText(SelectedProduct.getSoLuong()+"");
+        priceProdInfor.setText(App.numf.format(SelectedProduct.getPrice())+"đ");
+        remainInfor_lb.setText(SelectedProduct.getQuantity()+"");
       //  nameSeller_Infor_lb.setText(SelectedProduct.getUser().getFullName());
         contentProInfor_txa.setText(SelectedProduct.getMoTa());
         //sold.setText();
@@ -557,9 +536,9 @@ public class PageHomeController implements Initializable {
         if(e.getSource() == btnBuyProduct){
             if(Temp.account!=null){
 
-                if(SelectedProduct.getSoLuong()<=0){
+                if(SelectedProduct.getQuantity()<=0){
                     AlertNotification.showAlertWarning("","Sản phẩm này tạm hết!");
-                }else if(Integer.parseInt(txtNumber.getText()) > SelectedProduct.getSoLuong()){
+                }else if(Integer.parseInt(txtNumber.getText()) > SelectedProduct.getQuantity()){
                     AlertNotification.showAlertWarning("","Số lượng hàng không đủ");
                 }else {
                     paneInformationProduct.setVisible(false);
@@ -582,8 +561,8 @@ public class PageHomeController implements Initializable {
     //Thanh toán - Mua Hàng
     @FXML
     public void PayProduct(MouseEvent e) throws SQLException {
-        HoaDon hoaDon = new HoaDon(new Date(System.currentTimeMillis()),tongTien,voucherSelected,thanhTien,Temp.user);
-        CTHoaDon ctHoaDon = new CTHoaDon(SelectedProduct,numbersBuyProduct,SelectedProduct.getDonGia());
+        Order hoaDon = new Order(new Date(System.currentTimeMillis()),tongTien,voucherSelected,thanhTien,Temp.user);
+        OrderDetails ctHoaDon = new OrderDetails(SelectedProduct,numbersBuyProduct,SelectedProduct.getPrice());
 
 
         Task<Void> task = new Task<Void>() {
@@ -601,18 +580,13 @@ public class PageHomeController implements Initializable {
                     }
 
                 Thread.sleep(100);
-
-                if (cachedProducts.first()) {
-                    do{
-                        int productID = cachedProducts.getInt("ID");
-                        if(productID==SelectedProduct.getID()){
-                            cachedProducts.updateDouble("SoLuong",SelectedProduct.getSoLuong() - numbersBuyProduct);
-                            cachedProducts.updateRow();
-                            break;
-                        }
-                    }while (cachedProducts.next());
+                for (Product pro :listProductByPage){
+                    if(pro.getID() == SelectedProduct.getID()){
+                        pro.setQuantity(pro.getQuantity() - numbersBuyProduct);
+                        pro.setSold(pro.getSold() + numbersBuyProduct);
+                        break;
+                    }
                 }
-                pageSelected = 1;
 
                 Platform.runLater(() -> {
                     try {
@@ -630,26 +604,17 @@ public class PageHomeController implements Initializable {
         new Thread(task).start();
 
     }
-    public void PayProductAtHome(HoaDon hoaDon,CTHoaDon ctHoaDon){
+    public void PayProductAtHome(Order hoaDon, OrderDetails ctHoaDon){
             if(Temp.hoaDon_dao.OrderDetailsPayAtHome(hoaDon,ctHoaDon)){
                 AlertNotification.showAlertSucces("Mua hàng thành công!","Cảm ơn bạn đã mua hàng");
                 paneOrderDetail.setVisible(false);
-//                if (cachedProducts.first()) {
-//                    do{
-//                        int productID = cachedProducts.getInt("ID");
-//                        if(productID==SelectedProduct.getID()){
-//                            System.out.println(productID);
-//                            cachedProducts.refreshRow();
-//                            break;
-//                        }
-//                    }while (cachedProducts.next());
-//                }
+
             }else{
                 AlertNotification.showAlertError("","Có lỗi xảy ra");
             }
     }
 
-    public void payProductByBank(HoaDon hoaDon,CTHoaDon ctHoaDon)
+    public void payProductByBank(Order hoaDon, OrderDetails ctHoaDon)
     {
         Temp.bank = bank_dao.SelectByID(new Bank(Temp.user));
         if(Temp.bank!=null){
@@ -672,7 +637,7 @@ public class PageHomeController implements Initializable {
     }
     public void caculateOrderDetail()
     {
-        tongTien = SelectedProduct.getDonGia().multiply(BigDecimal.valueOf(Long.parseLong(txtNumber.getText())));
+        tongTien = SelectedProduct.getPrice().multiply(BigDecimal.valueOf(Long.parseLong(txtNumber.getText())));
 
         if(voucherSelected!=null)
         {
@@ -705,7 +670,7 @@ public class PageHomeController implements Initializable {
 
         imgProdOderDetail.setImage(new Image(SelectedProduct.getSrcImg()));
         nameProdOrder_txt.setText(SelectedProduct.getTenSP());
-        priceProOder_lb.setText(App.numf.format(SelectedProduct.getDonGia())+"đ");
+        priceProOder_lb.setText(App.numf.format(SelectedProduct.getPrice())+"đ");
         numbersProduct.setText(txtNumber.getText());
 
         //Tổng tiền hàng
@@ -970,13 +935,6 @@ public class PageHomeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            cachedProducts = RowSetProvider.newFactory().createCachedRowSet();
-        }catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-
         defaultForm();
         clickPage();
         showImage();

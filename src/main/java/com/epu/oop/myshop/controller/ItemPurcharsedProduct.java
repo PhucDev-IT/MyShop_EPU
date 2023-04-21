@@ -1,6 +1,6 @@
 package com.epu.oop.myshop.controller;
 
-import com.epu.oop.myshop.model.CTHoaDon;
+import com.epu.oop.myshop.model.OrderDetails;
 import com.epu.oop.myshop.model.Product;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,7 +41,7 @@ public class ItemPurcharsedProduct implements Initializable {
     @FXML
     private Label ngayMua_label;
 
-    private CTHoaDon cthd_dao;
+    private OrderDetails cthd_dao;
 
     public Locale lc = new Locale("vi", "VN");
     public NumberFormat numf = NumberFormat.getInstance(lc);
@@ -49,7 +49,7 @@ public class ItemPurcharsedProduct implements Initializable {
     public void setData(Object[] obj)
     {
 
-            CTHoaDon cthd = (CTHoaDon) obj[1];
+            OrderDetails cthd = (OrderDetails) obj[1];
             Product product = (Product) obj[0];
             imgProduct.setImage(new Image(product.getSrcImg()));
             nameProduct_lb.setText(product.getTenSP());
@@ -63,7 +63,7 @@ public class ItemPurcharsedProduct implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cthd_dao = new CTHoaDon();
+        cthd_dao = new OrderDetails();
         img_ThanhTien.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\thanhtien.png"));
     }
 }

@@ -2,16 +2,12 @@ package com.epu.oop.myshop.model;
 
 
 
-import com.epu.oop.myshop.Dao.HoaDon_Dao;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 
-public class HoaDon implements Serializable{
+public class Order implements Serializable{
 
     private int MaHD;
 
@@ -31,9 +27,9 @@ public class HoaDon implements Serializable{
 
     //-------------------------------- CONSTRUCTOR ------------------------------------------
 
-    public HoaDon() {}
+    public Order() {}
 
-    public HoaDon(int id,Date ngayLapHD, BigDecimal TongTien,VoucherModel voucher, BigDecimal thanhTien, User user) {
+    public Order(int id, Date ngayLapHD, BigDecimal TongTien, VoucherModel voucher, BigDecimal thanhTien, User user) {
         MaHD = id;
         NgayLapHD = ngayLapHD;
         ThanhTien = thanhTien;
@@ -42,7 +38,7 @@ public class HoaDon implements Serializable{
         this.voucher = voucher;
     }
     //Mua hàng
-    public HoaDon(Date ngayLapHD,BigDecimal tongTien,VoucherModel voucher,BigDecimal ThanhTien,User u)
+    public Order(Date ngayLapHD, BigDecimal tongTien, VoucherModel voucher, BigDecimal ThanhTien, User u)
     {
         this.NgayLapHD = ngayLapHD;
         this.user = u;
@@ -113,7 +109,7 @@ public class HoaDon implements Serializable{
 
     @Override
     public String toString() {
-        return "HoaDon [MaHD=" + MaHD + ", NgayLapHD=" + NgayLapHD + ", ThanhTien=" + ThanhTien + ", user=" + user
+        return "Order [MaHD=" + MaHD + ", NgayLapHD=" + NgayLapHD + ", ThanhTien=" + ThanhTien + ", user=" + user
                 + "]";
     }
 

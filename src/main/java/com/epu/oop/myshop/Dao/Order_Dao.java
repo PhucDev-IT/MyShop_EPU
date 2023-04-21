@@ -6,50 +6,30 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-public class HoaDon_Dao implements Dao_Interface<HoaDon> {
+public class Order_Dao implements Dao_Interface<Order> {
 
-    private static HoaDon_Dao instance;
+    private static Order_Dao instance;
 
-    public static HoaDon_Dao getInstance() {
+    public static Order_Dao getInstance() {
         if (instance == null) {
-            instance = new HoaDon_Dao();
+            instance = new Order_Dao();
         }
         return instance;
     }
 
 
     @Override
-    public int Insert(HoaDon t) {
-        int results = 0;
+    public boolean Insert(Order t) {
 
-            String sql = "INSERT INTO HoaDon(NgayLapHD,TongTien,MaVoucher,ThanhTien,Users_ID)" +
-                    " VALUES (?,?,?,?,?)";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setDate(1,t.getNgayLapHD());
-            statement.setBigDecimal(2,t.getTongTien());
-            statement.setString(3,t.getVoucher().getMaVoucher());
-            statement.setBigDecimal(4,t.getThanhTien());
-            statement.setInt(5,t.getUser().getID());
-
-            //Bước 3:Thực thi câu lệnh
-            results = statement.executeUpdate();
-            System.out.println("Có "+results +" thay đổi");
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return results;
+        return false;
     }
 
 
-    //Thanh toán hóa đơn băn ngân hàng
-    public boolean OrderDetailsPayByBank(HoaDon hoaDon, CTHoaDon cthd,PaymentHistory paymentHistory,Account account) {
+    //Thanh toán hóa đơn băng ngân hàng
+    public  boolean OrderDetailsPayByBank(Order hoaDon, OrderDetails cthd, PaymentHistory paymentHistory, Account account) {
         PreparedStatement preOrder = null;
         PreparedStatement preDetails = null;
         PreparedStatement prePaymentHistory = null;
-        PreparedStatement preAccount = null;
 
         Connection connection = null;
         try {
@@ -57,29 +37,23 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
             connection.setAutoCommit(false); // Bắt đầu transaction
             String sqlOrder = null;
             if(hoaDon.getVoucher()!=null) {
-                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID,MaVoucher)" +
+                sqlOrder = "INSERT INTO Orders(NgayLapHD,TongTien,ThanhTien,Users_ID,MaVoucher)" +
                         " VALUES (?,?,?,?,?)";
                 preOrder = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
                 preOrder.setString(5,hoaDon.getVoucher().getMaVoucher());
             }else{
-                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID)" +
+                sqlOrder = "INSERT INTO orders(NgayLapHD,TongTien,ThanhTien,Users_ID)" +
                         " VALUES (?,?,?,?)";
                 //để thiết lập cho PreparedStatement trả về giá trị của khóa chính được tạo ra
                 preOrder = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
             }
 
-            String sqlOrderDtails = "INSERT INTO CTHoaDon(Product_ID,HoaDon_ID,Quantity,Price)" +
+            String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,HoaDon_ID,Quantity,Price)" +
                     " VALUES (?,?,?,?)";
 
             String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
                     " VALUES (?,?,?,?,?,?)";
 
-            String sqlAccount = "UPDATE Account SET " +
-                    "Passwords=?," +
-                    " Currency=?," +
-                    " Statuss=?," +
-                    " PhanQuyen=?" +
-                    " WHERE UserName=?";
 
 
             preOrder.setDate(1, hoaDon.getNgayLapHD());
@@ -116,15 +90,7 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
 
             prePaymentHistory.executeUpdate();
 
-            preAccount = connection.prepareStatement(sqlAccount) ;
-                preAccount.setString(1, account.getPassword());
-                preAccount.setBigDecimal(2, account.getMoney());
-                preAccount.setString(3, account.getStatus());
-                preAccount.setString(4, account.getPhanQuyen());
-                preAccount.setString(5, account.getUserName());
-            preAccount.executeUpdate();
-
-                connection.commit();
+            connection.commit();
                 return true;
             } catch(SQLException ex){
                 if (connection != null) {
@@ -148,10 +114,6 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
                         prePaymentHistory.close();
                     }
 
-                    if(preAccount!=null){
-                        preAccount.close();
-                    }
-
                     connection.setAutoCommit(true);
                 } catch (SQLException excs) {
                     excs.printStackTrace();
@@ -163,7 +125,7 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
     }
 
         //Hóa đơn có tại nhà
-    public boolean OrderDetailsPayAtHome(HoaDon hoaDon,CTHoaDon cthd)
+    public boolean OrderDetailsPayAtHome(Order hoaDon, OrderDetails cthd)
     {
         PreparedStatement orderDetails = null;
         PreparedStatement order = null;
@@ -176,17 +138,17 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
             String sqlOrder = null;
 
             if(hoaDon.getVoucher()!=null) {
-                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID,MaVoucher)" +
+                sqlOrder = "INSERT INTO orders(NgayLapHD,TongTien,ThanhTien,Users_ID,MaVoucher)" +
                         " VALUES (?,?,?,?,?)";
                 order = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
                 order.setString(5,hoaDon.getVoucher().getMaVoucher());
             }else{
-                sqlOrder = "INSERT INTO HoaDon(NgayLapHD,TongTien,ThanhTien,Users_ID)" +
+                sqlOrder = "INSERT INTO orders(NgayLapHD,TongTien,ThanhTien,Users_ID)" +
                         " VALUES (?,?,?,?)";
                 order = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
             }
 
-            String sqlOrderDtails = "INSERT INTO CTHoaDon(Product_ID,HoaDon_ID,Quantity,Price)" +
+            String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,HoaDon_ID,Quantity,Price)" +
                     " VALUES (?,?,?,?)";
 
             //để thiết lập cho PreparedStatement trả về giá trị của khóa chính được tạo ra
@@ -217,7 +179,7 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
 
             checkDetails = orderDetails.executeUpdate();
             connection.commit();
-
+            System.out.println("Thành công");
         } catch (SQLException ex) {
             if (connection != null) {
                 try {
@@ -247,23 +209,23 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
     }
 
     @Override
-    public List<HoaDon> SelectAll() {
-        List<HoaDon> list = new ArrayList<>();
+    public List<Order> SelectAll() {
+        List<Order> list = new ArrayList<>();
 
-            String sql = "SELECT * FROM HoaDon";
+            String sql = "SELECT * FROM orders";
 
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery()){
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("Order_ID");
                 Date NgayLapHD = rs.getDate("NgayLapHD");
                 BigDecimal TongTien = rs.getBigDecimal("TongTien");
                 String MaVoucher = rs.getString("MaVoucher");
                 BigDecimal ThanhTien = rs.getBigDecimal("ThanhTien");
                 int Users_ID = rs.getInt("Users_ID");
 
-                list.add(new HoaDon(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID)));
+                list.add(new Order(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID)));
             }
             statement.close();
             JDBCUtil.CloseConnection(connection);
@@ -275,60 +237,35 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
     }
 
     @Override
-    public HoaDon SelectByID(HoaDon t) {
+    public Order SelectByID(Order t) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public int Update(HoaDon t) {
+    public int Update(Order t) {
         return 1;
     }
 
     @Override
-    public int Delete(HoaDon t) {
+    public int Delete(Order t) {
         // TODO Auto-generated method stub
         return 0;
     }
 
-    //Tính tổng đơn hàng đã bán và tổng tiền của người bán
-    public Object[] SumOrder(int ID)
-    {
-        Object[] obj = new Object[2];
-            String sql = "select count(HoaDon.ID)  , sum(ThanhTien) from CTHoaDon join HoaDon " +
-                    "                    ON CTHoaDon.HoaDon_ID = HoaDon.ID " +
-                    "                    Join Product " +
-                    "                    ON CTHoaDon.Product_ID = Product.ID " +
-                    "                    JOIN ProductSeller ON Product.ID = ProductSeller.Product_ID " +
-                    "                    AND ProductSeller.Users_ID = ?";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setInt(1,ID);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()){
-                obj[0] = rs.getInt(1);
-                obj[1] = rs.getBigDecimal(2);
-            }
-            rs.close();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return obj;
-    }
+
 
     //Tính tổng hóa đơn đã bán trong ngày hôm nay
     public Object[] OrderToDay(Date date,int ID)
     {
         Object[] obj = new Object[2];
 
-            String sql = "select count(HoaDon.ID) as Numbers , sum(ThanhTien) as Total from CTHoaDon join HoaDon " +
-                    "ON CTHoaDon.HoaDon_ID = HoaDon.ID " +
+            String sql = "select count(HoaDon.ID) as Numbers , sum(ThanhTien) as Total from OrderDetails join orders " +
+                    "ON orderDetails.Order_ID = orders.Order_ID " +
                     "AND NgayLapHD = ? " +
                     "Join Product " +
-                    "ON CTHoaDon.Product_ID = Product.ID " +
-                    "JOIN ProductSeller ON Product.ID = ProductSeller.Product_ID " +
+                    "ON OrderDetails.Product_ID = Product.MaSP " +
+                    "JOIN ProductSeller ON Product.MaSP = ProductSeller.Product_ID " +
                     "AND ProductSeller.Users_ID = ?";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -354,7 +291,7 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
         BigDecimal result = new BigDecimal("0");
 
 
-            String sql = "SELECT CAST(SUM(Quantity*Price) AS DECIMAL) FROM CTHoaDon" +
+            String sql = "SELECT CAST(SUM(Quantity*Price) AS DECIMAL) FROM OrderDetails" +
                     " WHERE Product_ID=?";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -379,12 +316,12 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
 
 
             String sql = "SELECT p.TenSP,p.SrcImg,cthd.Quantity,cthd.Price,HoaDon.NgayLapHD,Users.FullName " +
-                    "FROM Product p INNER JOIN CTHoaDon cthd " +
-                    "ON p.ID = cthd.Product_ID " +
-                    "INNER JOIN HoaDon ON cthd.HoaDon_ID = HoaDon.ID " +
-                    "JOIN ProductSeller ON p.ID = ProductSeller.Product_ID " +
-                    "JOIN Users ON ProductSeller.Users_ID = Users.ID " +
-                    "AND HoaDon.Users_ID = ?" +
+                    "FROM Product p INNER JOIN OrderDetails cthd " +
+                    "ON p.MaSP = cthd.Product_ID " +
+                    "INNER JOIN orders ON cthd.Order_ID = orders.Order_ID " +
+                    "JOIN ProductSeller ON p.MaSP = ProductSeller.Product_ID " +
+                    "JOIN Users ON ProductSeller.Users_ID = Users.Account_ID " +
+                    "AND orders.Users_ID = ?" +
                     " ORDER BY HoaDon.NgayLapHD DESC";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -396,7 +333,7 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
                 product.setTenSP(rs.getString("TenSP"));
                 product.setSrcImg(rs.getString("SrcImg"));
                 obj[0] = product;
-                CTHoaDon cthd = new CTHoaDon();
+                OrderDetails cthd = new OrderDetails();
                 cthd.setQuantity(rs.getFloat("Quantity"));
                 cthd.setPrice(rs.getBigDecimal("Price"));
                 obj[1] = cthd;
@@ -411,24 +348,4 @@ public class HoaDon_Dao implements Dao_Interface<HoaDon> {
         return results;
     }
 
-    public int IndexNewInsert()
-    {
-        int maxID = 0;
-
-            String sql = "SELECT MAX(ID) FROM HoaDon";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet result = statement.executeQuery()){
-
-            if (result.next()) {
-                maxID = result.getInt(1);
-            }
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
-        }catch (SQLException e)
-        {
-            System.out.println("Có lỗi xảy ra,Không thể lấy index new: "+e.getMessage());
-        }
-        return maxID;
-    }
 }

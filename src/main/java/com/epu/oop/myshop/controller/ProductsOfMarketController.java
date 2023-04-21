@@ -1,6 +1,6 @@
 package com.epu.oop.myshop.controller;
 
-import com.epu.oop.myshop.Dao.CTHoaDon_Dao;
+import com.epu.oop.myshop.Dao.OrderDetails_Dao;
 import com.epu.oop.myshop.model.MyListener;
 import com.epu.oop.myshop.model.Product;
 import javafx.fxml.FXML;
@@ -26,7 +26,6 @@ public class ProductsOfMarketController {
 
     @FXML
     private Label sold;
-    private CTHoaDon_Dao cthd_dao  =  new CTHoaDon_Dao();
 
     private Product product;
 
@@ -43,20 +42,15 @@ public class ProductsOfMarketController {
         this.product = prod;
         this.mylistener = myListener;
 
-       this.imgProducts.setImage(new Image(prod.getSrcImg()));
+       this.imgProducts.setImage(new Image(getClass().getResourceAsStream(prod.getSrcImg())));
         nameProduct_txt.setText((prod.getTenSP()));
-       // Object[] resul = cthd_dao.SoLuongVaTongTienDaBan(prod);
-        float daban = 0;
-//        if(resul!=null && resul[0]!=null ){
-//            daban = (float) resul[0];
-//        }
 
-        sold.setText(daban+"");
+        sold.setText(prod.getSold()+"");
 
         //Định dạng tiền tệ việt nam
         Locale lc = new Locale("vi","VN");
         NumberFormat numf = NumberFormat.getInstance(lc);
-        price.setText(numf.format(prod.getDonGia())+ "");
+        price.setText(numf.format(prod.getPrice())+ "");
 
     }
 

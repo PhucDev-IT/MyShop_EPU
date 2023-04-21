@@ -1,104 +1,185 @@
 package com.epu.oop.myshop.Dao;
 
-
 import com.epu.oop.myshop.Database.JDBCUtil;
-import com.epu.oop.myshop.model.Category;
 import com.epu.oop.myshop.model.Product;
 import com.epu.oop.myshop.model.User;
-
-import java.io.InputStream;
-import java.io.Reader;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
-import javax.sql.RowSet;
-import javax.sql.RowSetEvent;
-import javax.sql.RowSetListener;
-import javax.sql.RowSetMetaData;
+
 import javax.sql.rowset.*;
-import javax.sql.rowset.spi.SyncProvider;
-import javax.sql.rowset.spi.SyncProviderException;
+
 
 public class Product_Dao implements Dao_Interface<Product>{
     private static Product_Dao instance;
 
-    public static Product_Dao getInstance() {
+    private Connection connection;
+
+    public synchronized static Product_Dao getInstance() {
         if (instance == null) {
             instance = new Product_Dao();
         }
         return instance;
     }
-    @Override
-    public int Insert(Product t) {
-        int results = 0;
-        try {
-            Connection connection = JDBCUtil.getConnection();
 
-            String sql = "INSERT INTO Product(TenSP,SoLuong,DonGia,MoTa,SrcImg,Category_ID)" +
+    private void openConnection() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = JDBCUtil.getConnection();
+        }
+    }
+
+    private void closeConnection() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    }
+
+    @Override
+    public boolean Insert(Product t) throws SQLException {
+        boolean results = false;
+        try {
+            openConnection();
+            connection.setAutoCommit(false);
+            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID)" +
                     " VALUES (?,?,?,?,?,?)";
             String sqlProductSeller = "INSERT INTO ProductSeller (Product_ID,Users_ID) " +
                     "VALUES (?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
 
             statement.setString(1,t.getTenSP());
-            statement.setFloat(2,t.getSoLuong());
-            statement.setBigDecimal(3,t.getDonGia());
+            statement.setFloat(2,t.getQuantity());
+            statement.setBigDecimal(3,t.getPrice());
             statement.setString(4,t.getMoTa());
             statement.setString(5,t.getSrcImg());
             statement.setInt(6,t.getCategory());
+            statement.executeUpdate();
 
-            results += statement.executeUpdate();
+            int index ;
 
-            int index = IndexNewInsert();
+            try(ResultSet rs= statement.getGeneratedKeys()){
+                if(rs.next()){
+                    index = rs.getInt(1);
+                }else {
+                    throw new SQLException("Không thể thm dữ liệu bảng product");
+                }
+            }
             statement = connection.prepareStatement(sqlProductSeller);
             statement.setInt(1,index);
             statement.setInt(2,t.getUser().getID());
 
-            results += statement.executeUpdate();
-            //Bước 3:Thực thi câu lệnh
+            statement.executeUpdate();
 
-            System.out.println("Product_Dao - Có "+results +" thay đổi");
+            connection.commit();
             statement.close();
-            JDBCUtil.CloseConnection(connection);
-
+            results = true;
         }catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+            }
             e.printStackTrace();
+        }finally {
+            connection.setAutoCommit(true);
+            closeConnection();
         }
         return results;
     }
 
+
     @Override
-    public List<Product> SelectAll() {
+    public List<Product> SelectAll() throws SQLException {
         List<Product> list = new ArrayList<>();
 
             String sql = "SELECT * FROM Product" +
-                    " WHERE Statuss = 'ON' ";
-
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql);
+                    " WHERE Activity = 'ON' ";
+        openConnection();
+        try(PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery()){
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
-                float soLuong = rs.getFloat("SoLuong");
-                BigDecimal donGia = rs.getBigDecimal("DonGia");
+                float soLuong = rs.getFloat("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
                 String MoTa = rs.getString("MoTa");
+                float sold = rs.getFloat("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("TotalRevenue");
                 String SrcImg = rs.getString("SrcImg");
                 int DanhMuc = rs.getInt("Category_ID");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,DanhMuc));
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc));
             }
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra "+e.getMessage());
+        }finally {
+            closeConnection();
         }
 
         return list;
     }
 
     //Phân trang, truy vấn dữ liệu luưu vào bộ nhớ đệm cachedrowset
+    //Lấy số lượng trang cho danh mục
+    public int getNumbersPages(int idCate) throws SQLException {
+        int result = 0;
+        String sql = "SELECT COUNT(*) as total FROM Product WHERE Category_ID = ?";
+        openConnection();
+        try(PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setInt(1,idCate);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+              result = rs.getInt("total");
+            }
+            statement.close();
+            rs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }finally {
+            closeConnection();
+        }
+        return result;
+    }
+    public synchronized List<Product> getProductsByPage(int category,int page,int maxProduct) {
+        List<Product> list = new ArrayList<>();
+        int startIndex = (page-1)*maxProduct;
+        String sql = "SELECT * FROM Product WHERE Category_ID = ?" +
+                " ORDER BY MaSP" +
+                "  OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try{
+            openConnection();
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setInt(1, category);
+            pstmt.setInt(2, startIndex);
+            pstmt.setInt(3, maxProduct);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()){
+                int ID = rs.getInt("MaSP");
+                String TenSP = rs.getString("TenSP");
+                float soLuong = rs.getFloat("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
+                String MoTa = rs.getString("MoTa");
+                float sold = rs.getFloat("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("TotalRevenue");
+                String SrcImg = rs.getString("SrcImg");
+                int DanhMuc = rs.getInt("Category_ID");
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc));
+            }
+
+            pstmt.close();
+        }catch (SQLException e){
+            System.out.println("Có lỗi xảy ra: "+e.getMessage());
+        }finally {
+            try{
+                closeConnection();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+
     public synchronized CachedRowSet CachedProduct(int idCate)
     {
         try (Connection conn = JDBCUtil.getConnection()) {
@@ -120,21 +201,23 @@ public class Product_Dao implements Dao_Interface<Product>{
         Product products = null;
 
             String sql = "SELECT * FROM Product " +
-                    " WHERE ID=? " +
-                    "AND p.Statuss = 'ON' ";
+                    " WHERE MaSP=? " +
+                    "AND p.Activity = 'ON' ";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
-                float soLuong = rs.getFloat("SoLuong");
-                BigDecimal donGia = rs.getBigDecimal("DonGia");
+                float soLuong = rs.getFloat("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
                 String MoTa = rs.getString("MoTa");
+                float sold = rs.getFloat("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("TotalRevenue");
                 String SrcImg = rs.getString("SrcImg");
                 int DanhMuc = rs.getInt("Category_ID");
-                products = new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,DanhMuc);
+                products = new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc);
             }
             rs.close();
             statement.close();
@@ -153,21 +236,21 @@ public class Product_Dao implements Dao_Interface<Product>{
                 String sql = "UPDATE Product"
                         + " SET "
                         + "TenSP =?, "
-                        + " SoLuong=?,"
-                        + " DonGia=?,"
+                        + " Quantity=?,"
+                        + " Price=?,"
                         + " MoTa=?,"
                         + " SrcImg=?,"
-                        + "Status=?"
-                        + " WHERE ID = ?";
+                        + "Activity=?"
+                        + " WHERE MaSP = ?";
 
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
                statement.setString(1,t.getTenSP());
-               statement.setFloat(2,t.getSoLuong());
-               statement.setBigDecimal(3,t.getDonGia());
+               statement.setFloat(2,t.getQuantity());
+               statement.setBigDecimal(3,t.getPrice());
                statement.setString(4,t.getMoTa());
                statement.setString(5,t.getSrcImg());
-               statement.setString(6,t.getStatus());
+               statement.setString(6,t.getActivity());
                statement.setInt(7,t.getID());
 
                result = statement.executeUpdate();
@@ -185,7 +268,7 @@ public class Product_Dao implements Dao_Interface<Product>{
         int results = 0;
 
             String sql = "DELETE FROM Product" +
-                    " WHERE ID = ?";
+                    " WHERE MaSP = ?";
 
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -209,20 +292,22 @@ public class Product_Dao implements Dao_Interface<Product>{
 
             String sql = "SELECT * FROM Product" +
                     " WHERE TenSP LIKE ? " +
-                    "AND Statuss = 'ON'";
+                    "AND Activity = 'ON'";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setString(1,"%"+keyword+"%");
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
-                float soLuong = rs.getFloat("SoLuong");
-                BigDecimal donGia = rs.getBigDecimal("DonGia");
+                float soLuong = rs.getFloat("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
                 String MoTa = rs.getString("MoTa");
+                float sold = rs.getFloat("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("TotalRevenue");
                 String SrcImg = rs.getString("SrcImg");
                 int DanhMuc = rs.getInt("Category_ID");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,DanhMuc));
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc));
             }
         }catch (SQLException e)
         {
@@ -239,7 +324,7 @@ public class Product_Dao implements Dao_Interface<Product>{
 
 
             String sql = "SELECT u.* FROM Users u JOIN ProductSeller ps" +
-                    " ON u.ID = ps.Users_ID" +
+                    " ON u.Account_ID = ps.Users_ID" +
                     " AND ps.Product_ID = ?";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -247,7 +332,7 @@ public class Product_Dao implements Dao_Interface<Product>{
             ResultSet rs = statement.executeQuery();
             while (rs.next())
             {
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("Account_ID");
                 String UserName = rs.getString("FullName");
                 String Gender = rs.getString("Gender");
                 Date dateOfBirth = rs.getDate("DateOfBirth");
@@ -271,47 +356,12 @@ public class Product_Dao implements Dao_Interface<Product>{
     }
 
     //Select top 3 sản phẩm bán nhiều nhất
-    public List<Product> topProducts()
-    {
-        List<Product> list = new ArrayList<>();
-
-            String sql = "SELECT Top(3) p.* " +
-                    "FROM Product p " +
-                    "INNER JOIN (" +
-                    "    SELECT ct.Product_ID, SUM(ct.Quantity) AS TotalQuantity" +
-                    "    FROM CTHoaDon ct" +
-                    "    GROUP BY ct.Product_ID" +
-                    ") subq " +
-                    "ON p.ID = subq.Product_ID " +
-                    "AND Statuss = 'ON' " +
-                    "ORDER BY subq.TotalQuantity DESC";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet rs = statement.executeQuery()){
-            while (rs.next()){
-                int ID = rs.getInt("ID");
-                String TenSP = rs.getString("TenSP");
-                float soLuong = rs.getFloat("SoLuong");
-                BigDecimal donGia = rs.getBigDecimal("DonGia");
-                String MoTa = rs.getString("MoTa");
-                String SrcImg = rs.getString("SrcImg");
-                int DanhMuc = rs.getInt("Category_ID");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,DanhMuc));
-            }
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
-        }catch (SQLException e){
-            System.out.println("Có lỗi xảy ra "+e.getMessage());
-        }
-
-        return list;
-    }
 
     public int IndexNewInsert()
     {
         int maxID = 0;
 
-            String sql = "SELECT MAX(ID) FROM Product";
+            String sql = "SELECT MAX(MaSP) FROM Product";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet result = statement.executeQuery()){
@@ -336,21 +386,23 @@ public class Product_Dao implements Dao_Interface<Product>{
             String sql = "SELECT * " +
                     "FROM Product p " +
                     "WHERE p.Category_ID = ? " +
-                    " AND p.Statuss = 'ON' " ;
+                    " AND p.Activity = 'ON' " ;
 
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,idCategory);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
-                float soLuong = rs.getFloat("SoLuong");
-                BigDecimal donGia = rs.getBigDecimal("DonGia");
+                float soLuong = rs.getFloat("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
                 String MoTa = rs.getString("MoTa");
+                float sold = rs.getFloat("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("TotalRevenue");
                 String SrcImg = rs.getString("SrcImg");
                 int DanhMuc = rs.getInt("Category_ID");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,DanhMuc));
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc));
             }
             rs.close();
             statement.close();

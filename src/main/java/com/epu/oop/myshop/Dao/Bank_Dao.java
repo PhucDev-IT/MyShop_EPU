@@ -19,7 +19,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
 
 
     @Override
-    public int Insert(Bank t) {
+    public boolean Insert(Bank t) {
         int results = 0;
 
             String sql = "INSERT INTO Bank(SoTaiKhoan,TenNH,ChuSoHuu,Users_ID)" +
@@ -40,7 +40,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
         }catch (SQLException e) {
             e.printStackTrace();
         }
-        return results;
+        return results>0;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.epu.oop.myshop.Database;
 
+import com.epu.oop.myshop.model.CreateSQL;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,12 +11,12 @@ public class JDBCUtil {
         Connection conn = null;
             try{
                 // Tải driver JDBC
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                Class.forName(CreateSQL.driver);
 
                 // Thông tin đăng nhập
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=MyShop1";
-                String username = "sa";
-                String password = "123456";
+                String url = CreateSQL.urlConnect;
+                String username = CreateSQL.userName;
+                String password = CreateSQL.password;
 
                 // Tạo kết nối
                 conn = DriverManager.getConnection(url, username, password);

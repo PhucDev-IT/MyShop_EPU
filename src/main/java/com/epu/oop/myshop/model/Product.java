@@ -16,15 +16,19 @@ public class Product implements Serializable {
 
     private String TenSP;
 
-    private float SoLuong;
+    private float quantity;
 
-    private BigDecimal DonGia;
+    private BigDecimal price;
 
     private String MoTa;
 
     private String SrcImg;
 
-    private String Status;
+    private String Activity;
+
+    private float sold;
+
+    private BigDecimal TotalRevenue;
 
     private int  idCategory;
 
@@ -42,11 +46,11 @@ public class Product implements Serializable {
     }
     public Product(String tenSP, float soLuong, BigDecimal donGia, String moTa, String srcImg, int category, User user) {
         TenSP = tenSP;
-        SoLuong = soLuong;
-        DonGia = donGia;
+        this.quantity = soLuong;
+        this.price = donGia;
         MoTa = moTa;
         SrcImg = srcImg;
-        Status = "ON";
+        Activity = "ON";
         this.idCategory = category;
         this.user = user;
     }
@@ -54,35 +58,37 @@ public class Product implements Serializable {
     public Product(int iD, String tenSP, float soLuong, BigDecimal donGia, String srcImg) {
         ID = iD;
         TenSP = tenSP;
-        SoLuong = soLuong;
-        DonGia = donGia;
+        this.quantity = soLuong;
+        this.price = donGia;
         SrcImg = srcImg;
 
     }
 
 
     //Sellect Các mặt hàng đang bán của User
-    public Product(int id ,String tenSP, float soLuong, BigDecimal donGia, String moTa, String srcImg,
-                    int category) {
+    public Product(int id ,String tenSP, float soLuong, BigDecimal donGia, String moTa, String srcImg,float sold,
+                   BigDecimal TotalRevenue, int category) {
         this.ID = id;
         TenSP = tenSP;
-        SoLuong = soLuong;
-        DonGia = donGia;
+        this.quantity = soLuong;
+        this.price = donGia;
         MoTa = moTa;
         SrcImg = srcImg;
         this.idCategory = category;
-        Status = "ON";
+        Activity = "ON";
+        this.sold = sold;
+        this.TotalRevenue = TotalRevenue;
     }
 
     //Select hóa đơn đã mua của user
     public Product(int id, String tenSP, float soLuong, BigDecimal donGia, String moTa, String srcImg, String statuss) {
         this.ID = id;
         TenSP = tenSP;
-        SoLuong = soLuong;
-        DonGia = donGia;
+        this.quantity = soLuong;
+        this.price = donGia;
         MoTa = moTa;
         SrcImg = srcImg;
-        Status = statuss;
+        Activity = statuss;
     }
 
     public int getID() {
@@ -99,22 +105,6 @@ public class Product implements Serializable {
 
     public void setTenSP(String tenSP) {
         TenSP = tenSP;
-    }
-
-    public float getSoLuong() {
-        return SoLuong;
-    }
-
-    public void setSoLuong(float soLuong) {
-        SoLuong = soLuong;
-    }
-
-    public BigDecimal getDonGia() {
-        return DonGia;
-    }
-
-    public void setDonGia(BigDecimal donGia) {
-        DonGia = donGia;
     }
 
     public String getMoTa() {
@@ -142,16 +132,52 @@ public class Product implements Serializable {
         this.idCategory = category;
     }
 
-
-
-    public String getStatus() {
-        return Status;
+    public float getQuantity() {
+        return quantity;
     }
 
+    public void setQuantity(float quantity) {
+        this.quantity = quantity;
+    }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-    public void setStatus(String status) {
-        Status = status;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getActivity() {
+        return Activity;
+    }
+
+    public void setActivity(String activity) {
+        Activity = activity;
+    }
+
+    public float getSold() {
+        return sold;
+    }
+
+    public void setSold(float sold) {
+        this.sold = sold;
+    }
+
+    public BigDecimal getTotalRevenue() {
+        return TotalRevenue;
+    }
+
+    public void setTotalRevenue(BigDecimal totalRevenue) {
+        TotalRevenue = totalRevenue;
+    }
+
+    public int getIdCategory() {
+        return idCategory;
+    }
+
+    public void setIdCategory(int idCategory) {
+        this.idCategory = idCategory;
     }
 
     public User getUser() {
@@ -164,8 +190,8 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "\nProducts [ID=" + ID + ", TenSP=" + TenSP + ", SoLuong=" + SoLuong + ", DonGia=" + DonGia + ", MoTa="
-                + MoTa + ", SrcImg=" + SrcImg+", "+ Status;
+        return "\nProducts [ID=" + ID + ", TenSP=" + TenSP + ", SoLuong=" + quantity + ", DonGia=" + price + ", MoTa="
+                + MoTa + ", SrcImg=" + SrcImg+", "+ Activity;
     }
 
 

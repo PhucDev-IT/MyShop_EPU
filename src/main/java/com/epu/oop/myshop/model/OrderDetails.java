@@ -2,13 +2,12 @@ package com.epu.oop.myshop.model;
 
 
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 
-public class CTHoaDon {
+public class OrderDetails {
 
-    private HoaDon hoaDon;
+    private Order hoaDon;
 
     private Product product;
 
@@ -19,13 +18,13 @@ public class CTHoaDon {
     //------------------------------- CONSTRUCTOR ---------------------------------------------------------
 
 
-    public CTHoaDon(){}
-    public CTHoaDon(Product p,float soLuong,BigDecimal dongia){
+    public OrderDetails(){}
+    public OrderDetails(Product p, float soLuong, BigDecimal dongia){
         this.product = p;
         this.quantity = soLuong;
         this.price = dongia;
     }
-    public CTHoaDon(HoaDon hoadon, Product product)
+    public OrderDetails(Order hoadon, Product product)
     {
         this.hoaDon = hoadon;
         this.product = product;
@@ -37,11 +36,11 @@ public class CTHoaDon {
     //-----------------------------------------SETTER - GETTER --------------------------------------------------------
 
 
-    public HoaDon getHoaDon() {
+    public Order getHoaDon() {
         return hoaDon;
     }
 
-    public void setHoaDon(HoaDon hoaDon) {
+    public void setHoaDon(Order hoaDon) {
         this.hoaDon = hoaDon;
     }
 

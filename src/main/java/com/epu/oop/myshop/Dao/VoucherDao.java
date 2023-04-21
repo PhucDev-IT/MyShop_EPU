@@ -18,7 +18,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
         return instance;
     }
     @Override
-    public int Insert(VoucherModel voucherModel) {
+    public boolean Insert(VoucherModel voucherModel) {
         int results = 0;
         String sql = "INSERT INTO Voucher(MaVoucher,TiLeGiamGia,SoLuong,NoiDung,NgayThem,NgayKetThuc,ImgVoucher,SotienGiamGia)" +
                 " VALUES (?,?,?,?,?,?,?,?)";
@@ -41,7 +41,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
         }catch (SQLException e) {
             e.printStackTrace();
         }
-        return results;
+        return results>0;
     }
 
     @Override
@@ -130,7 +130,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
     public int GiftVoucher(VoucherModel voucherModel,String email) {
         int results = 0;
         String sql = "INSERT INTO VoucherUser(MaVoucher,ID_User)"+
-                " VALUES (?,(SELECT ID FROM Users WHERE Email = ?))";
+                " VALUES (?,(SELECT Account_ID FROM Users WHERE Email = ?))";
 
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){

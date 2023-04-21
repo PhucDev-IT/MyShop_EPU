@@ -22,31 +22,8 @@ public class UserDao implements Dao_Interface<User> {
     }
 
     @Override
-    public int Insert(User t) {
-        int results = 0;
-            int index = Account_Dao.getInstance().IndexNewInsert();
-
-            if(index<=0)    //Nếu tìm kiếm lỗi
-                return 0;
-
-            //Bước 2:Tạo đối tượng PreparedStatemt
-            String sql = "INSERT INTO Users(ID,FullName,Email)" +
-                    " VALUES (?,?,?)";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setInt(1,index);
-            statement.setString(2,t.getFullName());
-            statement.setString(3,t.getEmail());
-
-            //Bước 3:Thực thi câu lệnh
-            results = statement.executeUpdate();
-            System.out.println("Có "+results +" thay đổi");
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return results;
+    public boolean Insert(User t) {
+       return true;
     }
 
     @Override
@@ -60,7 +37,7 @@ public class UserDao implements Dao_Interface<User> {
             ResultSet rs = statement.executeQuery()){
 
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("Account_ID");
                 String UserName = rs.getString("FullName");
                 String Gender = rs.getString("Gender");
                 Date dateOfBirth = rs.getDate("DateOfBirth");
@@ -85,7 +62,7 @@ public class UserDao implements Dao_Interface<User> {
         User user = null;
 
             //Bước 2:Tạo đối tượng PreparedStatemt
-            String sql = "SELECT * FROM Users WHERE ID=?";
+            String sql = "SELECT * FROM Users WHERE Account_ID=?";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
@@ -94,7 +71,7 @@ public class UserDao implements Dao_Interface<User> {
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("Account_ID");
                 String UserName = rs.getString("FullName");
                 String Gender = rs.getString("Gender");
                 Date dateOfBirth = rs.getDate("DateOfBirth");
@@ -129,7 +106,7 @@ public class UserDao implements Dao_Interface<User> {
                     ", CCCD=?" +
                     ", Phone=?" +
                     ", SrcAvatar=?" +
-                    " WHERE ID=?";
+                    " WHERE Account_ID=?";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
 
@@ -160,7 +137,7 @@ public class UserDao implements Dao_Interface<User> {
 
             //Bước 2:Tạo đối tượng PreparedStatemt
             String sql = "DELETE FROM Users" +
-                    " WHERE ID = ?";
+                    " WHERE Account_ID = ?";
 
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -185,8 +162,8 @@ public class UserDao implements Dao_Interface<User> {
 
 
             String sql = "SELECT Product.* FROM Product INNER JOIN ProductSeller " +
-                    "ON Product.ID = ProductSeller.Product_ID " +
-                    "AND Product.Statuss = 'ON' " +
+                    "ON Product.MaSP = ProductSeller.Product_ID " +
+                    "AND Product.Activity = 'ON' " +
                     "AND ProductSeller.Users_ID = ?";
 
         try(Connection connection = JDBCUtil.getConnection();
@@ -195,14 +172,16 @@ public class UserDao implements Dao_Interface<User> {
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()){
-                int ID = rs.getInt("ID");
+                int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
                 float soLuong = rs.getFloat("SoLuong");
                 BigDecimal donGia = rs.getBigDecimal("DonGia");
                 String MoTa = rs.getString("MoTa");
                 String SrcImg = rs.getString("SrcImg");
                 int DanhMuc = rs.getInt("Category_ID");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,DanhMuc));
+                float sold = rs.getFloat("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("totalrevenue");
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc));
             }
             rs.close();
             statement.close();
@@ -218,7 +197,7 @@ public class UserDao implements Dao_Interface<User> {
         List<Product> list = new ArrayList<>();
 
             String sql = "SELECT Product.* FROM Product JOIN CTHoaDon " +
-                    "ON CTHoaDon.Product_ID = Product.ID " +
+                    "ON CTHoaDon.Product_ID = Product.MaSP " +
                     "INNER JOIN HoaDon ON HoaDon.ID = CTHoaDon.HoaDon_ID " +
                     "AND HoaDon.Users_ID = ?";
 
@@ -234,7 +213,7 @@ public class UserDao implements Dao_Interface<User> {
                 BigDecimal donGia = rs.getBigDecimal("DonGia");
                 String MoTa = rs.getString("MoTa");
                 String SrcImg = rs.getString("SrcImg");
-                String Statuss = rs.getString("Statuss");
+                String Statuss = rs.getString("Activity");
                 list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,Statuss));
             }
             statement.close();
@@ -251,7 +230,7 @@ public class UserDao implements Dao_Interface<User> {
         String email = null;
 
         //Bước 2:Tạo đối tượng PreparedStatemt
-        String sql = "SELECT * FROM Users WHERE ID=?";
+        String sql = "SELECT * FROM Users WHERE Account_ID=?";
         try(Connection connection = JDBCUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,ID);

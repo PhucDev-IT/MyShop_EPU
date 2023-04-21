@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -334,7 +335,7 @@ public class ProfileUserController implements Initializable {
     private Bank_Dao bank_Dao = Bank_Dao.getInstance();
     private Account_Dao account_dao = Account_Dao.getInstance();
 
-    private HoaDon_Dao hoaDon_dao = HoaDon_Dao.getInstance();
+    private Order_Dao hoaDon_dao = Order_Dao.getInstance();
 
     private PaymentHistory_Dao paymentHistory_dao = PaymentHistory_Dao.getInstance();
 
@@ -451,7 +452,7 @@ public class ProfileUserController implements Initializable {
                 AlertNotification.showAlertWarning("WARNING", "Vui lòng nhập đầy đủ thông tin ngân hàng của bạn");
             } else {
                 Bank bankInsert = new Bank(stk, tenNganHang, chusoHuu, user);
-                if (bank_Dao.Insert(bankInsert) > 0) {
+                if (bank_Dao.Insert(bankInsert)) {
                     if (Jtxt_CCCD.isEditable()) {
                         user.setCanCuocCongDan(Jtxt_CCCD.getText());
                         userDao.Update(user);
@@ -571,7 +572,7 @@ public class ProfileUserController implements Initializable {
     }
 
     // Button: Thêm sản phẩm
-    public void AddProducts(ActionEvent e) {
+    public void AddProducts(ActionEvent e) throws SQLException {
 
         String nameSP = tenHang_txt.getText();
         float SoLuong = Float.parseFloat(soLuong_txt.getText());
@@ -594,10 +595,9 @@ public class ProfileUserController implements Initializable {
 
             Product pro = new Product(nameSP, SoLuong, DonGia, moTa, srcImg, IdCategory, user);
 
-            int check = produc_dao.Insert(pro);
-            // user.addProduct(pro);
-            //  userDao.Update(user);
-            if (check < 0) {
+
+
+            if (!produc_dao.Insert(pro)) {
                 AlertNotification.showAlertError("ERROR", "Thêm sản phẩm thất bại.");
             } else {
                 //Mỗi lần thêm thành công sẽ k truy vẫn lại dữ liệu từ CSDL nữa, thêm trực tiếp vào arraylist
@@ -636,7 +636,7 @@ public class ProfileUserController implements Initializable {
 
         if (check) {
 
-            pro_onclick.setStatus("LOCK");    //Sản phẩm đang được chọn
+            pro_onclick.setActivity("LOCK");    //Sản phẩm đang được chọn
             int x = produc_dao.Update(pro_onclick);
             if (x > 0) {
                 AlertNotification.showAlertSucces("", "Xóa thành công!");
@@ -696,8 +696,8 @@ public class ProfileUserController implements Initializable {
 
                 imgSP.setImage(new Image(t.getSrcImg()));
                 tenHang_txt.setText(t.getTenSP());
-                soLuong_txt.setText(t.getSoLuong() + "");
-                DonGia_txt.setText(numf.format(t.getDonGia()) + "");
+                soLuong_txt.setText(t.getQuantity() + "");
+                DonGia_txt.setText(numf.format(t.getPrice()) + "");
 
                // danhMuc_choisebox.setValue(cate);
                 moTa_txta.setText(t.getMoTa());
@@ -747,7 +747,7 @@ public class ProfileUserController implements Initializable {
     // -------------------------------------- FORM RÚT TIỀN -------------------------------------------------------------------
     public void showInformationRutTienForm() {
 
-        //Số dư có được: môĩ khi có người mua hàng thì trigger SQL sẽ tính tổng tiền trong class HoaDon, tạo trigger update money cho account luôn
+        //Số dư có được: môĩ khi có người mua hàng thì trigger SQL sẽ tính tổng tiền trong class Order, tạo trigger update money cho account luôn
         Account acount = account_dao.SelectByID(Temp.account);
         Temp.account.setMoney(acount.getMoney());
         if (acount.getMoney() != null)
@@ -1141,11 +1141,11 @@ public class ProfileUserController implements Initializable {
         }
 
 
-        Object[] objSumOrder = hoaDon_dao.SumOrder(Temp.account.getID());
-        SumDaBan_lb.setText(objSumOrder[0] + " đơn");
-        if (objSumOrder[1] != null) {
-            SumDoanhThu_lb.setText(App.numf.format(objSumOrder[1]) + "đ");
-        }
+//        Object[] objSumOrder = hoaDon_dao.SumOrder(Temp.account.getID());
+//        SumDaBan_lb.setText(objSumOrder[0] + " đơn");
+//        if (objSumOrder[1] != null) {
+//            SumDoanhThu_lb.setText(App.numf.format(objSumOrder[1]) + "đ");
+//        }
 
         DefaultCategory(); // Trong form bán hàng
         defaultAddress();

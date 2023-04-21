@@ -21,7 +21,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
     }
     //Dành cho chuyển tiền
     @Override
-    public int Insert(PaymentHistory paymentHistory) {
+    public boolean Insert(PaymentHistory paymentHistory) {
         int results = 0;
         try {
             Connection connection = JDBCUtil.getConnection();
@@ -47,7 +47,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
         }catch (SQLException e) {
             e.printStackTrace();
         }
-        return results;
+        return results>0;
     }
 
 

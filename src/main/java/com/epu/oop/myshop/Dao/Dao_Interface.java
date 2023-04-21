@@ -1,12 +1,13 @@
 package com.epu.oop.myshop.Dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface Dao_Interface<T> {
 
-    public int Insert(T t);
+    public boolean Insert(T t) throws SQLException;
 
-    public List<T> SelectAll();
+    public List<T> SelectAll() throws SQLException;
 
     public T SelectByID(T t);
 

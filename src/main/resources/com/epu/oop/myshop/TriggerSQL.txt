@@ -1,19 +1,99 @@
-CREATE TRIGGER TRIG_Update_TotalMoney ON CTHOADON
-FOR INSERT
-AS
-BEGIN
-	UPDATE HoaDon
-	SET ThanhTien =(SELECT SUM(Quantity*Price) FROM inserted)
-	WHERE HoaDon.ID = (Select HoaDon_ID FROM inserted)
+preCategory.setInt(1,1);
+            preCategory.setString(2,"Điện thoại");
+            preCategory.executeUpdate();
 
-	Update Account
-	SET Currency = Currency+(SELECT SUM(Quantity*Price) FROM inserted)
-	where Account.ID = (SELECT ps.Users_ID FROM inserted cthd JOIN Product p
-						ON p.ID = cthd.Product_ID
-						JOIN ProductSeller ps
-						ON p.ID = ps.Product_ID)
+            preCategory.setInt(1,2);
+            preCategory.setString(2,"Laptop");
+            preCategory.executeUpdate();
 
-	UPDATE Product
-	SET SoLuong = SoLuong - (Select Quantity From inserted)
-	WHERE Product.ID = (select Product_ID from inserted)
-END
+            preCategory.setInt(1,3);
+            preCategory.setString(2,"Máy chơi game");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,4);
+            preCategory.setString(2,"Chăm sóc da");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,5);
+            preCategory.setString(2,"Trang điểm");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,6);
+            preCategory.setString(2,"Nước hoa");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,7);
+            preCategory.setString(2,"Thực phẩm chức năng");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,8);
+            preCategory.setString(2,"Thiết bị y tế");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,9);
+            preCategory.setString(2,"Trang phục nam");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,10);
+            preCategory.setString(2,"Giày dép nam");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,11);
+            preCategory.setString(2,"Đồng hồ nam");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,12);
+            preCategory.setString(2,"Đồ lót nam");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,13);
+            preCategory.setString(2,"Trang phục nữ");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,14);
+            preCategory.setString(2,"Túi xách nữ");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,15);
+            preCategory.setString(2,"Đồ ngủ & Nội y");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,16);
+            preCategory.setString(2,"Trang sức nữ");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,17);
+            preCategory.setString(2,"Xe máy & Moto");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,18);
+            preCategory.setString(2,"Xe ô tô");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,19);
+            preCategory.setString(2,"Xe địa hình");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,20);
+            preCategory.setString(2,"Phụ kiện thể thao");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,21);
+            preCategory.setString(2,"Đồ thể thao nam - nữ");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,22);
+            preCategory.setString(2,"Vali & Túi du lịch");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,23);
+            preCategory.setString(2,"Kính mát");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,24);
+            preCategory.setString(2,"Điện thoại");
+            preCategory.executeUpdate();
+
+            preCategory.setInt(1,25);
+            preCategory.setString(2,"Điện thoại");
+            preCategory.executeUpdate();

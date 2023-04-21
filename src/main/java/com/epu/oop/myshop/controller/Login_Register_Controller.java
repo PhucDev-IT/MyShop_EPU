@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 public class Login_Register_Controller implements Initializable{
 
@@ -91,7 +92,7 @@ public class Login_Register_Controller implements Initializable{
     }
 
 
-    public void Register(ActionEvent e) throws FileNotFoundException {
+    public void Register(ActionEvent e) throws FileNotFoundException, SQLException {
         UserDao user_Dao = UserDao.getInstance();
 
         String name = NameTxt_Register.getText();
@@ -110,23 +111,14 @@ public class Login_Register_Controller implements Initializable{
             u.setEmail(email);
             u.setAccount(account);
 
-            int check1 = 0;
-            int check2 = 0;
-
             if(accountDao.checkRegister(account)==false)
             {
-                check1 = accountDao.Insert(account);
-                check2 = user_Dao.Insert(u);
 
-                if(check1>0)
+                boolean result = accountDao.signUpUser(account,u);
+                if(result)
                 {
-                    if(check2 <=0) {
-                        AlertNotification.showAlertError("ERROR!", "Có lỗi xảy ra.!");
-                        accountDao.Delete(account);
-                    }
                     AlertNotification.showAlertSucces("", "Đăng ký tài khoản thành công!");
                 }
-
             }else {
                 AlertNotification.showAlertWarning("WARNING","Tài khoản đã tồn tại");
             }
