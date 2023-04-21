@@ -28,13 +28,13 @@ public class CreateSQL {
     }
 
     public void AutoCreateDatabase() throws SQLException {
-        createDatabase();
+//        createDatabase();
         creatTable();
         createTigger();
         insertData();
         insertDataChild();
     }
-    private void createDatabase() throws SQLException {
+    public void createDatabase() throws SQLException {
         Connection conn = null;
         try{
             // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
@@ -314,7 +314,7 @@ public class CreateSQL {
             "( " +
             " MaSP INT PRIMARY KEY IDENTITY," +
             " TenSP NVARCHAR(40)," +
-            " Quantity FLOAT, " +
+            " Quantity INT, " +
             " Price DECIMAL, " +
             " MoTa NVARCHAR(500) DEFAULT (N'Người bán không viết gì')," +
             " SrcImg VARCHAR(400)," +
@@ -399,19 +399,21 @@ public class CreateSQL {
             "                       ON p.MaSP = ps.Product_ID) " +
             "END";
 
-    private final String TriggerTwo = "CREATE TRIGGER TRIG_Update_Product ON OrderDetails" +
-            " FOR INSERT" +
-            " AS " +
+    private final String TriggerTwo = "CREATE TRIGGER TRIG_Update_Product ON OrderDetails " +
+            "FOR INSERT " +
+            "AS " +
             "BEGIN " +
             "    UPDATE Product" +
-            "    SET Quantity = Quantity - (Select Quantity From inserted)" +
-            "    WHERE Product.MaSP = (select Product_ID from inserted)" +
+            "    SET Quantity = Quantity - (SELECT Quantity FROM inserted WHERE Product_ID = Product.MaSP)" +
+            "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
+            "    " +
             "    UPDATE Product" +
-            "    SET Sold = Sold+(SELECT Quantity FROM inserted)" +
-            "    WHERE Product.MaSP = (select Product_ID from inserted)" +
+            "    SET Sold = (SELECT SUM(Quantity) FROM OrderDetails WHERE Product_ID = Product.MaSP)" +
+            "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
+            "    " +
             "    UPDATE Product" +
-            "    SET TotalRevenue = TotalRevenue+(SELECT SUM(Quantity*Price) FROM inserted)" +
-            "    WHERE Product.MaSP = (select Product_ID from inserted)" +
+            "    SET TotalRevenue = (SELECT SUM(Quantity*Price) FROM OrderDetails WHERE Product_ID = Product.MaSP)" +
+            "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "END";
 
     private final String TriggerThree = "CREATE TRIGGER TRIG_Update_MoneyCustomer ON Orders " +

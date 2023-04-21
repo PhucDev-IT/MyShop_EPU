@@ -236,10 +236,10 @@ public class Account_Dao implements Dao_Interface<Account> {
             preAccount.setString(5,"Member");
             preAccount.executeUpdate();
 
-            int index = 0;
+            int index;
             try(ResultSet rs = preAccount.getGeneratedKeys()){
                 if(rs.next()){
-                    rs.getInt(1);
+                   index =  rs.getInt(1);
                 }else {
                     throw new SQLException("Không thể đăng ký");
                 }

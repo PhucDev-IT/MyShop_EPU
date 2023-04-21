@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.Database.JDBCUtil;
+import com.epu.oop.myshop.controller.PageHomeController;
 import com.epu.oop.myshop.model.*;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -10,13 +11,26 @@ public class Order_Dao implements Dao_Interface<Order> {
 
     private static Order_Dao instance;
 
-    public static Order_Dao getInstance() {
+    private Connection connection;
+
+    public synchronized static Order_Dao getInstance() {
         if (instance == null) {
             instance = new Order_Dao();
         }
         return instance;
     }
 
+    private void openConnection() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = JDBCUtil.getConnection();
+        }
+    }
+
+    private void closeConnection() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    }
 
     @Override
     public boolean Insert(Order t) {
@@ -26,14 +40,13 @@ public class Order_Dao implements Dao_Interface<Order> {
 
 
     //Thanh toán hóa đơn băng ngân hàng
-    public  boolean OrderDetailsPayByBank(Order hoaDon, OrderDetails cthd, PaymentHistory paymentHistory, Account account) {
+    public  boolean OrderDetailsPayByBank(Order hoaDon, OrderDetails cthd, PaymentHistory paymentHistory) throws SQLException {
         PreparedStatement preOrder = null;
         PreparedStatement preDetails = null;
         PreparedStatement prePaymentHistory = null;
 
-        Connection connection = null;
         try {
-            connection = JDBCUtil.getConnection();
+            openConnection();
             connection.setAutoCommit(false); // Bắt đầu transaction
             String sqlOrder = null;
             if(hoaDon.getVoucher()!=null) {
@@ -48,7 +61,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 preOrder = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
             }
 
-            String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,HoaDon_ID,Quantity,Price)" +
+            String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,Order_ID,Quantity,Price)" +
                     " VALUES (?,?,?,?)";
 
             String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
@@ -91,18 +104,16 @@ public class Order_Dao implements Dao_Interface<Order> {
             prePaymentHistory.executeUpdate();
 
             connection.commit();
-                return true;
-            } catch(SQLException ex){
+            System.out.println("Theem hóa đơn thành công");
+        } catch(SQLException ex){
                 if (connection != null) {
-                    try {
                         connection.rollback();
                         System.out.println("Rolled back.");
-                    } catch (SQLException exrb) {
-                        exrb.printStackTrace();
-                    }
                 }
+            System.out.println("Lỗi: "+ ex.getMessage());
+            return false;
             } finally{
-                try {
+
                     if (preOrder != null) {
                         preOrder.close();
                     }
@@ -113,27 +124,22 @@ public class Order_Dao implements Dao_Interface<Order> {
                     if(prePaymentHistory!=null){
                         prePaymentHistory.close();
                     }
-
                     connection.setAutoCommit(true);
-                } catch (SQLException excs) {
-                    excs.printStackTrace();
-                }
-                JDBCUtil.CloseConnection(connection);
+                closeConnection();
             }
-
-        return false;
+        return true;
     }
 
         //Hóa đơn có tại nhà
-    public boolean OrderDetailsPayAtHome(Order hoaDon, OrderDetails cthd)
-    {
+    public boolean OrderDetailsPayAtHome(Order hoaDon, OrderDetails cthd) throws SQLException {
         PreparedStatement orderDetails = null;
         PreparedStatement order = null;
+
         int checkOrder = 0;
         int checkDetails=0;
-        Connection connection = null;
+
         try {
-            connection = JDBCUtil.getConnection();
+           openConnection();
             connection.setAutoCommit(false); // Bắt đầu transaction
             String sqlOrder = null;
 
@@ -148,10 +154,8 @@ public class Order_Dao implements Dao_Interface<Order> {
                 order = connection.prepareStatement(sqlOrder,PreparedStatement.RETURN_GENERATED_KEYS);
             }
 
-            String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,HoaDon_ID,Quantity,Price)" +
+            String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,Order_ID,Quantity,Price)" +
                     " VALUES (?,?,?,?)";
-
-            //để thiết lập cho PreparedStatement trả về giá trị của khóa chính được tạo ra
 
             order.setDate(1,hoaDon.getNgayLapHD());
             order.setBigDecimal(2,hoaDon.getTongTien());
@@ -176,21 +180,16 @@ public class Order_Dao implements Dao_Interface<Order> {
             orderDetails.setFloat(3,cthd.getQuantity());
             orderDetails.setBigDecimal(4,new BigDecimal(cthd.getPrice()+""));
 
-
             checkDetails = orderDetails.executeUpdate();
             connection.commit();
             System.out.println("Thành công");
         } catch (SQLException ex) {
             if (connection != null) {
-                try {
-                    connection.rollback();
-                    System.out.println("Rolled back.");
-                } catch (SQLException exrb) {
-                    exrb.printStackTrace();
-                }
+                connection.rollback();
+                System.out.println("Rolled back.");
             }
+            System.out.println("Lỗi: "+ ex.getMessage());
         } finally {
-            try {
                 if (order != null) {
                     order.close();
                 }
@@ -200,22 +199,18 @@ public class Order_Dao implements Dao_Interface<Order> {
                 }
 
                 connection.setAutoCommit(true);
-            } catch (SQLException excs) {
-                excs.printStackTrace();
-            }
-            JDBCUtil.CloseConnection(connection);
+                closeConnection();
         }
         return checkOrder>0 && checkDetails>0;
     }
 
     @Override
-    public List<Order> SelectAll() {
+    public List<Order> SelectAll() throws SQLException {
         List<Order> list = new ArrayList<>();
 
             String sql = "SELECT * FROM orders";
-
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql);
+        openConnection();
+        try(PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery()){
             while (rs.next()){
                 int ID = rs.getInt("Order_ID");
@@ -228,9 +223,10 @@ public class Order_Dao implements Dao_Interface<Order> {
                 list.add(new Order(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID)));
             }
             statement.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra "+e.getMessage());
+        }finally {
+            closeConnection();
         }
 
         return list;
@@ -256,19 +252,18 @@ public class Order_Dao implements Dao_Interface<Order> {
 
 
     //Tính tổng hóa đơn đã bán trong ngày hôm nay
-    public Object[] OrderToDay(Date date,int ID)
-    {
+    public Object[] OrderToDay(Date date,int ID) throws SQLException {
         Object[] obj = new Object[2];
 
-            String sql = "select count(HoaDon.ID) as Numbers , sum(ThanhTien) as Total from OrderDetails join orders " +
+            String sql = "select count(orders.ID) as Numbers , sum(ThanhTien) as Total from OrderDetails join orders " +
                     "ON orderDetails.Order_ID = orders.Order_ID " +
                     "AND NgayLapHD = ? " +
                     "Join Product " +
                     "ON OrderDetails.Product_ID = Product.MaSP " +
                     "JOIN ProductSeller ON Product.MaSP = ProductSeller.Product_ID " +
                     "AND ProductSeller.Users_ID = ?";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
+        openConnection();
+        try(PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setDate(1,date);
             statement.setInt(2,ID);
             ResultSet rs = statement.executeQuery();
@@ -278,9 +273,10 @@ public class Order_Dao implements Dao_Interface<Order> {
             }
             statement.close();
             rs.close();
-            JDBCUtil.CloseConnection(connection);
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            closeConnection();
         }
         return obj;
     }
@@ -310,8 +306,7 @@ public class Order_Dao implements Dao_Interface<Order> {
     }
 
     //-------------------------- lỊCH SỬ MUA HÀNG ---------------------------------------------------
-    public List<Object[]> getPurchaseProducts(User u)
-    {
+    public List<Object[]> getPurchaseProducts(User u) throws SQLException {
         List<Object[]> results = new ArrayList<>();
 
 
@@ -323,8 +318,8 @@ public class Order_Dao implements Dao_Interface<Order> {
                     "JOIN Users ON ProductSeller.Users_ID = Users.Account_ID " +
                     "AND orders.Users_ID = ?" +
                     " ORDER BY HoaDon.NgayLapHD DESC";
-        try(Connection connection = JDBCUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
+            openConnection();
+        try(PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,u.getID());
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
@@ -341,9 +336,12 @@ public class Order_Dao implements Dao_Interface<Order> {
                 obj[3] = rs.getString("FullName");
                 results.add(obj);
             }
+
         }catch (Exception e)
         {
             e.printStackTrace();
+        }finally {
+            closeConnection();
         }
         return results;
     }

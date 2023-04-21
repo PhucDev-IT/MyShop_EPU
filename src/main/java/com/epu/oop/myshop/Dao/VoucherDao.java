@@ -96,7 +96,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
         String sql = "select * from voucher " +
                 "where NgayKetThuc >= GETDATE() " +
                 "AND NgayThem <=GETDATE() " +
-                "AND MaVoucher  NOT IN (SELECT MaVoucher FROM HOADON WHERE Users_ID = ?) " +
+                "AND MaVoucher  NOT IN (SELECT MaVoucher FROM orders WHERE Users_ID = ?) " +
                 "AND MaVoucher NOT IN (SELECT MaVoucher FROM VoucherUser)" +
                 "OR MaVoucher IN (SELECT Mavoucher FROM VoucherUser WHERE ID_User = ?)";
 

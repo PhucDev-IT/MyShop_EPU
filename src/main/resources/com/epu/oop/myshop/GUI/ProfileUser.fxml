@@ -125,7 +125,7 @@
             </JFXButton>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="editProfile_Form" layoutX="-3.0" layoutY="85.0" prefHeight="565.0" prefWidth="1202.0" style="-fx-background-color: #FFFFCC;" visible="false">
+      <AnchorPane fx:id="editProfile_Form" layoutX="-3.0" layoutY="85.0" prefHeight="565.0" prefWidth="1202.0" style="-fx-background-color: #fafafa;" visible="false">
          <children>
             <Label layoutX="88.0" layoutY="134.0" text="Họ Tên:">
                <font>
@@ -155,7 +155,7 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <JFXComboBox fx:id="Jcombox_diaChi" layoutX="175.0" layoutY="305.0" prefHeight="31.0" prefWidth="205.0" />
+            <JFXComboBox fx:id="Jcombox_diaChi" editable="true" layoutX="175.0" layoutY="305.0" prefHeight="31.0" prefWidth="205.0" />
             <Label layoutX="88.0" layoutY="426.0" prefHeight="21.0" prefWidth="63.0" text="Email:">
                <font>
                   <Font name="System Bold" size="15.0" />
@@ -228,7 +228,7 @@
             <DatePicker fx:id="ngaySinh_datepicker" layoutX="175.0" layoutY="254.0" stylesheets="@../StyleCSS/Profile.css" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: #F8F8FF;">
+      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;">
          <children>
             <Label layoutX="92.0" layoutY="120.0" prefHeight="21.0" prefWidth="99.0" text="Xin chào:">
                <font>
@@ -240,7 +240,7 @@
                   <Font name="Times New Roman" size="24.0" />
                </font>
             </Label>
-            <Pane layoutX="942.0" layoutY="104.0" prefHeight="56.0" prefWidth="243.0" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="942.0" layoutY="104.0" prefHeight="56.0" prefWidth="243.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label fx:id="DateTime_label" alignment="TOP_LEFT" layoutX="93.0" layoutY="16.0" prefHeight="21.0" prefWidth="142.0" text="26/2/2020" textFill="#cd1212">
                      <font>
@@ -250,7 +250,7 @@
                   <ImageView fx:id="Calendar_img" fitHeight="28.0" fitWidth="28.0" layoutX="32.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="154.0" layoutY="239.0" onMouseClicked="#cickPurchaseProForm" prefHeight="87.0" prefWidth="331.0" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="154.0" layoutY="239.0" onMouseClicked="#cickPurchaseProForm" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="111.0" layoutY="30.0" text="Lịch sử mua hàng">
                      <font>
@@ -260,7 +260,7 @@
                   <ImageView fx:id="purchaseHistory" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="725.0" layoutY="239.0" onMouseClicked="#LienKetNganHang" prefHeight="87.0" prefWidth="331.0" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="725.0" layoutY="239.0" onMouseClicked="#LienKetNganHang" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="106.0" layoutY="30.0" prefHeight="27.0" prefWidth="205.0" text="Liên kết ngân hàng">
                      <font>
@@ -270,7 +270,7 @@
                   <ImageView fx:id="bank_img" fitHeight="46.0" fitWidth="50.0" layoutX="32.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="154.0" layoutY="405.0" onMouseClicked="#setChangePassword" prefHeight="87.0" prefWidth="331.0" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="154.0" layoutY="405.0" onMouseClicked="#setChangePassword" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="111.0" layoutY="30.0" text="Đổi mật khẩu">
                      <font>
@@ -280,7 +280,7 @@
                   <ImageView fx:id="changePassword" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="725.0" layoutY="405.0" onMouseClicked="#DisplayVoucherForm" prefHeight="87.0" prefWidth="331.0" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="725.0" layoutY="405.0" onMouseClicked="#DisplayVoucherForm" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="106.0" layoutY="30.0" prefHeight="27.0" prefWidth="205.0" text="Xem Voucher">
                      <font>
@@ -290,7 +290,7 @@
                   <ImageView fx:id="voucher_img" fitHeight="46.0" fitWidth="50.0" layoutX="35.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="142.0" layoutY="26.0" prefHeight="61.0" prefWidth="921.0" style="-fx-background-color: #F8F8FF;">
+            <Pane layoutX="142.0" layoutY="26.0" prefHeight="61.0" prefWidth="921.0" style="-fx-background-color: white;">
                <children>
                   <ImageView fx:id="imgIconTongDoanhThu" fitHeight="30.0" fitWidth="30.0" layoutX="768.0" layoutY="6.0" pickOnBounds="true" />
                   <Label fx:id="SumDoanhThu_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="805.0" layoutY="39.0" prefHeight="21.0" prefWidth="115.0" text="0" textFill="#d30a0a">
@@ -503,7 +503,7 @@
                   </Label>
                </children>
             </Pane>
-            <Pane layoutX="37.0" layoutY="60.0" prefHeight="197.0" prefWidth="370.0" style="-fx-background-color: #CC99FF;">
+            <Pane layoutX="37.0" layoutY="60.0" prefHeight="197.0" prefWidth="370.0" style="-fx-background-color: #eee; -fx-border-radius: 10; -fx-background-radius: 10;">
                <children>
                   <Label alignment="CENTER" layoutX="-3.0" layoutY="14.0" prefHeight="20.0" prefWidth="370.0" text="Thân chào, Hello">
                      <font>

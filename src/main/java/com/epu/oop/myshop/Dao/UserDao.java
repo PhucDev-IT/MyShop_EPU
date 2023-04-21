@@ -174,14 +174,14 @@ public class UserDao implements Dao_Interface<User> {
             while (rs.next()){
                 int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
-                float soLuong = rs.getFloat("SoLuong");
+                int soLuong = rs.getInt("SoLuong");
                 BigDecimal donGia = rs.getBigDecimal("DonGia");
                 String MoTa = rs.getString("MoTa");
                 String SrcImg = rs.getString("SrcImg");
                 int DanhMuc = rs.getInt("Category_ID");
-                float sold = rs.getFloat("sold");
+                int sold = rs.getInt("sold");
                 BigDecimal totalrevenue = rs.getBigDecimal("totalrevenue");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc));
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,null));
             }
             rs.close();
             statement.close();
@@ -209,7 +209,7 @@ public class UserDao implements Dao_Interface<User> {
             while (rs.next()){
                 int ID = rs.getInt("ID");
                 String TenSP = rs.getString("TenSP");
-                float soLuong = rs.getFloat("SoLuong");
+                int soLuong = rs.getInt("SoLuong");
                 BigDecimal donGia = rs.getBigDecimal("DonGia");
                 String MoTa = rs.getString("MoTa");
                 String SrcImg = rs.getString("SrcImg");

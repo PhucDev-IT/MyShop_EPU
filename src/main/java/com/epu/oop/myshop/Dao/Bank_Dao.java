@@ -19,14 +19,16 @@ public class Bank_Dao implements Dao_Interface<Bank> {
 
 
     @Override
-    public boolean Insert(Bank t) {
+    public boolean Insert(Bank t) throws SQLException {
         int results = 0;
 
             String sql = "INSERT INTO Bank(SoTaiKhoan,TenNH,ChuSoHuu,Users_ID)" +
                     " VALUES (?,?,?,?)";
-        try (Connection connection = JDBCUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
-
+        Connection connection = null;
+        try {
+             connection = JDBCUtil.getConnection();
+             connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1,t.getSoTaiKhoan());
             statement.setString(2,t.getTenNH());
             statement.setString(3,t.getChuSoHuu());
@@ -36,9 +38,16 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
             statement.close();
-            JDBCUtil.CloseConnection(connection);
+            connection.commit();
         }catch (SQLException e) {
-            e.printStackTrace();
+            if(connection!=null) {
+                connection.rollback();
+                System.out.println("roll back: "+e.getMessage());
+            }
+
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
         }
         return results>0;
     }
@@ -50,12 +59,15 @@ public class Bank_Dao implements Dao_Interface<Bank> {
     }
 
     @Override
-    public Bank SelectByID(Bank t) {
+    public Bank SelectByID(Bank t) throws SQLException {
         Bank bank = null;
 
             String sql = "SELECT * FROM Bank WHERE Users_ID=?";
-        try (Connection connection = JDBCUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
+        Connection connection = null;
+        try {
+             connection = JDBCUtil.getConnection();
+             connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1,t.getUser().getID());
 
             //Bước 3:Thực thi câu lệnh
@@ -70,9 +82,16 @@ public class Bank_Dao implements Dao_Interface<Bank> {
                 bank = new Bank(SoTaiKhoan,TenNH,ChuSoHuu,new User(user_id));
             }
             statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
-            e.printStackTrace();
+            if(connection!=null){
+                connection.rollback();
+                System.out.println("roll back: "+e.getMessage());
+            }
+
+        }finally {
+
+            connection.close();
         }
 
         return bank;
@@ -80,17 +99,19 @@ public class Bank_Dao implements Dao_Interface<Bank> {
     }
 
     @Override
-    public int Update(Bank t) {
+    public int Update(Bank t) throws SQLException {
         int results = 0;
 
             String sql = "UPDATE Bank SET " +
-                    "SoTaiKhoan=?," +
+                    " SoTaiKhoan=?," +
                     " TenNH=?," +
                     " ChuSoHuu=?," +
                     " WHERE Users_ID=?";
-        try (Connection connection = JDBCUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
-
+        Connection connection = null;
+        try {
+             connection = JDBCUtil.getConnection();
+             connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1,t.getSoTaiKhoan());
             statement.setString(2,t.getTenNH());
             statement.setString(3,t.getChuSoHuu());
@@ -99,9 +120,15 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
             statement.close();
-            JDBCUtil.CloseConnection(connection);
+           connection.commit();
         }catch (SQLException e) {
-            e.printStackTrace();
+            if(connection!=null){
+                connection.rollback();
+                System.out.println("roll back: "+e.getMessage());
+            }
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
         }
         return results;
     }

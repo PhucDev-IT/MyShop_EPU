@@ -26,7 +26,7 @@
          <top>
             <Pane onMouseMoved="#hiddenListItemOfMenu" prefHeight="70.0" prefWidth="1484.0" style="-fx-background-color: #f5deba;" BorderPane.alignment="CENTER">
                <children>
-                  <TextField fx:id="SearchProduct_txt" layoutX="453.0" layoutY="18.0" prefHeight="38.0" prefWidth="507.0" promptText="Tìm kiếm" style="-fx-border-radius: 10px; -fx-background-radius: 10px; -fx-background-color: #f4f4f4;">
+                  <TextField fx:id="SearchProduct_txt" layoutX="453.0" layoutY="18.0" onAction="#getNameProductSearch" prefHeight="38.0" prefWidth="507.0" promptText="Tìm kiếm" style="-fx-border-radius: 10px; -fx-background-radius: 10px; -fx-background-color: #f4f4f4;">
                      <padding>
                         <Insets left="50.0" />
                      </padding>
@@ -60,6 +60,25 @@
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
                <children>
+                  <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" visible="false">
+                     <children>
+                        <ScrollPane layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <GridPane fx:id="gridProductSearch" hgap="10.0" vgap="10.0">
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <padding>
+                                    <Insets top="-30.0" />
+                                 </padding>
+                              </GridPane>
+                           </content>
+                           <padding>
+                              <Insets left="30.0" />
+                           </padding>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
                   <Pane layoutY="-2.0" onMouseClicked="#hiddenListItemOfMenu" prefHeight="36.0" prefWidth="1300.0">
                      <children>
                         <JFXButton id="nav-item-one" fx:id="menu1_btn" layoutX="86.0" layoutY="5.0" onMouseMoved="#HoverMenuNavbar" prefHeight="26.0" prefWidth="161.0" ripplerFill="#b55353" stylesheets="@../StyleCSS/pageHome.css" text="Thiết bị điện tử">
@@ -111,6 +130,9 @@
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
+                                 <padding>
+                                    <Insets left="30.0" />
+                                 </padding>
                               </Pagination>
                               <GridPane fx:id="grid_Products" hgap="8.0" layoutY="14.0" prefHeight="0.0" prefWidth="0.0" stylesheets="@../StyleCSS/pageHome.css" vgap="8.0">
                                 <rowConstraints>
@@ -320,7 +342,7 @@
                               <Font name="Times New Roman Bold" size="16.0" />
                            </font>
                         </Label>
-                        <Label fx:id="sold" layoutX="91.0" layoutY="190.0" prefHeight="21.0" prefWidth="107.0" text="100.000đ" textFill="#574949">
+                        <Label fx:id="soldInfror_lb" layoutX="91.0" layoutY="190.0" prefHeight="21.0" prefWidth="107.0" text="100.000đ" textFill="#574949">
                            <font>
                               <Font name="Times New Roman Bold" size="16.0" />
                            </font>
@@ -535,8 +557,11 @@
                         </Label>
                      </children>
                   </AnchorPane>
-                  <ImageView fx:id="imgLoading" fitHeight="48.0" fitWidth="62.0" layoutX="611.0" layoutY="282.0" pickOnBounds="true" preserveRatio="true" visible="false" />
-                  <Pane layoutX="411.0" layoutY="-9.0" prefHeight="200.0" prefWidth="602.0" style="-fx-background-color: red;" visible="false" />
+                  <AnchorPane fx:id="paneLoading" layoutX="41.0" layoutY="-63.0" prefHeight="723.0" prefWidth="1326.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-63.0">
+                     <children>
+                        <ImageView fx:id="imgLoading" fitHeight="76.0" fitWidth="94.0" layoutX="562.0" layoutY="311.0" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
          </center>

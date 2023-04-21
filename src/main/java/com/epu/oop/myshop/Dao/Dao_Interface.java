@@ -9,9 +9,9 @@ public interface Dao_Interface<T> {
 
     public List<T> SelectAll() throws SQLException;
 
-    public T SelectByID(T t);
+    public T SelectByID(T t) throws SQLException;
 
-    public int Update(T t);
+    public int Update(T t) throws SQLException;
 
     public int Delete(T t);
 }

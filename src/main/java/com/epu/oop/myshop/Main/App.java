@@ -1,17 +1,25 @@
 package com.epu.oop.myshop.Main;
 
+import com.epu.oop.myshop.Dao.Product_Dao;
+import com.epu.oop.myshop.model.CreateSQL;
+import com.epu.oop.myshop.model.Product;
+import com.epu.oop.myshop.model.User;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.Random;
 
 public class App extends Application {
     public static final SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -21,7 +29,7 @@ public class App extends Application {
     public static NumberFormat numf = NumberFormat.getInstance(lc);
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/epu/oop/myshop/GUI/PageHome.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/epu/oop/myshop/GUI/setDataApp.fxml"));
         Parent root = (Parent) loader.load();
         Scene scene = new Scene(root);
         stage.centerOnScreen();

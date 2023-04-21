@@ -16,7 +16,7 @@ public class Product implements Serializable {
 
     private String TenSP;
 
-    private float quantity;
+    private int quantity;
 
     private BigDecimal price;
 
@@ -26,7 +26,7 @@ public class Product implements Serializable {
 
     private String Activity;
 
-    private float sold;
+    private int sold;
 
     private BigDecimal TotalRevenue;
 
@@ -44,7 +44,7 @@ public class Product implements Serializable {
         this.ID = id;
         this.TenSP = tenSP;
     }
-    public Product(String tenSP, float soLuong, BigDecimal donGia, String moTa, String srcImg, int category, User user) {
+    public Product(String tenSP, int soLuong, BigDecimal donGia, String moTa, String srcImg, int category, User user) {
         TenSP = tenSP;
         this.quantity = soLuong;
         this.price = donGia;
@@ -55,7 +55,7 @@ public class Product implements Serializable {
         this.user = user;
     }
 
-    public Product(int iD, String tenSP, float soLuong, BigDecimal donGia, String srcImg) {
+    public Product(int iD, String tenSP, int soLuong, BigDecimal donGia, String srcImg) {
         ID = iD;
         TenSP = tenSP;
         this.quantity = soLuong;
@@ -66,8 +66,8 @@ public class Product implements Serializable {
 
 
     //Sellect Các mặt hàng đang bán của User
-    public Product(int id ,String tenSP, float soLuong, BigDecimal donGia, String moTa, String srcImg,float sold,
-                   BigDecimal TotalRevenue, int category) {
+    public Product(int id ,String tenSP, int soLuong, BigDecimal donGia, String moTa, String srcImg,int sold,
+                   BigDecimal TotalRevenue, int category,User u) {
         this.ID = id;
         TenSP = tenSP;
         this.quantity = soLuong;
@@ -78,10 +78,11 @@ public class Product implements Serializable {
         Activity = "ON";
         this.sold = sold;
         this.TotalRevenue = TotalRevenue;
+        this.user = u;
     }
 
     //Select hóa đơn đã mua của user
-    public Product(int id, String tenSP, float soLuong, BigDecimal donGia, String moTa, String srcImg, String statuss) {
+    public Product(int id, String tenSP, int soLuong, BigDecimal donGia, String moTa, String srcImg, String statuss) {
         this.ID = id;
         TenSP = tenSP;
         this.quantity = soLuong;
@@ -132,11 +133,11 @@ public class Product implements Serializable {
         this.idCategory = category;
     }
 
-    public float getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(float quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -156,11 +157,11 @@ public class Product implements Serializable {
         Activity = activity;
     }
 
-    public float getSold() {
+    public int getSold() {
         return sold;
     }
 
-    public void setSold(float sold) {
+    public void setSold(int sold) {
         this.sold = sold;
     }
 

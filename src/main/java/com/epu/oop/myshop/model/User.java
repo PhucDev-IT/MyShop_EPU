@@ -52,6 +52,9 @@ public class User implements Serializable {
 
     }
 
+    public User(String name){
+        this.FullName = name;
+    }
     public User(String fullName, String gender, Date dateOfBirth, String address, String canCuocCongDan,
                 String email, String numberPhone, String srcAvatar, Account account) {
         FullName = fullName;

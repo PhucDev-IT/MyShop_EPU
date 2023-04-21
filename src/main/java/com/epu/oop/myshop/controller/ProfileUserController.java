@@ -440,7 +440,7 @@ public class ProfileUserController implements Initializable {
     }
 
     //Xử lý thêm ngân hàng
-    public void addBank() {
+    public void addBank() throws SQLException {
         if (isStringEmpty(Jtxt_CCCD.getText())) {
             AlertNotification.showAlertWarning("", "Vui lòng nhập căn cước công dân");
         } else {
@@ -467,13 +467,13 @@ public class ProfileUserController implements Initializable {
         }
     }
 
-    public void updateBank() {
+    public void updateBank() throws SQLException {
         String chusoHuu = Jtxt_ChuSoHuu.getText();
         String tenNganHang = Jtxt_TenNganHang.getText();
         String stk = Jtxt_SoTaiKhoan.getText();
 
         if (isStringEmpty(chusoHuu) || isStringEmpty(tenNganHang) || isStringEmpty(stk)) {
-            AlertNotification.showAlertWarning("WARNING", "Vui lòng nhập đầy đủ thông tin ngân hàng của bạn");
+            AlertNotification.showAlertWarning("", "Vui lòng nhập đầy đủ thông tin ngân hàng của bạn");
         } else {
             bank.setChuSoHuu(chusoHuu);
             bank.setTenNH(tenNganHang);
@@ -483,7 +483,7 @@ public class ProfileUserController implements Initializable {
     }
 
     @FXML
-    public void ActionButton(ActionEvent e) {
+    public void ActionButton(ActionEvent e) throws SQLException {
         String nameButton = btn_updateProfile.getText();
         if (nameButton.equals("Đổi mật khẩu")) {
             String pass = Jtxt_Pass.getText();
@@ -575,7 +575,7 @@ public class ProfileUserController implements Initializable {
     public void AddProducts(ActionEvent e) throws SQLException {
 
         String nameSP = tenHang_txt.getText();
-        float SoLuong = Float.parseFloat(soLuong_txt.getText());
+        int SoLuong = Integer.parseInt(soLuong_txt.getText());
 
         // Mục đích khi người bán nhập giá bán có các kí tự thì ....
         String giaBan = DonGia_txt.getText();
@@ -631,8 +631,8 @@ public class ProfileUserController implements Initializable {
     }
 
     // button: Xóa sản phẩm
-    public void RemoveProducts(ActionEvent e) throws FileNotFoundException {
-        boolean check = AlertNotification.showAlertConfirmation("CONFIRMATION", "Bạn chắc chắn muốn xóa sản phẩm này?");
+    public void RemoveProducts(ActionEvent e) throws FileNotFoundException, SQLException {
+        boolean check = AlertNotification.showAlertConfirmation("", "Bạn chắc chắn muốn xóa sản phẩm này?");
 
         if (check) {
 
@@ -648,10 +648,10 @@ public class ProfileUserController implements Initializable {
     }
 
     // Button: Sửa sant phẩm
-    public void UpdateProduct(ActionEvent e) throws FileNotFoundException {
+    public void UpdateProduct(ActionEvent e) throws FileNotFoundException, SQLException {
         String img = urlSP;
         String tenhang = tenHang_txt.getText();
-        float SoLuong = Float.parseFloat(soLuong_txt.getText());
+        int SoLuong = Integer.parseInt(soLuong_txt.getText());
 
         String giaBan = DonGia_txt.getText();
         giaBan = deleteChar(giaBan);
@@ -679,7 +679,7 @@ public class ProfileUserController implements Initializable {
         String tenHang = tenHang_txt.getText();
 
         List<Product> listprod = new ArrayList<>();
-        listprod = produc_dao.SearchProducts(tenHang);
+       // listprod = produc_dao.SearchProducts(tenHang);
 
         setDataInBanHangForm(listprod);
     }
@@ -913,7 +913,7 @@ public class ProfileUserController implements Initializable {
     //--------------------------------------- Lịch sử mua hàng ----------------------------------------------------------
 
     @FXML
-    public void cickPurchaseProForm(MouseEvent e) {
+    public void cickPurchaseProForm(MouseEvent e) throws SQLException {
         HideForm();
         PurchaseProduct_Form.setVisible(true);
         PurchaseProducts();
@@ -929,7 +929,7 @@ public class ProfileUserController implements Initializable {
         addessCard_lb.setText(user.getAddress());
     }
     BigDecimal tongTienDaMuaHang = new BigDecimal("0");
-    public void PurchaseProducts() {
+    public void PurchaseProducts() throws SQLException {
         listPurchaseProducts = hoaDon_dao.getPurchaseProducts(user);
         grid_PurchaseProduct.getChildren().clear();
         int col = 0;
@@ -1029,7 +1029,7 @@ public class ProfileUserController implements Initializable {
 
 
     // Hiển thị thông tin của người dùng
-    public void defaultProfile() {
+    public void defaultProfile() throws SQLException {
         //Nếu người dùng đã mua hàng ở bên ngoài thì k cần mất thời gian truy vấn tìm lại nữa
         if (Temp.user == null) {
             user = userDao.SelectByID(new User(Temp.account.getID()));
@@ -1081,7 +1081,7 @@ public class ProfileUserController implements Initializable {
     }
 
     //Nếu đăặt Hide lên đầu thì khi có sự kiện nhấn bất kì thì nó bị ẩn ngay
-    public void click(MouseEvent e) throws IOException {
+    public void click(MouseEvent e) throws IOException, SQLException {
 
         if (e.getSource() == menu_img) {
             asideLeft_Frm.setVisible(true);
@@ -1120,7 +1120,7 @@ public class ProfileUserController implements Initializable {
             }
         } else if (e.getSource() == MyShop_txt) {
 
-            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/HomeForm.fxml");
+            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
 
         }
     }
@@ -1134,11 +1134,16 @@ public class ProfileUserController implements Initializable {
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
-        Object[] obj = hoaDon_dao.OrderToDay(Date.valueOf(LocalDate.now()), Temp.account.getID());
-        soDonHangtoday_lb.setText(obj[0] + " đơn");
-        if (obj[1] != null) {
-            doanhThuToday_lb.setText(App.numf.format(obj[1]) + "đ");
-        }
+//        Object[] obj = new Object[0];
+//        try {
+//            obj = hoaDon_dao.OrderToDay(Date.valueOf(LocalDate.now()), Temp.account.getID());
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//        soDonHangtoday_lb.setText(obj[0] + " đơn");
+//        if (obj[1] != null) {
+//            doanhThuToday_lb.setText(App.numf.format(obj[1]) + "đ");
+//        }
 
 
 //        Object[] objSumOrder = hoaDon_dao.SumOrder(Temp.account.getID());
@@ -1149,7 +1154,11 @@ public class ProfileUserController implements Initializable {
 
         DefaultCategory(); // Trong form bán hàng
         defaultAddress();
-        defaultProfile();
+        try {
+            defaultProfile();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         defaultValue();
         NameDefault_Label.setText(user.getFullName());
         produc_dao = new Product_Dao();
