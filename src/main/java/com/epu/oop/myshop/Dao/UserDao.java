@@ -1,7 +1,6 @@
 package com.epu.oop.myshop.Dao;
 
-import com.epu.oop.myshop.Database.JDBCUtil;
-import com.epu.oop.myshop.model.Category;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Product;
 import com.epu.oop.myshop.model.User;
 import java.math.BigDecimal;
@@ -11,11 +10,16 @@ import java.util.List;
 
 public class UserDao implements Dao_Interface<User> {
 
+    private final ConnectionPool jdbcUtil;
     private static UserDao instance;
 
-    public static UserDao getInstance() {
+    public UserDao(ConnectionPool jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
+    }
+
+    public static UserDao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new UserDao();
+            instance = new UserDao(jdbcUtil);
             System.out.println("Tạo đối tượng userDao");
         }
         return instance;
@@ -32,7 +36,7 @@ public class UserDao implements Dao_Interface<User> {
 
             //Bước 2:Tạo đối tượng PreparedStatemt
             String sql = "SELECT * FROM Users";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery()){
 
@@ -49,8 +53,7 @@ public class UserDao implements Dao_Interface<User> {
 
                 list.add(new User(ID,UserName,Gender,dateOfBirth,Address,CCCD,Email,Phone,SrcAvatar));
             }
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,7 +66,7 @@ public class UserDao implements Dao_Interface<User> {
 
             //Bước 2:Tạo đối tượng PreparedStatemt
             String sql = "SELECT * FROM Users WHERE Account_ID=?";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
 
@@ -84,8 +87,7 @@ public class UserDao implements Dao_Interface<User> {
                 user = new User(ID,UserName,Gender,dateOfBirth,Address,CCCD,Email,Phone,SrcAvatar);
             }
             rs.close();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -107,7 +109,7 @@ public class UserDao implements Dao_Interface<User> {
                     ", Phone=?" +
                     ", SrcAvatar=?" +
                     " WHERE Account_ID=?";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
 
             statement.setString(1,t.getFullName());
@@ -123,8 +125,7 @@ public class UserDao implements Dao_Interface<User> {
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
 
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -139,7 +140,7 @@ public class UserDao implements Dao_Interface<User> {
             String sql = "DELETE FROM Users" +
                     " WHERE Account_ID = ?";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
 
@@ -147,8 +148,7 @@ public class UserDao implements Dao_Interface<User> {
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
 
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -166,7 +166,7 @@ public class UserDao implements Dao_Interface<User> {
                     "AND Product.Activity = 'ON' " +
                     "AND ProductSeller.Users_ID = ?";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
             ResultSet rs = statement.executeQuery();
@@ -174,8 +174,8 @@ public class UserDao implements Dao_Interface<User> {
             while (rs.next()){
                 int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
-                int soLuong = rs.getInt("SoLuong");
-                BigDecimal donGia = rs.getBigDecimal("DonGia");
+                int soLuong = rs.getInt("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
                 String MoTa = rs.getString("MoTa");
                 String SrcImg = rs.getString("SrcImg");
                 int DanhMuc = rs.getInt("Category_ID");
@@ -184,8 +184,7 @@ public class UserDao implements Dao_Interface<User> {
                 list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,null));
             }
             rs.close();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -201,7 +200,7 @@ public class UserDao implements Dao_Interface<User> {
                     "INNER JOIN HoaDon ON HoaDon.ID = CTHoaDon.HoaDon_ID " +
                     "AND HoaDon.Users_ID = ?";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,us.getID());
             ResultSet rs = statement.executeQuery();
@@ -209,8 +208,8 @@ public class UserDao implements Dao_Interface<User> {
             while (rs.next()){
                 int ID = rs.getInt("ID");
                 String TenSP = rs.getString("TenSP");
-                int soLuong = rs.getInt("SoLuong");
-                BigDecimal donGia = rs.getBigDecimal("DonGia");
+                int soLuong = rs.getInt("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
                 String MoTa = rs.getString("MoTa");
                 String SrcImg = rs.getString("SrcImg");
                 String Statuss = rs.getString("Activity");
@@ -218,7 +217,6 @@ public class UserDao implements Dao_Interface<User> {
             }
             statement.close();
             rs.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -231,7 +229,7 @@ public class UserDao implements Dao_Interface<User> {
 
         //Bước 2:Tạo đối tượng PreparedStatemt
         String sql = "SELECT * FROM Users WHERE Account_ID=?";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,ID);
 
@@ -242,8 +240,6 @@ public class UserDao implements Dao_Interface<User> {
                 email = rs.getString("Email");
             }
             rs.close();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e) {
             e.printStackTrace();
         }

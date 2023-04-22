@@ -1,19 +1,6 @@
 package com.epu.oop.myshop.Main;
 
-import com.epu.oop.myshop.Dao.Product_Dao;
-import com.epu.oop.myshop.Database.JDBCUtil;
-import com.epu.oop.myshop.model.Category;
-import com.epu.oop.myshop.model.CreateSQL;
-import com.epu.oop.myshop.model.Product;
-import com.epu.oop.myshop.model.User;
-
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Random;
 
 public class Test{
     public static void main(String[] args) throws SQLException, ClassNotFoundException {

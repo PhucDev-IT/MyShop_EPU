@@ -16,12 +16,7 @@ public class Temp {
     public static List<Category> Listcategory = new ArrayList<>();
    // public static List<Product> Listproducts = new ArrayList<>();
 
-    public static UserDao userDao;
-    public static Order_Dao hoaDon_dao = Order_Dao.getInstance();
-    public Temp()
-    {
-        userDao = UserDao.getInstance();
-        //hoaDon_dao = Order_Dao.getInstance();
-    }
+
+
 
 }

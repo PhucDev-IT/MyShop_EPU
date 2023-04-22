@@ -3,6 +3,7 @@ package com.epu.oop.myshop.controller;
 
 import com.epu.oop.myshop.Dao.OrderDetails_Dao;
 import com.epu.oop.myshop.Dao.Order_Dao;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.MyListener;
 import com.epu.oop.myshop.model.Product;
 import javafx.fxml.FXML;
@@ -12,7 +13,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
-import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -39,9 +39,10 @@ public class ItemProductsInBanHang {
 
     private Product prod;
 
-    private Order_Dao hoaDon_Dao = new Order_Dao();
+    private ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private Order_Dao hoaDon_Dao = Order_Dao.getInstance(connectionPool);
 
-    private OrderDetails_Dao cthd_dao = new OrderDetails_Dao();
+    private OrderDetails_Dao cthd_dao = OrderDetails_Dao.getInstance(connectionPool);
 
     private MyListener<Product> myListener;
 

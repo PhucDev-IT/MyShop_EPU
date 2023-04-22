@@ -24,7 +24,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ProfileUserController">
+<AnchorPane fx:id="profileUserPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ProfileUserController">
    <children>
       <Pane layoutY="-1.0" prefHeight="87.0" prefWidth="1200.0" styleClass="header" stylesheets="@../StyleCSS/Profile.css">
          <children>
@@ -33,7 +33,7 @@
             <ImageView fx:id="RankSeller" fitHeight="71.0" fitWidth="84.0" layoutX="1089.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </Pane>
-      <AnchorPane fx:id="banHang_Form" layoutX="-3.0" layoutY="87.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: #FFFFCC;" visible="false">
+      <AnchorPane fx:id="banHang_Form" layoutX="-3.0" layoutY="87.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: #fffef7;" visible="false">
          <children>
             <Separator layoutX="473.0" orientation="VERTICAL" prefHeight="502.0" prefWidth="0.0" />
             <TextField fx:id="tenHang_txt" layoutX="120.0" layoutY="139.0" prefHeight="31.0" prefWidth="289.0" promptText="Tên mặt hàng" />
@@ -67,11 +67,11 @@
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
-            <Button layoutX="19.0" layoutY="501.0" mnemonicParsing="false" onAction="#RemoveProducts" prefHeight="31.0" prefWidth="105.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Ngừng Bán" textFill="#fffbfb" fx:id="xoaSP_btn">
+            <Button disable="true" layoutX="19.0" layoutY="501.0" mnemonicParsing="false" onAction="#RemoveProducts" prefHeight="31.0" prefWidth="105.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Ngừng Bán" textFill="#fffbfb" fx:id="xoaSP_btn">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
-            <Button fx:id="SuaSP_btn" layoutX="146.0" layoutY="502.0" mnemonicParsing="false" onAction="#UpdateProduct" prefHeight="26.0" prefWidth="73.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Sửa" textFill="#fffbfb">
+            <Button fx:id="SuaSP_btn" disable="true" layoutX="146.0" layoutY="502.0" mnemonicParsing="false" onAction="#UpdateProduct" prefHeight="26.0" prefWidth="73.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Sửa" textFill="#fffbfb">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
@@ -228,7 +228,7 @@
             <DatePicker fx:id="ngaySinh_datepicker" layoutX="175.0" layoutY="254.0" stylesheets="@../StyleCSS/Profile.css" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;">
+      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;" visible="false">
          <children>
             <Label layoutX="92.0" layoutY="120.0" prefHeight="21.0" prefWidth="99.0" text="Xin chào:">
                <font>

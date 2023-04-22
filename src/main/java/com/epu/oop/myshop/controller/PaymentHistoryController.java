@@ -2,6 +2,7 @@ package com.epu.oop.myshop.controller;
 
 import com.epu.oop.myshop.Dao.Account_Dao;
 import com.epu.oop.myshop.Dao.UserDao;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.Account;
 import com.epu.oop.myshop.model.PaymentHistory;
@@ -31,7 +32,9 @@ public class PaymentHistoryController {
 
     @FXML
     private Label soTien_lb;
-    private UserDao userDao = UserDao.getInstance();
+
+    private ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private UserDao userDao = UserDao.getInstance(connectionPool);
 
     public void setData(PaymentHistory p)
     {

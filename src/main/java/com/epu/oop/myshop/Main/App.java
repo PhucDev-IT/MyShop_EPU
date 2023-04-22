@@ -29,7 +29,7 @@ public class App extends Application {
     public static NumberFormat numf = NumberFormat.getInstance(lc);
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/epu/oop/myshop/GUI/setDataApp.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/epu/oop/myshop/GUI/PageHome.fxml"));
         Parent root = (Parent) loader.load();
         Scene scene = new Scene(root);
         stage.centerOnScreen();

@@ -1,7 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 
-import com.epu.oop.myshop.Database.JDBCUtil;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Account;
 import com.epu.oop.myshop.model.User;
 
@@ -12,13 +12,19 @@ import java.util.List;
 
 public class Account_Dao implements Dao_Interface<Account> {
 
+    private final ConnectionPool jdbcUtil;
     private static Account_Dao instance;
 
-    public static Account_Dao getInstance() {
+    public static Account_Dao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new Account_Dao();
+            instance = new Account_Dao(jdbcUtil);
         }
         return instance;
+    }
+
+    public Account_Dao(ConnectionPool jdbcUtil){
+
+        this.jdbcUtil = jdbcUtil;
     }
 
     @Override
@@ -29,7 +35,7 @@ public class Account_Dao implements Dao_Interface<Account> {
             //Try - catch - resources : giúp tự động close, tránh rò rĩ tài nguyên
         Connection connection = null;
            try{
-               connection = JDBCUtil.getConnection();
+               connection = jdbcUtil.getConnection();
                connection.setAutoCommit(false);
                PreparedStatement statement = connection.prepareStatement(sql);
                statement.setString(1,t.getUserName());
@@ -61,7 +67,7 @@ public class Account_Dao implements Dao_Interface<Account> {
 
             String sql = "SELECT * FROM Account";
 
-            try(Connection connection = JDBCUtil.getConnection();
+            try(Connection connection = jdbcUtil.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql);
                 ResultSet rs = statement.executeQuery()){
                  while (rs.next()){
@@ -73,10 +79,8 @@ public class Account_Dao implements Dao_Interface<Account> {
                 String PhanQuyen = rs.getString("PhanQuyen");
 
                 list.add(new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen));
-
             }
-                 statement.close();
-                JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -87,7 +91,7 @@ public class Account_Dao implements Dao_Interface<Account> {
     public Account SelectByID(Account t) {
         Account account = null;
         String sql = "SELECT * FROM Account WHERE UserName=?";
-        try (Connection connection = JDBCUtil.getConnection();
+        try (Connection connection = jdbcUtil.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)){
 
             statement.setString(1,t.getUserName());
@@ -103,8 +107,7 @@ public class Account_Dao implements Dao_Interface<Account> {
 
                 account =  new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen);
             }
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+            rs.close();
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -120,7 +123,7 @@ public class Account_Dao implements Dao_Interface<Account> {
                     " Activity=?," +
                     " PhanQuyen=?" +
                     " WHERE UserName=?";
-        try (Connection connection = JDBCUtil.getConnection();
+        try (Connection connection = jdbcUtil.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)){
 
             statement.setString(1,t.getPassword());
@@ -130,8 +133,7 @@ public class Account_Dao implements Dao_Interface<Account> {
             statement.setString(5,t.getUserName());
 
             results = statement.executeUpdate();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -143,14 +145,13 @@ public class Account_Dao implements Dao_Interface<Account> {
         int results = 0;
             String sql = "DELETE FROM Account" +
                     " WHERE UserName = ?";
-        try (Connection connection = JDBCUtil.getConnection();
+        try (Connection connection = jdbcUtil.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setString(1,t.getUserName());
             //Bước 3:Thực thi câu lệnh
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -163,7 +164,7 @@ public class Account_Dao implements Dao_Interface<Account> {
     {
         int check = 0;
         String sql = "SELECT COUNT(*) AS number FROM Account WHERE ID = ?";
-        try(Connection conn = JDBCUtil.getConnection();
+        try(Connection conn = jdbcUtil.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)){
             statement.setInt(1,account.getID());
             ResultSet resultSet = statement.executeQuery();
@@ -171,8 +172,6 @@ public class Account_Dao implements Dao_Interface<Account> {
                 check = resultSet.getInt("number");
             }
 
-            statement.close();
-            JDBCUtil.CloseConnection(conn);
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra: "+e.getMessage());
         }
@@ -187,7 +186,7 @@ public class Account_Dao implements Dao_Interface<Account> {
             String sql = "SELECT * FROM Account " +
                     "WHERE UserName=? " +
                     "AND Passwords = ?";
-        try (Connection connection = JDBCUtil.getConnection();
+        try (Connection connection = jdbcUtil.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setString(1,account.getUserName());
             statement.setString(2,account.getPassword());
@@ -205,7 +204,6 @@ public class Account_Dao implements Dao_Interface<Account> {
             }
             statement.close();
             rs.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra: "+e.getMessage());
         }
@@ -226,7 +224,7 @@ public class Account_Dao implements Dao_Interface<Account> {
             String sqlUs = "INSERT INTO Users(Account_ID,FullName,Email)" +
                     " VALUES (?,?,?)";
 
-            connection = JDBCUtil.getConnection();
+            connection = jdbcUtil.getConnection();
             connection.setAutoCommit(false);
             preAccount = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
             preAccount.setString(1,account.getUserName());
@@ -261,7 +259,7 @@ public class Account_Dao implements Dao_Interface<Account> {
 
             if(preAccount!=null) preAccount.close();
             connection.setAutoCommit(true);
-            JDBCUtil.CloseConnection(connection);
+            connection.close();
         }
         return check>0;
     }

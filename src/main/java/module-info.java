@@ -6,6 +6,7 @@ module com.epu.oop.myshop {
     requires mssql.jdbc;
     requires com.jfoenix;
     requires java.sql.rowset;
+    requires com.zaxxer.hikari;
 
     exports com.epu.oop.myshop.Main;
     exports com.epu.oop.myshop.controller to javafx.fxml;

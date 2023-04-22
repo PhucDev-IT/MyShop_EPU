@@ -1,6 +1,6 @@
 package com.epu.oop.myshop.Dao;
 
-import com.epu.oop.myshop.Database.JDBCUtil;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.VoucherModel;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -9,11 +9,16 @@ import java.util.List;
 
 public class VoucherDao implements Dao_Interface<VoucherModel> {
 
+    private final ConnectionPool jdbcUtil;
     private static VoucherDao instance;
 
-    public static VoucherDao getInstance() {
+    public VoucherDao(ConnectionPool jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
+    }
+
+    public static VoucherDao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new VoucherDao();
+            instance = new VoucherDao(jdbcUtil);
         }
         return instance;
     }
@@ -23,7 +28,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
         String sql = "INSERT INTO Voucher(MaVoucher,TiLeGiamGia,SoLuong,NoiDung,NgayThem,NgayKetThuc,ImgVoucher,SotienGiamGia)" +
                 " VALUES (?,?,?,?,?,?,?,?)";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
 
             statement.setString(1,voucherModel.getMaVoucher());
@@ -36,8 +41,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
             statement.setBigDecimal(8,voucherModel.getSoTienGiam());
             //Bước 3:Thực thi câu lệnh
             results =  statement.executeUpdate();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -50,7 +54,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
 
         String sql = "SELECT * FROM Voucher";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery()){
             while (rs.next()){
@@ -65,8 +69,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
 
                 list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc));
             }
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -100,7 +103,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
                 "AND MaVoucher NOT IN (SELECT MaVoucher FROM VoucherUser)" +
                 "OR MaVoucher IN (SELECT Mavoucher FROM VoucherUser WHERE ID_User = ?)";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,IDUser);
             statement.setInt(2,IDUser);
@@ -118,8 +121,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
                 list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc));
             }
             rs.close();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,7 +134,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
         String sql = "INSERT INTO VoucherUser(MaVoucher,ID_User)"+
                 " VALUES (?,(SELECT Account_ID FROM Users WHERE Email = ?))";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
 
             statement.setString(1,voucherModel.getMaVoucher());
@@ -140,8 +142,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
 
             //Bước 3:Thực thi câu lệnh
             results =  statement.executeUpdate();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
            e.printStackTrace();
         }
@@ -154,15 +155,14 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
 
         String sql = "SELECT Count(*) FROM Voucher WHERE Mavoucher = ?";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setString(1,ID);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                result = rs.getInt(1);
             }
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }

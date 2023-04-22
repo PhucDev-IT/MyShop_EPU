@@ -3,6 +3,7 @@ package com.epu.oop.myshop.controller;
 
 import com.epu.oop.myshop.Dao.Account_Dao;
 import com.epu.oop.myshop.Dao.UserDao;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Account;
 import com.epu.oop.myshop.model.ConverForm;
 import com.epu.oop.myshop.model.Temp;
@@ -13,19 +14,24 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 public class Login_Register_Controller implements Initializable{
 
+    @FXML
+    private AnchorPane loginForm_Pane;
     @FXML
     private Label khach_label;
     @FXML
@@ -60,8 +66,8 @@ public class Login_Register_Controller implements Initializable{
     @FXML
     private Label minisizeRegister_Label;
 
-
-    private Account_Dao accountDao = Account_Dao.getInstance();
+    ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private Account_Dao accountDao = Account_Dao.getInstance(connectionPool);
 
     public void Login(ActionEvent e)
     {
@@ -80,6 +86,7 @@ public class Login_Register_Controller implements Initializable{
 
             Temp.account = resul;
             try{
+
                 ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -93,7 +100,6 @@ public class Login_Register_Controller implements Initializable{
 
 
     public void Register(ActionEvent e) throws FileNotFoundException, SQLException {
-        UserDao user_Dao = UserDao.getInstance();
 
         String name = NameTxt_Register.getText();
         String pass = PasswordTxt_register.getText();
@@ -126,10 +132,6 @@ public class Login_Register_Controller implements Initializable{
 
         }
     }
-
-
-
-
 
     public void click(MouseEvent e)
     {
@@ -178,11 +180,10 @@ public class Login_Register_Controller implements Initializable{
     }
 
 
+    //Giair phóng data
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
 
     }
 }

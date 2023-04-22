@@ -1,28 +1,31 @@
 package com.epu.oop.myshop.Dao;
 
-import com.epu.oop.myshop.Database.JDBCUtil;
-import com.epu.oop.myshop.controller.PageHomeController;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.*;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 public class Order_Dao implements Dao_Interface<Order> {
-
+    private final ConnectionPool jdbcUtil;
     private static Order_Dao instance;
 
     private Connection connection;
 
-    public synchronized static Order_Dao getInstance() {
+    public Order_Dao(ConnectionPool jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
+    }
+
+    public synchronized static Order_Dao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new Order_Dao();
+            instance = new Order_Dao(jdbcUtil);
         }
         return instance;
     }
 
     private void openConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            connection = JDBCUtil.getConnection();
+            connection = jdbcUtil.getConnection();
         }
     }
 
@@ -289,7 +292,7 @@ public class Order_Dao implements Dao_Interface<Order> {
 
             String sql = "SELECT CAST(SUM(Quantity*Price) AS DECIMAL) FROM OrderDetails" +
                     " WHERE Product_ID=?";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,u.getID());
             ResultSet rs = statement.executeQuery();
@@ -298,7 +301,6 @@ public class Order_Dao implements Dao_Interface<Order> {
             }
             statement.close();
             rs.close();
-            JDBCUtil.CloseConnection(connection);
         } catch (Exception e) {
             e.printStackTrace();
         }

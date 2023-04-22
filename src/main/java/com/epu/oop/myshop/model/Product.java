@@ -44,7 +44,9 @@ public class Product implements Serializable {
         this.ID = id;
         this.TenSP = tenSP;
     }
-    public Product(String tenSP, int soLuong, BigDecimal donGia, String moTa, String srcImg, int category, User user) {
+
+    public Product(int ID,String tenSP, int soLuong, BigDecimal donGia, String moTa, String srcImg, int category, User user) {
+        this.ID = ID;
         TenSP = tenSP;
         this.quantity = soLuong;
         this.price = donGia;

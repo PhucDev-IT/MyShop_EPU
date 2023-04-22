@@ -1,7 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 
-import com.epu.oop.myshop.Database.JDBCUtil;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.OrderDetails;
 import com.epu.oop.myshop.model.Product;
 import java.math.BigDecimal;
@@ -14,11 +14,16 @@ import java.util.List;
 
 public class OrderDetails_Dao implements Dao_Interface<OrderDetails> {
 
+    private final ConnectionPool jdbcUtil;
     private static OrderDetails_Dao instance;
 
-    public static OrderDetails_Dao getInstance() {
+    public OrderDetails_Dao(ConnectionPool jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
+    }
+
+    public static OrderDetails_Dao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new OrderDetails_Dao();
+            instance = new OrderDetails_Dao(jdbcUtil);
         }
         return instance;
     }
@@ -55,7 +60,7 @@ public class OrderDetails_Dao implements Dao_Interface<OrderDetails> {
     public Object[] SoLuongVaTongTienDaBan(Product t) {
         Object[] result = new Object[2];
             String sql = "SELECT CAST(SUM(quantity) AS float),SUM(quantity*price) FROM OrderDetails WHERE Product_ID=?";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1, t.getID());
             ResultSet rs = statement.executeQuery();
@@ -64,8 +69,6 @@ public class OrderDetails_Dao implements Dao_Interface<OrderDetails> {
                 result[1] = rs.getBigDecimal(2);
             }
 
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
         } catch (SQLException e) {
             System.out.println("Không thể truy vấn số lượng đã bán và tổng tiên:\n"+e.getMessage());
             result[0] = null;
@@ -81,7 +84,7 @@ public class OrderDetails_Dao implements Dao_Interface<OrderDetails> {
 
         String sql = "INSERT INTO OrderDetails(Product_ID,HoaDon_ID,Quantity,Price)" +
                 " VALUES (?,?,?,?)";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getProduct().getID());
             statement.setInt(2,IDHoaDon);
@@ -91,8 +94,6 @@ public class OrderDetails_Dao implements Dao_Interface<OrderDetails> {
             //Bước 3:Thực thi câu lệnh
             results = statement.executeUpdate();
             System.out.println("Thêm thành công bảng chi tiết hóa đơn");
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e) {
             e.printStackTrace();
         }

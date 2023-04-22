@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.controller;
 
 import com.epu.oop.myshop.Dao.*;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.*;
 import com.jfoenix.controls.JFXButton;
@@ -41,7 +42,8 @@ import java.util.*;
 
 public class ProfileUserController implements Initializable {
 
-
+    @FXML
+    private AnchorPane profileUserPane;
     //Phí rút tiền
     private static final BigDecimal phiRutTien = new BigDecimal("5000");
     static final String Nam = "Nam";
@@ -100,7 +102,7 @@ public class ProfileUserController implements Initializable {
     private AnchorPane banHang_Form;
 
     @FXML
-    private ChoiceBox<Category> danhMuc_choisebox;
+    private ChoiceBox<String> danhMuc_choisebox;
 
     @FXML
     private GridPane grid_BanHangForm;
@@ -331,17 +333,21 @@ public class ProfileUserController implements Initializable {
     @FXML
     private Label myShop_label;
 
-    private UserDao userDao = UserDao.getInstance();
-    private Bank_Dao bank_Dao = Bank_Dao.getInstance();
-    private Account_Dao account_dao = Account_Dao.getInstance();
+    private ConnectionPool connectionPool = ConnectionPool.getInstance();
 
-    private Order_Dao hoaDon_dao = Order_Dao.getInstance();
+    private UserDao userDao = UserDao.getInstance(connectionPool);
+    private Bank_Dao bank_Dao = Bank_Dao.getInstance(connectionPool);
+    private Account_Dao account_dao = Account_Dao.getInstance(connectionPool);
 
-    private PaymentHistory_Dao paymentHistory_dao = PaymentHistory_Dao.getInstance();
+    private Order_Dao hoaDon_dao = Order_Dao.getInstance(connectionPool);
 
-    private VoucherDao voucherDao = VoucherDao.getInstance();
+    private PaymentHistory_Dao paymentHistory_dao = PaymentHistory_Dao.getInstance(connectionPool);
+
+    private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
     private Bank bank;
     private User user;
+
+    private Category category = new Category();
 
 
 
@@ -555,6 +561,15 @@ public class ProfileUserController implements Initializable {
 
     // ------------------------------------------- FORM Bán Hàng ---------------------------------------------------
 
+    public void clearTextData(){
+        imgSP.setImage(null);
+        tenHang_txt.setText("");
+        soLuong_txt.setText("");
+        DonGia_txt.setText("");
+        danhMuc_choisebox.setValue(null);
+        moTa_txta.setText("");
+    }
+
     // Thêm ảnh cho hàng
     public void AddImageProduct() {
         FileChooser open = new FileChooser();
@@ -588,29 +603,23 @@ public class ProfileUserController implements Initializable {
 
 
         int IdCategory = -1;
-        IdCategory= Category.listCategory.get(danhMuc_choisebox.getValue());
+        IdCategory=category.listCategory.get(danhMuc_choisebox.getValue());
+
         if (IdCategory == -1 || isStringEmpty(srcImg) || isStringEmpty(soLuong_txt.getText()) || isStringEmpty(giaBan)) {
             AlertNotification.showAlertWarning("", "Thiếu thông tin!");
         } else {
 
-            Product pro = new Product(nameSP, SoLuong, DonGia, moTa, srcImg, IdCategory, user);
-
-
+            Product pro = new Product(0,nameSP, SoLuong, DonGia, moTa, srcImg, IdCategory, user);
 
             if (!produc_dao.Insert(pro)) {
-                AlertNotification.showAlertError("ERROR", "Thêm sản phẩm thất bại.");
+                AlertNotification.showAlertError("Có lỗi xảy ra!", "Thêm sản phẩm thất bại.");
             } else {
                 //Mỗi lần thêm thành công sẽ k truy vẫn lại dữ liệu từ CSDL nữa, thêm trực tiếp vào arraylist
                 listProducts.add(pro);
                 setDataInBanHangForm(listProducts);
             }
 
-            imgSP.setImage(null);
-            tenHang_txt.setText("");
-            soLuong_txt.setText("");
-            DonGia_txt.setText("");
-            danhMuc_choisebox.setValue(null);
-            moTa_txta.setText("");
+
 
 
         }
@@ -637,9 +646,11 @@ public class ProfileUserController implements Initializable {
         if (check) {
 
             pro_onclick.setActivity("LOCK");    //Sản phẩm đang được chọn
-            int x = produc_dao.Update(pro_onclick);
-            if (x > 0) {
+
+            if (produc_dao.Update(pro_onclick) > 0) {
                 AlertNotification.showAlertSucces("", "Xóa thành công!");
+                listProducts.remove(pro_onclick);
+                setDataInBanHangForm(listProducts);
             } else {
                 AlertNotification.showAlertWarning("", "Có lỗi xảy ra.");
             }
@@ -653,22 +664,23 @@ public class ProfileUserController implements Initializable {
         String tenhang = tenHang_txt.getText();
         int SoLuong = Integer.parseInt(soLuong_txt.getText());
 
-        String giaBan = DonGia_txt.getText();
-        giaBan = deleteChar(giaBan);
+        String giaBan = deleteChar(DonGia_txt.getText());
         BigDecimal DonGia = new BigDecimal(giaBan);
-
         String mota = moTa_txta.getText();
+
         int IdCategory = -1;
-        IdCategory= Category.listCategory.get(danhMuc_choisebox.getValue());
+        IdCategory= category.listCategory.get(danhMuc_choisebox.getValue());
 
-        Product pro = new Product(tenhang, SoLuong, DonGia, mota, img, IdCategory, user);
-
+        Product pro = new Product(pro_onclick.getID(),tenhang, SoLuong, DonGia, mota, img, IdCategory, user);
 
         int check = produc_dao.Update(pro);
-        if (check == 0) {
-            AlertNotification.showAlertSucces("Success", "Cập nhật thành công");
+        if (check > 0) {
+            AlertNotification.showAlertSucces("", "Cập nhật thành công");
+            listProducts.remove(pro);
+            listProducts.add(pro);
+            setDataInBanHangForm(listProducts);
         } else {
-            AlertNotification.showAlertWarning("WARNING", "Có lỗi xảy ra!");
+            AlertNotification.showAlertWarning("", "Có lỗi xảy ra!");
         }
 
 
@@ -699,19 +711,21 @@ public class ProfileUserController implements Initializable {
                 soLuong_txt.setText(t.getQuantity() + "");
                 DonGia_txt.setText(numf.format(t.getPrice()) + "");
 
-               // danhMuc_choisebox.setValue(cate);
+                for(Map.Entry entry : category.listCategory.entrySet()){
+                    if(t.getCategory() == (int)entry.getValue()){
+                        danhMuc_choisebox.setValue(entry.getKey()+"");
+                    }
+                }
                 moTa_txta.setText(t.getMoTa());
+
+                xoaSP_btn.setDisable(false);
+                SuaSP_btn.setDisable(false);
             }
         };
     }
 
     public void setDataInBanHangForm(List<Product> listp) {
-        imgSP.setImage(null);
-        tenHang_txt.setText("");
-        soLuong_txt.setText("");
-        DonGia_txt.setText("");
-        danhMuc_choisebox.setValue(null);
-        moTa_txta.setText("");
+        clearTextData();
 
         // Xóa các node trong gridPane
         grid_BanHangForm.getChildren().clear();
@@ -963,7 +977,10 @@ public class ProfileUserController implements Initializable {
     }
 
     public void DefaultCategory() {
-        ObservableList<Category> languages = FXCollections.observableArrayList(Temp.Listcategory);
+        ObservableList<String> languages = FXCollections.observableArrayList();
+        for (Map.Entry entry : category.listCategory.entrySet()){
+            languages.add(entry.getKey()+"");
+        }
         danhMuc_choisebox.setItems(languages);
     }
 
@@ -1132,8 +1149,11 @@ public class ProfileUserController implements Initializable {
         DateTime_label.setText(App.timeDay);
     }
 
+
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+
+
 //        Object[] obj = new Object[0];
 //        try {
 //            obj = hoaDon_dao.OrderToDay(Date.valueOf(LocalDate.now()), Temp.account.getID());
@@ -1161,7 +1181,7 @@ public class ProfileUserController implements Initializable {
         }
         defaultValue();
         NameDefault_Label.setText(user.getFullName());
-        produc_dao = new Product_Dao();
+        produc_dao = Product_Dao.getInstance(connectionPool);
 
 
     }

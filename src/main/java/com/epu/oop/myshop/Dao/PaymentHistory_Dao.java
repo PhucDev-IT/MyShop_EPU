@@ -1,6 +1,6 @@
 package com.epu.oop.myshop.Dao;
 
-import com.epu.oop.myshop.Database.JDBCUtil;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Account;
 import com.epu.oop.myshop.model.PaymentHistory;
 import com.epu.oop.myshop.model.User;
@@ -11,11 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
+    private final ConnectionPool jdbcUtil;
     private static PaymentHistory_Dao instance;
 
-    public static PaymentHistory_Dao getInstance() {
+    public PaymentHistory_Dao(ConnectionPool jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
+    }
+
+    public static PaymentHistory_Dao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new PaymentHistory_Dao();
+            instance = new PaymentHistory_Dao(jdbcUtil);
         }
         return instance;
     }
@@ -24,7 +29,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
     public boolean Insert(PaymentHistory paymentHistory) {
         int results = 0;
         try {
-            Connection connection = JDBCUtil.getConnection();
+            Connection connection = jdbcUtil.getConnection();
 
             String sql = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID,Account_ID)" +
                     " VALUES (?,?,?,?,?,?,?)";
@@ -43,7 +48,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
             results = statement.executeUpdate();
             System.out.println("Rút tiền: Có "+results +" thay đổi");
             statement.close();
-            JDBCUtil.CloseConnection(connection);
+            connection.close();
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,7 +60,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
     public int PaymentMyShop(PaymentHistory paymentHistory) {
         int results = 0;
         try {
-            Connection connection = JDBCUtil.getConnection();
+            Connection connection = jdbcUtil.getConnection();
 
             String sql = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
                     " VALUES (?,?,?,?,?,?)";
@@ -72,7 +77,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
             results = statement.executeUpdate();
             System.out.println("Rút tiền: Có "+results +" thay đổi");
             statement.close();
-            JDBCUtil.CloseConnection(connection);
+            connection.close();
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -104,7 +109,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
     public List<PaymentHistory> listPaymentHistory(Account a){
         List<PaymentHistory> list = new ArrayList<>();
         try {
-            Connection connection = JDBCUtil.getConnection();
+            Connection connection = jdbcUtil.getConnection();
             String sql = "SELECT pm.* from PaymentHistory pm " +
                     "WHERE Users_ID = ? or Account_ID = ? " +
                     "Order by NgayGiaoDich DESC";
@@ -124,7 +129,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
                 list.add(new PaymentHistory(ID,tenGiaoDich,NoiDung,soTien,ngayGiaoDich,src,new User(User_ID),new Account(Account_ID)));
             }
             statement.close();
-            JDBCUtil.CloseConnection(connection);
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

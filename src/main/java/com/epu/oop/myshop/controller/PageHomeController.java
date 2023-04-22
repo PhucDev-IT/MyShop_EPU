@@ -1,10 +1,8 @@
 package com.epu.oop.myshop.controller;
 
 
-import com.epu.oop.myshop.Dao.Bank_Dao;
-import com.epu.oop.myshop.Dao.Product_Dao;
-import com.epu.oop.myshop.Dao.UserDao;
-import com.epu.oop.myshop.Dao.VoucherDao;
+import com.epu.oop.myshop.Dao.*;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.*;
 import com.jfoenix.controls.JFXButton;
@@ -44,10 +42,8 @@ import java.net.URL;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.sql.SQLSyntaxErrorException;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -347,13 +343,16 @@ public class PageHomeController implements Initializable {
 
     private VoucherModel voucherSelected = null;
 
-    private List<VoucherModel> listvoucher;
-    private Product_Dao product_Dao = Product_Dao.getInstance();
-    private VoucherDao voucherDao = VoucherDao.getInstance();
+    private List<VoucherModel> listvoucher = new ArrayList<>();
 
-    private UserDao userDao = UserDao.getInstance();
+    private ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private Product_Dao product_Dao = Product_Dao.getInstance(connectionPool);
+    private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
 
-    private Bank_Dao bank_dao = Bank_Dao.getInstance();
+    private Order_Dao order_dao = Order_Dao.getInstance(connectionPool);
+    private UserDao userDao = UserDao.getInstance(connectionPool);
+
+    private Bank_Dao bank_dao = Bank_Dao.getInstance(connectionPool);
 
 
     //---------------------- KIỂM TRA RỖNG ----------------------------------
@@ -593,22 +592,20 @@ public class PageHomeController implements Initializable {
                     Thread.sleep(200);
 
                     Platform.runLater(() -> {
-                        if (e.getSource() == payAtHome) {
-                            try {
+                        try{
+                            if(e.getSource() == payAtHome){
                                 checkAddOrder=PayProductAtHome(hoaDon, ctHoaDon);
-                            } catch (SQLException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        } else if (e.getSource() == payByBank) {
-                            try {
+                            }else if(e.getSource() == payByBank){
                                 checkAddOrder=payProductByBank(hoaDon, ctHoaDon);
-                            } catch (SQLException ex) {
-                                throw new RuntimeException(ex);
                             }
+                        }catch (SQLException e){
+                            throw new RuntimeException(e);
                         }
+
                     });
                     Thread.sleep(1000);
                     Platform.runLater(() -> {
+                        System.out.println(checkAddOrder);
                         if (checkAddOrder) {
                             for (Product pro : listProduct) {
                                 if (pro.getID() == SelectedProduct.getID()) {
@@ -635,7 +632,7 @@ public class PageHomeController implements Initializable {
     }
 
     public boolean PayProductAtHome(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
-        if (Temp.hoaDon_dao.OrderDetailsPayAtHome(hoaDon, ctHoaDon)) {
+        if (checkAddOrder = order_dao.OrderDetailsPayAtHome(hoaDon, ctHoaDon)) {
             AlertNotification.showAlertSucces("Mua hàng thành công!", "Cảm ơn bạn đã mua hàng");
             return true;
         } else {
@@ -653,7 +650,7 @@ public class PageHomeController implements Initializable {
                 PaymentHistory paymentBank = new PaymentHistory("Mua Hàng", "Thanh toán cho MyShop", thanhTien,
                         new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconThanhToan.jpg", Temp.user, null);
                 Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
-                if (Temp.hoaDon_dao.OrderDetailsPayByBank(hoaDon, ctHoaDon, paymentBank)) {
+                if (checkAddOrder = order_dao.OrderDetailsPayByBank(hoaDon, ctHoaDon, paymentBank)) {
                     AlertNotification.showAlertSucces("Mua hàng thành công!", "Cảm ơn bạn đã mua hàng");
                     return true;
                 } else {
@@ -853,8 +850,10 @@ public class PageHomeController implements Initializable {
     @FXML
     public void EventAuthForm(MouseEvent e) throws IOException {
         if (e.getSource() == SignIn_lb) {
+            freeResources();
             ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/LoginForm.fxml");
         } else if (e.getSource() == SignUp_lb) {
+            freeResources();
             ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/RegisterForm.fxml");
         }
     }
@@ -877,6 +876,7 @@ public class PageHomeController implements Initializable {
 
 
     public void clickCategory(MouseEvent e) throws SQLException {
+
         if (e.getSource() == itemPhone_lb) {
             keyCategory = category.listCategory.get(itemPhone_lb.getText());
         } else if (e.getSource() == itemLaptop_lb) {
@@ -962,6 +962,7 @@ public class PageHomeController implements Initializable {
 
     public void click(MouseEvent e) throws IOException {
         if (e.getSource() == imgAvatar) {
+            freeResources();
             ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/ProfileUser.fxml");
         }
 
@@ -973,29 +974,37 @@ public class PageHomeController implements Initializable {
         clickPage();
         showImage();
 
-        ThreadImageV threadImageV;
+//        ThreadImageV threadImageV;
+//        Rectangle clip = new Rectangle(
+//                img_slider.getFitWidth(), img_slider.getFitHeight()
+//        );
+//        clip.setArcWidth(20);
+//        clip.setArcHeight(20);
+//        img_slider.setClip(clip);
+//
+//        // snapshot the rounded image.
+//        SnapshotParameters parameters = new SnapshotParameters();
+//        parameters.setFill(Color.TRANSPARENT);
+//        WritableImage image = img_slider.snapshot(parameters, null);
+//
+//        // remove the rounding clip so that our effect can show through.
+//        img_slider.setClip(null);
+//
+//        // apply a shadow effect.
+//        img_slider.setEffect(new DropShadow(20, Color.BLACK));
+//
+//        // store the rounded image in the imageView.
+//        img_slider.setImage(image);
+//        threadImageV = new ThreadImageV(img_slider);
+//        threadImageV.start();
+    }
 
-        Rectangle clip = new Rectangle(
-                img_slider.getFitWidth(), img_slider.getFitHeight()
-        );
-        clip.setArcWidth(20);
-        clip.setArcHeight(20);
-        img_slider.setClip(clip);
-
-        // snapshot the rounded image.
-        SnapshotParameters parameters = new SnapshotParameters();
-        parameters.setFill(Color.TRANSPARENT);
-        WritableImage image = img_slider.snapshot(parameters, null);
-
-        // remove the rounding clip so that our effect can show through.
-        img_slider.setClip(null);
-
-        // apply a shadow effect.
-        img_slider.setEffect(new DropShadow(20, Color.BLACK));
-
-        // store the rounded image in the imageView.
-        img_slider.setImage(image);
-        threadImageV = new ThreadImageV(img_slider);
-        threadImageV.start();
+    //Giari phóng tài nguyên scene
+    public void freeResources(){
+        gridVoucher.getChildren().clear();
+        gridProductSearch.getChildren().clear();
+        grid_Products.getChildren().clear();
+        listvoucher.clear();
+        listProduct.clear();
     }
 }

@@ -1,32 +1,36 @@
 package com.epu.oop.myshop.Dao;
 
-import com.epu.oop.myshop.Database.JDBCUtil;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Product;
 import com.epu.oop.myshop.model.User;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.sql.Date;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.sql.rowset.*;
 
 
 public class Product_Dao implements Dao_Interface<Product>{
+    private final ConnectionPool jdbcUtil;
     private static Product_Dao instance;
 
     private Connection connection;
 
-    public synchronized static Product_Dao getInstance() {
+    public Product_Dao(ConnectionPool jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
+    }
+
+    public synchronized static Product_Dao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new Product_Dao();
+            instance = new Product_Dao(jdbcUtil);
         }
         return instance;
     }
 
     private void openConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            connection = JDBCUtil.getConnection();
+            connection = jdbcUtil.getConnection();
         }
     }
 
@@ -37,49 +41,54 @@ public class Product_Dao implements Dao_Interface<Product>{
     }
 
     @Override
-    public boolean Insert(Product t) throws SQLException {
+    public synchronized boolean Insert(Product t) throws SQLException {
         boolean results = false;
+        PreparedStatement preProduct = null;
+        PreparedStatement preProSeller = null;
         try {
             openConnection();
             connection.setAutoCommit(false);
             String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID)" +
                     " VALUES (?,?,?,?,?,?)";
-            String sqlProductSeller = "INSERT INTO ProductSeller (Product_ID,Users_ID) " +
+            String sqlProductSeller = "INSERT INTO ProductSeller(Product_ID,Users_ID) " +
                     "VALUES (?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
+            preProduct = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
 
-            statement.setString(1,t.getTenSP());
-            statement.setInt(2,t.getQuantity());
-            statement.setBigDecimal(3,t.getPrice());
-            statement.setString(4,t.getMoTa());
-            statement.setString(5,t.getSrcImg());
-            statement.setInt(6,t.getCategory());
-            statement.executeUpdate();
+            preProduct.setString(1,t.getTenSP());
+            preProduct.setInt(2,t.getQuantity());
+            preProduct.setBigDecimal(3,t.getPrice());
+            preProduct.setString(4,t.getMoTa());
+            preProduct.setString(5,t.getSrcImg());
+            preProduct.setInt(6,t.getCategory());
+            preProduct.executeUpdate();
 
             int index ;
 
-            try(ResultSet rs= statement.getGeneratedKeys()){
+            try(ResultSet rs= preProduct.getGeneratedKeys()){
                 if(rs.next()){
                     index = rs.getInt(1);
                 }else {
                     throw new SQLException("Không thể thm dữ liệu bảng product");
                 }
-            }
-            statement = connection.prepareStatement(sqlProductSeller);
-            statement.setInt(1,index);
-            statement.setInt(2,t.getUser().getID());
 
-            statement.executeUpdate();
+            }
+            preProSeller = connection.prepareStatement(sqlProductSeller);
+            preProSeller.setInt(1,index);
+            preProSeller.setInt(2,t.getUser().getID());
+
+            preProSeller.executeUpdate();
 
             connection.commit();
-            statement.close();
             results = true;
         }catch (SQLException e) {
             if(connection!=null){
                 connection.rollback();
+                System.out.println("Roll Back: "+e.getMessage());
             }
-            e.printStackTrace();
         }finally {
+            if(preProduct!=null)    preProduct.close();
+
+            if(preProSeller!=null)  preProSeller.close();
             connection.setAutoCommit(true);
             closeConnection();
         }
@@ -108,6 +117,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 int DanhMuc = rs.getInt("Category_ID");
                 list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,null));
             }
+            rs.close();
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra "+e.getMessage());
         }finally {
@@ -171,7 +181,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 String nameSeller = rs.getString("FullName");
                 list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,new User(nameSeller)));
             }
-
+            rs.close();
             pstmt.close();
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra: "+e.getMessage());
@@ -193,7 +203,7 @@ public class Product_Dao implements Dao_Interface<Product>{
             String sql = "SELECT * FROM Product " +
                     " WHERE MaSP=? " +
                     "AND p.Activity = 'ON' ";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
             ResultSet rs = statement.executeQuery();
@@ -210,8 +220,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 products = new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,null);
             }
             rs.close();
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
+
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra "+e.getMessage());
         }
@@ -269,7 +278,7 @@ public class Product_Dao implements Dao_Interface<Product>{
             String sql = "DELETE FROM Product" +
                     " WHERE MaSP = ?";
 
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
 
@@ -277,8 +286,6 @@ public class Product_Dao implements Dao_Interface<Product>{
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
 
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -297,7 +304,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 " AND p.Activity = 'ON' " +
                 " ORDER BY MaSP" +
                 "  OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try(Connection connection = JDBCUtil.getConnection();
+        try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setString(1,"%"+keyword+"%");
             statement.setInt(2,lastIndex.get());
@@ -319,7 +326,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,new User(nameSeller)));
             }
             statement.close();
-            JDBCUtil.CloseConnection(connection);
+            rs.close();
             lastIndex.set(lastIndex.get() + 15); // thay đổi giá trị của biến lastIndex
         }catch (SQLException e)
         {

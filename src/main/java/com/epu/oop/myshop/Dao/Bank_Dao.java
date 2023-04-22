@@ -1,6 +1,6 @@
 package com.epu.oop.myshop.Dao;
 
-import com.epu.oop.myshop.Database.JDBCUtil;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Bank;
 import com.epu.oop.myshop.model.User;
 
@@ -8,11 +8,16 @@ import java.sql.*;
 import java.util.List;
 public class Bank_Dao implements Dao_Interface<Bank> {
 
+    private final ConnectionPool jdbcUtil;
     private static Bank_Dao instance;
 
-    public static Bank_Dao getInstance() {
+    public Bank_Dao(ConnectionPool jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
+    }
+
+    public static Bank_Dao getInstance(ConnectionPool jdbcUtil) {
         if (instance == null) {
-            instance = new Bank_Dao();
+            instance = new Bank_Dao(jdbcUtil);
         }
         return instance;
     }
@@ -26,7 +31,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
                     " VALUES (?,?,?,?)";
         Connection connection = null;
         try {
-             connection = JDBCUtil.getConnection();
+             connection = jdbcUtil.getConnection();
              connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1,t.getSoTaiKhoan());
@@ -37,8 +42,8 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             //Bước 3:Thực thi câu lệnh
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
-            statement.close();
             connection.commit();
+            statement.close();
         }catch (SQLException e) {
             if(connection!=null) {
                 connection.rollback();
@@ -65,7 +70,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             String sql = "SELECT * FROM Bank WHERE Users_ID=?";
         Connection connection = null;
         try {
-             connection = JDBCUtil.getConnection();
+             connection = jdbcUtil.getConnection();
              connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1,t.getUser().getID());
@@ -82,7 +87,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
                 bank = new Bank(SoTaiKhoan,TenNH,ChuSoHuu,new User(user_id));
             }
             statement.close();
-
+            rs.close();
         }catch (SQLException e) {
             if(connection!=null){
                 connection.rollback();
@@ -109,7 +114,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
                     " WHERE Users_ID=?";
         Connection connection = null;
         try {
-             connection = JDBCUtil.getConnection();
+             connection = jdbcUtil.getConnection();
              connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1,t.getSoTaiKhoan());
@@ -125,6 +130,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             if(connection!=null){
                 connection.rollback();
                 System.out.println("roll back: "+e.getMessage());
+                e.printStackTrace();
             }
         }finally {
             connection.setAutoCommit(true);
@@ -141,7 +147,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             String sql = "DELETE FROM Bank" +
                     " WHERE Users_ID = ?";
 
-        try (Connection connection = JDBCUtil.getConnection();
+        try (Connection connection = jdbcUtil.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getUser().getID());
 
@@ -149,8 +155,6 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");
 
-            statement.close();
-            JDBCUtil.CloseConnection(connection);
         }catch (SQLException e) {
             e.printStackTrace();
         }

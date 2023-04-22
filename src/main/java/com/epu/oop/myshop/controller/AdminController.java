@@ -2,6 +2,7 @@ package com.epu.oop.myshop.controller;
 
 
 import com.epu.oop.myshop.Dao.*;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.*;
 import com.jfoenix.controls.JFXButton;
@@ -43,13 +44,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.epu.oop.myshop.JdbcConnection.DaoApp.connectionPool;
+
 public class AdminController implements Initializable {
+    private ConnectionPool connectionPool = new ConnectionPool();
 
-    private Account_Dao account_Dao = Account_Dao.getInstance();
+    private Account_Dao account_Dao = Account_Dao.getInstance(connectionPool);
 
-    private UserDao user_dao = UserDao.getInstance();
+    private UserDao user_dao = UserDao.getInstance(connectionPool);
 
-    private Product_Dao prod_dao = Product_Dao.getInstance();
+    private Product_Dao prod_dao = Product_Dao.getInstance(connectionPool);
 
 
     // --------------------------- Quản Lý Danh Mục FORM  -------------------------------------------------------
@@ -303,7 +307,7 @@ public class AdminController implements Initializable {
     private String imgVoucherTemp;
     private List<VoucherModel> listVouchers = new ArrayList<>();
 
-    private VoucherDao voucherDao = VoucherDao.getInstance();
+    private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
 
     private VoucherModel voucher;
     private MyListener<VoucherModel> myListener_Voucher;
@@ -694,7 +698,7 @@ public class AdminController implements Initializable {
 class RanDom extends Task<String> {
 
     private static final SecureRandom random = new SecureRandom();
-    private VoucherDao voucherDao = VoucherDao.getInstance();
+    private VoucherDao voucherDao = new VoucherDao(connectionPool);
 
     @Override
     protected String call() throws Exception {
