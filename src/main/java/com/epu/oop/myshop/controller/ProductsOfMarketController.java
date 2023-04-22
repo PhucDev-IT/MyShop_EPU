@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -42,7 +43,14 @@ public class ProductsOfMarketController {
         this.product = prod;
         this.mylistener = myListener;
 
-       this.imgProducts.setImage(new Image(getClass().getResourceAsStream(prod.getSrcImg())));
+        try {
+            if(!prod.getSrcImg().contains(":")){
+                imgProducts.setImage(new Image(getClass().getResourceAsStream(prod.getSrcImg())));
+            }else
+                imgProducts.setImage(new Image(product.getSrcImg()));
+        }catch (Exception e){
+            imgProducts.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+        }
         nameProduct_txt.setText((prod.getTenSP()));
 
         sold.setText(prod.getSold()+"");
@@ -53,5 +61,6 @@ public class ProductsOfMarketController {
         price.setText(numf.format(prod.getPrice())+ "");
 
     }
+
 
 }

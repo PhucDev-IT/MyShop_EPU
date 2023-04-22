@@ -56,7 +56,7 @@ public class ItemPurcharsedProduct implements Initializable {
             price_label.setText(numf.format(cthd.getPrice())+"đ");
             Quantity_label.setText(cthd.getQuantity()+"");
             ngayMua_label.setText(obj[2]+"");
-        SellerProduct_label.setText(obj[3]+"");
+            SellerProduct_label.setText(obj[3]+"");
             ToTal_label.setText(numf.format((cthd.getPrice().multiply(new BigDecimal(cthd.getQuantity()))))+"đ");
 
     }

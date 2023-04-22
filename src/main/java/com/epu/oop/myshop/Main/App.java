@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ConcurrentModificationException;
 import java.util.Locale;
 import java.util.Random;
 
@@ -27,9 +28,15 @@ public class App extends Application {
 
     public static Locale lc = new Locale("vi","VN");
     public static NumberFormat numf = NumberFormat.getInstance(lc);
+
+
+    private static String urlScene;
+
+
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/epu/oop/myshop/GUI/PageHome.fxml"));
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(urlScene));
         Parent root = (Parent) loader.load();
         Scene scene = new Scene(root);
         stage.centerOnScreen();
@@ -38,7 +45,18 @@ public class App extends Application {
         stage.show();
     }
 
+
     public static void main(String[] args) {
-        launch();
+
+        CreateSQL cr = new CreateSQL();
+        if(cr.checkExistDatabase()){
+            urlScene = "/com/epu/oop/myshop/GUI/PageHome.fxml";
+            launch();
+        }else{
+            urlScene = "/com/epu/oop/myshop/GUI/setDataApp.fxml";
+            launch();
+        }
+
+
     }
 }

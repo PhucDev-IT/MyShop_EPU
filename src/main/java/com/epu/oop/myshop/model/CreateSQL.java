@@ -18,71 +18,76 @@ public class CreateSQL {
 
 
    
-
-    public static CreateSQL getInstance() throws SQLException, ClassNotFoundException {
-
-        return new CreateSQL();
+    public boolean checkExistDatabase(){
+        try {
+            Class.forName(driver);
+            Connection connection = DriverManager.getConnection(url, userName, password);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT name FROM sys.databases WHERE name = '" + databaseName + "'");
+            if (resultSet.next()) {
+                return true;    //Nếu tồn tại trả về kq không rỗng
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            // Error occurred while connecting to the database
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-//    public void AutoCreateDatabase() throws SQLException, IOException {
-//        createDatabase();
-//        creatTable();
-//        createTigger();
-//        insertData();
-//        insertDataChild();
-//        setDataOnDatabase();
-//    }
-//
-//    public void restoreData() throws SQLException {
-//        Connection conn = null;
-//        String sql = "USE master RESTORE DATABASE YourDatabaseName FROM DISK='C:\\Backup\\YourDatabase.bak' WITH REPLACE;";
-//        try {
-//            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
-//            Class.forName(driver);
-//            conn = DriverManager.getConnection(url, userName, password);
-//            conn.setAutoCommit(false);
-//            PreparedStatement statement = conn.prepareStatement(sql);
-//            statement.executeUpdate();
-//
-//            conn.commit();
-//        } catch (SQLException e) {
-//            if(conn!=null){
-//                conn.rollback();
-//                System.out.println("Roll back restore: "+e.getMessage());
-//            }
-//        } catch (ClassNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }finally {
-//            conn.setAutoCommit(true);
-//            conn.close();
-//        }
-//    }
-//
-//
-//    public void createDatabase() throws SQLException {
-//        Connection conn = null;
-//        try{
-//            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
-//            Class.forName(driver);
-//            conn = DriverManager.getConnection(url,userName,password);
-//            conn.setAutoCommit(false);
-//            Statement stmt = conn.createStatement();
-//            String sql = "CREATE DATABASE "+databaseName;
-//
-//            stmt.executeUpdate(sql);
-//            conn.commit();
-//            check = true;
-//            System.out.println("Tạo database thành công");
-//        } catch (SQLException | ClassNotFoundException e) {
-//            if (conn != null) {
-//                conn.rollback();
-//            }
-//            System.out.println("Không thể tạo databse: "+e.getMessage());
-//        } finally {
-//            conn.setAutoCommit(true);
-//            conn.close();
-//        }
-//    }
+
+    public void restoreData() throws SQLException {
+        Connection conn = null;
+        String sql = "USE master RESTORE DATABASE YourDatabaseName FROM DISK='D:\\myshop.bak' WITH REPLACE;";
+        try {
+            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, userName, password);
+            conn.setAutoCommit(false);
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            if(conn!=null){
+                conn.rollback();
+                System.out.println("Roll back restore: "+e.getMessage());
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }finally {
+            conn.setAutoCommit(true);
+            conn.close();
+        }
+    }
+
+    public boolean createDatabase() throws SQLException {
+        Connection conn = null;
+        try{
+            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url,userName,password);
+            conn.setAutoCommit(false);
+            Statement stmt = conn.createStatement();
+            String sql = "CREATE DATABASE "+databaseName;
+
+            stmt.executeUpdate(sql);
+            conn.commit();
+            System.out.println("Tạo database thành công");
+            return true;
+        } catch (SQLException | ClassNotFoundException e) {
+            if (conn != null) {
+                conn.rollback();
+            }
+            System.out.println("Không thể tạo databse: "+e.getMessage());
+        } finally {
+            conn.setAutoCommit(true);
+            conn.close();
+        }
+        return false;
+    }
 //
 //    private void creatTable() throws SQLException, IOException {
 //        if(!check){

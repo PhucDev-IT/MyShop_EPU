@@ -335,6 +335,45 @@ public class Product_Dao implements Dao_Interface<Product>{
         return list;
     }
 
+    //Tổng doanh thu người dùng đã bán
+    public Object[] sumTotalOrder(User u) throws SQLException {
+        Object[] obj = new Object[4];
+        openConnection();
+        String sql = "SELECT CAST(SUM(Sold) AS INT) AS sold , CAST(SUM(TotalRevenue) AS DECIMAL) as total " +
+                "FROM Product p JOIN ProductSeller ps " +
+                "ON p.MaSP = ps.Product_ID " +
+                "AND ps.Users_ID = ?";
+
+        String sqlToday = "select COUNT(od.Order_ID) as totalorder,CAST(SUM(TongTien) AS DECIMAL) as totalMoney FROM orders od " +
+                "WHERE NgayLapHD = CONVERT(date, GETDATE()) " +
+                "AND od.Order_ID IN( " +
+                "SELECT Order_ID FROM OrderDetails odd JOIN ProductSeller ps " +
+                "ON odd.Product_ID = ps.Product_ID " +
+                "AND ps.Users_ID = ?)";
+        try(PreparedStatement statement = connection.prepareStatement(sql);
+        PreparedStatement stmOderToday = connection.prepareStatement(sqlToday)){
+            statement.setInt(1,u.getID());
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                obj[0] = rs.getInt("sold");
+                obj[1] = rs.getBigDecimal("total");
+            }
+            stmOderToday.setInt(1,u.getID());
+            ResultSet resultSet = stmOderToday.executeQuery();
+            while (resultSet.next()){
+                obj[2] = resultSet.getInt("totalorder");
+                obj[3] = resultSet.getBigDecimal("totalMoney");
+            }
+
+            rs.close();
+            resultSet.close();
+        }finally {
+            closeConnection();
+        }
+        return obj;
+
+    }
+
 
 
 }

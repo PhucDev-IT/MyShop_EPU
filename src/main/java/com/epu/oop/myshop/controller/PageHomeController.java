@@ -500,8 +500,17 @@ public class PageHomeController implements Initializable {
         };
     }
 
+
+    //Kiểm tra ảnh nằm trong project hay nằm ngoài project
     public void displayInformationProduct() {
-        imgProdInfor.setImage(new Image(getClass().getResourceAsStream(SelectedProduct.getSrcImg())));
+        try {
+            if(!SelectedProduct.getSrcImg().contains(":")){
+                imgProdInfor.setImage(new Image(getClass().getResourceAsStream(SelectedProduct.getSrcImg())));
+            }else
+                imgProdInfor.setImage(new Image(SelectedProduct.getSrcImg()));
+        }catch (Exception e){
+            imgProdInfor.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+        }
         nameProdInfor_txt.setText(SelectedProduct.getTenSP());
         priceProdInfor.setText(App.numf.format(SelectedProduct.getPrice()) + "đ");
         remainInfor_lb.setText(SelectedProduct.getQuantity() + "");
@@ -689,12 +698,21 @@ public class PageHomeController implements Initializable {
     public void showOderDetail() {
         numbersBuyProduct = Integer.parseInt(txtNumber.getText());
         //Lấy thông tin người dungf
-        Temp.user = userDao.SelectByID(new User(Temp.account.getID()));
+        if(Temp.user==null)
+            Temp.user = userDao.SelectByID(new User(Temp.account.getID()));
         nameUserOder_lb.setText(Temp.user.getFullName());
         phoneUserOder_lb.setText(Temp.user.getNumberPhone());
         AdressOrder_txt.setText(Temp.user.getAddress());
 
-        imgProdOderDetail.setImage(new Image(getClass().getResourceAsStream(SelectedProduct.getSrcImg())));
+        try {
+            if(!SelectedProduct.getSrcImg().contains(":")){
+                imgProdOderDetail.setImage(new Image(getClass().getResourceAsStream(SelectedProduct.getSrcImg())));
+            }else
+                imgProdOderDetail.setImage(new Image(SelectedProduct.getSrcImg()));
+        }catch (Exception e){
+            imgProdOderDetail.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+        }
+
         nameProdOrder_txt.setText(SelectedProduct.getTenSP());
         priceProOder_lb.setText(App.numf.format(SelectedProduct.getPrice()) + "đ");
         numbersProduct.setText(txtNumber.getText());
@@ -767,6 +785,9 @@ public class PageHomeController implements Initializable {
     public void loadDataProductSearch() {
         listProduct.clear();
         listProduct.addAll(product_Dao.SearchProducts(SearchProduct_txt.getText(), lastIndex, maxProductSearch));
+
+        System.out.println(listProduct.size());
+
         for (Product product : listProduct) {
             paneListProductSearch.setVisible(true);
             setDataProduct(product, gridProductSearch);
@@ -775,6 +796,7 @@ public class PageHomeController implements Initializable {
 
     public void getNameProductSearch(ActionEvent e) {
         if (!checkStringIsempty(SearchProduct_txt.getText())) {
+            lastIndex.set(0);   //Vì sau khi nhấn tìm lại thì vị trí bắt đầu đang bị nhảy lên cao r
             hideForm();
             loadData(e);
         }

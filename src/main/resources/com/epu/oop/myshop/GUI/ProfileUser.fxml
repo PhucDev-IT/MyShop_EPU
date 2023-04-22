@@ -24,12 +24,12 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="profileUserPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ProfileUserController">
+<AnchorPane fx:id="profileUserPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.UserProfileController">
    <children>
       <Pane layoutY="-1.0" prefHeight="87.0" prefWidth="1200.0" styleClass="header" stylesheets="@../StyleCSS/Profile.css">
          <children>
             <ImageView fitHeight="71.0" fitWidth="99.0" layoutX="33.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-            <Text id="myshop" fx:id="MyShop_txt" fill="WHITE" layoutX="38.0" layoutY="56.0" onMouseClicked="#click" strokeType="OUTSIDE" strokeWidth="0.0" text="MyShop" />
+            <Text id="myshop" fx:id="MyShop_txt" fill="WHITE" layoutX="38.0" layoutY="56.0" onMouseClicked="#clickConverForm" strokeType="OUTSIDE" strokeWidth="0.0" text="MyShop" />
             <ImageView fx:id="RankSeller" fitHeight="71.0" fitWidth="84.0" layoutX="1089.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </Pane>
@@ -63,20 +63,20 @@
                </font>
             </Label>
             <TextArea fx:id="moTa_txta" layoutX="10.0" layoutY="345.0" prefHeight="129.0" prefWidth="451.0" wrapText="true" />
-            <Button fx:id="ThemSP_btn" layoutX="243.0" layoutY="501.0" mnemonicParsing="false" onAction="#AddProducts" prefHeight="26.0" prefWidth="74.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Thêm" textFill="#fffbfb">
+            <Button fx:id="ThemSP_btn" layoutX="243.0" layoutY="501.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Thêm" textFill="#fffbfb">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
-            <Button disable="true" layoutX="19.0" layoutY="501.0" mnemonicParsing="false" onAction="#RemoveProducts" prefHeight="31.0" prefWidth="105.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Ngừng Bán" textFill="#fffbfb" fx:id="xoaSP_btn">
+            <Button disable="true" layoutX="19.0" layoutY="501.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="105.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Ngừng Bán" textFill="#fffbfb" fx:id="xoaSP_btn">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
-            <Button fx:id="SuaSP_btn" disable="true" layoutX="146.0" layoutY="502.0" mnemonicParsing="false" onAction="#UpdateProduct" prefHeight="26.0" prefWidth="73.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Sửa" textFill="#fffbfb">
+            <Button fx:id="SuaSP_btn" disable="true" layoutX="146.0" layoutY="502.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="73.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Sửa" textFill="#fffbfb">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
             <ChoiceBox fx:id="danhMuc_choisebox" layoutX="121.0" layoutY="274.0" prefHeight="31.0" prefWidth="169.0" />
-            <JFXButton fx:id="importImageHang_btn" buttonType="RAISED" layoutX="191.0" layoutY="57.0" onAction="#AddImageProduct" prefHeight="30.0" prefWidth="89.0" ripplerFill="#d71313" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Chọn ảnh" textFill="#fcf8f8">
+            <JFXButton fx:id="importImageHang_btn" buttonType="RAISED" layoutX="191.0" layoutY="57.0" prefHeight="30.0" prefWidth="89.0" ripplerFill="#d71313" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Chọn ảnh" textFill="#fcf8f8">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></JFXButton>
@@ -118,7 +118,7 @@
                   </GridPane>
                </content>
             </ScrollPane>
-            <JFXButton layoutX="338.0" layoutY="502.0" onAction="#SeachProduct" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Tìm Sản Phẩm" textFill="WHITE">
+            <JFXButton layoutX="338.0" layoutY="502.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Tìm Sản Phẩm" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
@@ -218,7 +218,7 @@
             </Label>
             <JFXTextField fx:id="Jtxt_CCCD" layoutX="174.0" layoutY="359.0" prefHeight="31.0" prefWidth="205.0" />
             <JFXTextField fx:id="Jtxt_SDT" layoutX="213.0" layoutY="467.0" />
-            <JFXButton fx:id="btn_updateProfile" layoutX="507.0" layoutY="510.0" onAction="#ActionButton" prefHeight="31.0" prefWidth="142.0" ripplerFill="#88e19a" style="-fx-background-color: #CCFF66;" text="Cập nhật" />
+            <JFXButton fx:id="btn_updateProfile" layoutX="507.0" layoutY="510.0" prefHeight="31.0" prefWidth="142.0" ripplerFill="#88e19a" style="-fx-background-color: #CCFF66;" text="Cập nhật" />
             <Separator layoutX="79.0" layoutY="87.0" prefHeight="4.0" prefWidth="99.0" />
             <Label layoutX="194.0" layoutY="77.0" text="Thông Tin Cá Nhân" />
             <Separator layoutX="335.0" layoutY="88.0" prefHeight="4.0" prefWidth="99.0" />
@@ -228,7 +228,7 @@
             <DatePicker fx:id="ngaySinh_datepicker" layoutX="175.0" layoutY="254.0" stylesheets="@../StyleCSS/Profile.css" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;" visible="false">
+      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;">
          <children>
             <Label layoutX="92.0" layoutY="120.0" prefHeight="21.0" prefWidth="99.0" text="Xin chào:">
                <font>
@@ -250,7 +250,7 @@
                   <ImageView fx:id="Calendar_img" fitHeight="28.0" fitWidth="28.0" layoutX="32.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="154.0" layoutY="239.0" onMouseClicked="#cickPurchaseProForm" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="154.0" layoutY="239.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="111.0" layoutY="30.0" text="Lịch sử mua hàng">
                      <font>
@@ -260,7 +260,7 @@
                   <ImageView fx:id="purchaseHistory" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="725.0" layoutY="239.0" onMouseClicked="#LienKetNganHang" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="725.0" layoutY="239.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="106.0" layoutY="30.0" prefHeight="27.0" prefWidth="205.0" text="Liên kết ngân hàng">
                      <font>
@@ -270,7 +270,7 @@
                   <ImageView fx:id="bank_img" fitHeight="46.0" fitWidth="50.0" layoutX="32.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="154.0" layoutY="405.0" onMouseClicked="#setChangePassword" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="154.0" layoutY="405.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="111.0" layoutY="30.0" text="Đổi mật khẩu">
                      <font>
@@ -280,7 +280,7 @@
                   <ImageView fx:id="changePassword" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="725.0" layoutY="405.0" onMouseClicked="#DisplayVoucherForm" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="725.0" layoutY="405.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="106.0" layoutY="30.0" prefHeight="27.0" prefWidth="205.0" text="Xem Voucher">
                      <font>
@@ -293,7 +293,7 @@
             <Pane layoutX="142.0" layoutY="26.0" prefHeight="61.0" prefWidth="921.0" style="-fx-background-color: white;">
                <children>
                   <ImageView fx:id="imgIconTongDoanhThu" fitHeight="30.0" fitWidth="30.0" layoutX="768.0" layoutY="6.0" pickOnBounds="true" />
-                  <Label fx:id="SumDoanhThu_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="805.0" layoutY="39.0" prefHeight="21.0" prefWidth="115.0" text="0" textFill="#d30a0a">
+                  <Label fx:id="SumDoanhThu_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="805.0" layoutY="39.0" prefHeight="21.0" prefWidth="115.0" style="-fx-background-color: white;" text="0" textFill="#d30a0a" visible="false">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
@@ -309,23 +309,27 @@
                         <Font name="Times New Roman" size="17.0" />
                      </font>
                   </Label>
-                  <Label fx:id="SumDaBan_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="576.0" layoutY="41.0" prefHeight="21.0" prefWidth="105.0" text="0" textFill="#d30a0a">
+                  <Label fx:id="SumDaBan_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="576.0" layoutY="41.0" prefHeight="21.0" prefWidth="105.0" style="-fx-background-color: white;" text="0" textFill="#d30a0a" visible="false">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
                   </Label>
                   <ImageView fx:id="imgIconDaBanToday" fitHeight="30.0" fitWidth="30.0" layoutX="109.0" layoutY="3.0" pickOnBounds="true" />
-                  <Label fx:id="soDonHangtoday_lb" alignment="CENTER" contentDisplay="CENTER" layoutX="72.0" layoutY="37.0" prefHeight="21.0" prefWidth="105.0" text="0 đơn" textFill="#d30a0a">
+                  <Label fx:id="soDonHangtoday_lb" alignment="CENTER" contentDisplay="CENTER" layoutX="72.0" layoutY="37.0" prefHeight="21.0" prefWidth="105.0" style="-fx-background-color: white;" text="0 đơn" textFill="#d30a0a" visible="false">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
                   </Label>
-                  <ImageView fx:id="iconDoanhThuToDay" fitHeight="30.0" fitWidth="30.0" layoutX="243.0" layoutY="3.0" pickOnBounds="true" />
-                  <Label fx:id="doanhThuToday_lb" alignment="CENTER" contentDisplay="CENTER" layoutX="192.0" layoutY="37.0" prefHeight="21.0" prefWidth="135.0" text="0đ" textFill="#d30a0a">
+                  <ImageView fx:id="iconDoanhThuToDay" fitHeight="30.0" fitWidth="30.0" layoutX="247.0" layoutY="3.0" pickOnBounds="true" />
+                  <Label fx:id="doanhThuToday_lb" alignment="CENTER" contentDisplay="CENTER" layoutX="192.0" layoutY="37.0" prefHeight="21.0" prefWidth="135.0" style="-fx-background-color: white;" text="0đ" textFill="#d30a0a" visible="false">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
                   </Label>
+                  <ImageView fx:id="imgloadingOne" fitHeight="30.0" fitWidth="30.0" layoutX="105.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="imgLoadingTwo" fitHeight="28.0" fitWidth="30.0" layoutX="243.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="imgLoadingThree" fitHeight="30.0" fitWidth="30.0" layoutX="576.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="imgLoadingFour" fitHeight="30.0" fitWidth="30.0" layoutX="804.0" layoutY="35.0" pickOnBounds="true" preserveRatio="true" />
                </children></Pane>
          </children>
       </AnchorPane>
@@ -387,7 +391,7 @@
                </font>
             </Label>
             <TextField fx:id="txtSoTienRut_RTForm" layoutX="323.0" layoutY="297.0" />
-            <JFXButton fx:id="btnRutTien" layoutX="323.0" layoutY="381.0" onAction="#RutTien" prefHeight="35.0" prefWidth="115.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Rút tiền" textFill="#fffbfb">
+            <JFXButton fx:id="btnRutTien" layoutX="323.0" layoutY="381.0" prefHeight="35.0" prefWidth="115.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Rút tiền" textFill="#fffbfb">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
@@ -422,12 +426,12 @@
                      </font>
                   </Label>
                   <TextField fx:id="soTienChuyen_txt" layoutX="207.0" layoutY="123.0" prefHeight="31.0" prefWidth="135.0" />
-                  <JFXButton fx:id="btnChuyenTien" layoutX="431.0" layoutY="180.0" onAction="#ChuyenTien" prefHeight="35.0" prefWidth="115.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Chuyển tiền" textFill="#fffbfb">
+                  <JFXButton fx:id="btnChuyenTien" layoutX="431.0" layoutY="180.0" prefHeight="35.0" prefWidth="115.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Chuyển tiền" textFill="#fffbfb">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
                   </JFXButton>
-                  <Pane fx:id="RutTienPane" layoutX="48.0" layoutY="241.0" onMouseClicked="#clickPaneInRutTienForm" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;">
+                  <Pane fx:id="RutTienPane" layoutX="48.0" layoutY="241.0" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;">
                      <children>
                         <ImageView fx:id="imgRutTien" fitHeight="31.0" fitWidth="42.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
                         <Label layoutX="43.0" layoutY="13.0" prefHeight="21.0" prefWidth="89.0" text="Rút tiền">
@@ -439,7 +443,7 @@
                   </Pane>
                </children>
             </AnchorPane>
-            <Pane fx:id="napTienPane" layoutX="417.0" layoutY="503.0" onMouseClicked="#clickPaneInRutTienForm" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;">
+            <Pane fx:id="napTienPane" layoutX="417.0" layoutY="503.0" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;">
                <children>
                   <ImageView fx:id="img_clickNapTien" fitHeight="31.0" fitWidth="42.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
                   <Label layoutX="47.0" layoutY="13.0" prefHeight="21.0" prefWidth="68.0" text="Nạp tiền">
@@ -449,7 +453,7 @@
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="ChuyenTienPane" layoutX="561.0" layoutY="503.0" onMouseClicked="#clickPaneInRutTienForm" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;">
+            <Pane fx:id="ChuyenTienPane" layoutX="561.0" layoutY="503.0" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;">
                <children>
                   <ImageView fx:id="img_clickChuyenTien" fitHeight="31.0" fitWidth="42.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
                   <Label layoutX="43.0" layoutY="13.0" prefHeight="21.0" prefWidth="89.0" text="Chuyển tiền">
@@ -528,14 +532,14 @@
             </ScrollPane>
          </children>
       </AnchorPane>
-      <ImageView fx:id="menu_img" fitHeight="36.0" fitWidth="50.0" layoutX="5.0" layoutY="127.0" onMouseClicked="#click" pickOnBounds="true" />
-      <Pane fx:id="asideLeft_Frm" layoutY="116.0" onMouseExited="#click" prefHeight="535.0" prefWidth="169.0" style="-fx-background-color: #DDDDDD;" styleClass="item_aside" stylesheets="@../StyleCSS/Profile.css" visible="false">
+      <ImageView fx:id="menu_img" fitHeight="36.0" fitWidth="50.0" layoutX="5.0" layoutY="127.0" onMouseClicked="#eventMenu" pickOnBounds="true" />
+      <Pane fx:id="asideLeft_Frm" focusTraversable="true" layoutY="116.0" onMouseExited="#eventMenu" prefHeight="535.0" prefWidth="169.0" style="-fx-background-color: #DDDDDD;" styleClass="item_aside" stylesheets="@../StyleCSS/Profile.css" visible="false">
          <children>
             <VBox layoutY="-1.0" prefHeight="502.0" prefWidth="169.0" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Pane prefHeight="103.0" prefWidth="158.0">
                      <children>
-                        <ImageView fx:id="avata_img" fitHeight="61.0" fitWidth="70.0" layoutX="49.0" layoutY="10.0" onMouseClicked="#updateAvatar" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="avata_img" fitHeight="61.0" fitWidth="70.0" layoutX="49.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
                         <Label fx:id="helloName_label" alignment="CENTER" layoutY="79.0" prefHeight="17.0" prefWidth="158.0" text="Nguyễn Văn Phúc">
                            <font>
                               <Font name="System Bold" size="12.0" />
@@ -543,7 +547,7 @@
                         </Label>
                      </children>
                   </Pane>
-                  <JFXButton fx:id="dashboard_btn" buttonType="RAISED" onMouseClicked="#click" prefHeight="63.0" prefWidth="169.0" ripplerFill="#e7e7e7" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="Bảng điều khiển">
+                  <JFXButton fx:id="dashboard_btn" buttonType="RAISED" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" ripplerFill="#e7e7e7" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="Bảng điều khiển">
                      <graphic>
                         <ImageView fx:id="img_Dashboard" fitHeight="30.0" fitWidth="35.0" layoutX="14.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
@@ -551,7 +555,7 @@
                         <Font size="14.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton fx:id="editProfile_btn" layoutX="10.0" layoutY="337.0" onMouseClicked="#click" prefHeight="63.0" prefWidth="169.0" ripplerFill="#e7e7e7" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="      Sửa hồ sơ      " textOverrun="LEADING_ELLIPSIS">
+                  <JFXButton fx:id="editProfile_btn" layoutX="10.0" layoutY="337.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" ripplerFill="#e7e7e7" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="      Sửa hồ sơ      " textOverrun="LEADING_ELLIPSIS">
                      <graphic>
                         <ImageView fx:id="img_SuaHoSo" fitHeight="30.0" fitWidth="35.0" layoutX="14.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
@@ -559,7 +563,7 @@
                         <Font size="14.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton fx:id="sell_btn" layoutX="10.0" layoutY="344.0" onMouseClicked="#click" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="      Bán hàng       " textOverrun="LEADING_ELLIPSIS">
+                  <JFXButton fx:id="sell_btn" layoutX="10.0" layoutY="344.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="      Bán hàng       " textOverrun="LEADING_ELLIPSIS">
                      <graphic>
                         <ImageView fx:id="img_BanHang" fitHeight="30.0" fitWidth="35.0" layoutX="14.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
@@ -567,7 +571,7 @@
                         <Font size="14.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton fx:id="soDuTK_btn" layoutX="10.0" layoutY="351.0" onMouseClicked="#click" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="    Số dư TK       " textOverrun="LEADING_ELLIPSIS">
+                  <JFXButton fx:id="soDuTK_btn" layoutX="10.0" layoutY="351.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="    Số dư TK       " textOverrun="LEADING_ELLIPSIS">
                      <graphic>
                         <ImageView fx:id="img_SoDuTK" fitHeight="30.0" fitWidth="35.0" layoutX="14.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>
@@ -575,7 +579,7 @@
                         <Font size="14.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton fx:id="logout_btn" layoutX="10.0" layoutY="358.0" onMouseClicked="#click" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="   Đăng xuất        " textOverrun="LEADING_ELLIPSIS">
+                  <JFXButton fx:id="logout_btn" layoutX="10.0" layoutY="358.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="   Đăng xuất        " textOverrun="LEADING_ELLIPSIS">
                      <graphic>
                         <ImageView fx:id="img_Logout" fitHeight="30.0" fitWidth="35.0" layoutX="14.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>

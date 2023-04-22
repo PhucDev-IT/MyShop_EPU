@@ -58,8 +58,12 @@ public class ItemProductsInBanHang {
 
         this.prod = p;
         this.myListener = mylistener;
-
-        image.setImage(new Image(p.getSrcImg()));
+        try {
+            image.setImage(new Image(p.getSrcImg()));
+        }catch (Exception e){
+            image.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+            System.out.println("Lỗi: "+e.getMessage());
+        }
         tenHang_text.setText(p.getTenSP());
         SoLuong_label.setText(p.getQuantity()+"");
 
@@ -71,7 +75,7 @@ public class ItemProductsInBanHang {
         }else {
             DoanhThu_Label.setText("0đ");
         }
-        GiaBan_label.setText(numf.format(p.getPrice())+ "");
+        GiaBan_label.setText(numf.format(p.getPrice())+ "đ");
 
     }
 

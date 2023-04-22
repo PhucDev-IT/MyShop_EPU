@@ -284,28 +284,7 @@ public class Order_Dao implements Dao_Interface<Order> {
         return obj;
     }
 
-    //-------------------------------- Tính tổng tiền người dùng đã bán hàng - set profile--------------------------
-    public BigDecimal TotalMoney(User u)
-    {
-        BigDecimal result = new BigDecimal("0");
 
-
-            String sql = "SELECT CAST(SUM(Quantity*Price) AS DECIMAL) FROM OrderDetails" +
-                    " WHERE Product_ID=?";
-        try(Connection connection = jdbcUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setInt(1,u.getID());
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()){
-                result = BigDecimal.valueOf(rs.getInt(1));
-            }
-            statement.close();
-            rs.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 
     //-------------------------- lỊCH SỬ MUA HÀNG ---------------------------------------------------
     public List<Object[]> getPurchaseProducts(User u) throws SQLException {

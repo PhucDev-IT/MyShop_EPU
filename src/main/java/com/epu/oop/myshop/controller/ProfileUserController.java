@@ -706,7 +706,13 @@ public class ProfileUserController implements Initializable {
                 Locale lc = new Locale("vi", "VN");
                 NumberFormat numf = NumberFormat.getInstance(lc);
 
-                imgSP.setImage(new Image(t.getSrcImg()));
+
+
+                try {
+                    imgSP.setImage(new Image(t.getSrcImg()));
+                }catch (Exception e){
+                    imgSP.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+                }
                 tenHang_txt.setText(t.getTenSP());
                 soLuong_txt.setText(t.getQuantity() + "");
                 DonGia_txt.setText(numf.format(t.getPrice()) + "");
