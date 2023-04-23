@@ -155,41 +155,6 @@ public class UserDao implements Dao_Interface<User> {
         return results;
     }
 
-    //Tất cả mặt hàng mà người dùng đang bán
-    public List<Product> listProducts(User t)
-    {
-        List<Product> list = new ArrayList<>();
-
-
-            String sql = "SELECT Product.* FROM Product INNER JOIN ProductSeller " +
-                    "ON Product.MaSP = ProductSeller.Product_ID " +
-                    "AND Product.Activity = 'ON' " +
-                    "AND ProductSeller.Users_ID = ?";
-
-        try(Connection connection = jdbcUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setInt(1,t.getID());
-            ResultSet rs = statement.executeQuery();
-
-            while (rs.next()){
-                int ID = rs.getInt("MaSP");
-                String TenSP = rs.getString("TenSP");
-                int soLuong = rs.getInt("Quantity");
-                BigDecimal donGia = rs.getBigDecimal("Price");
-                String MoTa = rs.getString("MoTa");
-                String SrcImg = rs.getString("SrcImg");
-                int DanhMuc = rs.getInt("Category_ID");
-                int sold = rs.getInt("sold");
-                BigDecimal totalrevenue = rs.getBigDecimal("totalrevenue");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,null));
-            }
-            rs.close();
-
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
 
     //Lấy thông tin hóa đơn đã mua
     public List<Product> selectHoaDon(User us){

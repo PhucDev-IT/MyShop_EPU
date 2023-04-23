@@ -537,14 +537,12 @@ public class PageHomeController implements Initializable {
                 txtNumber.setText(oldValue);
             }
         });
-
         if (!checkStringIsempty(txtNumber.getText())) {
             if (txtNumber.getText().charAt(0) == '0') {
                 txtNumber.setText(txtNumber.getText().replace("0", ""));
             }
             numbersBuyProduct = Integer.parseInt(txtNumber.getText());
         }
-
     }
 
     //Nhấn cloes information
@@ -961,10 +959,10 @@ public class PageHomeController implements Initializable {
 
     private void showImage() {
         img_iconSearch.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconSearch.png"));
-        imgAvatar.setImage((new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/img1.jpg"))));
+        imgAvatar.setImage((new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_User.png"))));
         imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
         imgVoucherOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/voucher.png")));
-        imgUserOrder.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_user.png"))));
+        imgUserOrder.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_User.png"))));
         imgPhoneOrder.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconPhone.png"));
         imgAddressOrder.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconAddress.png"));
         imgPayAtHome.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"));

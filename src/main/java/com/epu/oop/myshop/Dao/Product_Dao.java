@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.controller.UserProfileController;
 import com.epu.oop.myshop.model.Product;
 import com.epu.oop.myshop.model.User;
 import java.math.BigDecimal;
@@ -374,6 +375,87 @@ public class Product_Dao implements Dao_Interface<Product>{
 
     }
 
+    //Lấy các mặt hàng người dùng đang bán
+    public synchronized List<Product> selectProductOfUser(User u,AtomicInteger lastIndex,int maxProduct) throws SQLException {
+        List<Product> list = new ArrayList<>();
+        openConnection();
+        String sql = "SELECT Product.* FROM Product INNER JOIN ProductSeller " +
+                "ON Product.MaSP = ProductSeller.Product_ID " +
+                " AND ProductSeller.Users_ID = ?"+
+                " AND Product.Activity = 'ON' " +
+                " ORDER BY MaSP " +
+                " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
+
+        try(PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1,u.getID());
+            statement.setInt(2,lastIndex.get());
+            statement.setInt(3,maxProduct);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()){
+                int ID = rs.getInt("MaSP");
+                String TenSP = rs.getString("TenSP");
+                int soLuong = rs.getInt("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
+                String MoTa = rs.getString("MoTa");
+                String SrcImg = rs.getString("SrcImg");
+                int DanhMuc = rs.getInt("Category_ID");
+                int sold = rs.getInt("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("totalrevenue");
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,u));
+            }
+            statement.close();
+            rs.close();
+        }catch (SQLException e){
+            System.out.println("Có lỗi: "+e.getMessage());
+        }finally {
+            closeConnection();
+        }
+
+        return list;
+    }
+
+    //Tìm product đang bán
+    public  List<Product> SearchProductOfSeller(User u,String keyword, AtomicInteger lastIndex, int maxProduct)
+    {
+        List<Product> list = new ArrayList<>();
+
+        String sql = "SELECT Product.* FROM Product INNER JOIN ProductSeller " +
+                "                ON Product.MaSP = ProductSeller.Product_ID" +
+                "                 AND ProductSeller.Users_ID =?" +
+                "                AND Product.TenSP LIKE ?" +
+                "                 AND Product.Activity = 'ON'" +
+                "                 ORDER BY MaSP" +
+                "                 OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
+        try(Connection connection = jdbcUtil.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1,u.getID());
+            statement.setString(2,"%"+keyword+"%");
+            statement.setInt(3,lastIndex.get());
+            statement.setInt(4,maxProduct);
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                int ID = rs.getInt("MaSP");
+                String TenSP = rs.getString("TenSP");
+                int soLuong = rs.getInt("Quantity");
+                BigDecimal donGia = rs.getBigDecimal("Price");
+                String MoTa = rs.getString("MoTa");
+                String SrcImg = rs.getString("SrcImg");
+                int DanhMuc = rs.getInt("Category_ID");
+                int sold = rs.getInt("sold");
+                BigDecimal totalrevenue = rs.getBigDecimal("totalrevenue");
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,u));
+            }
+            statement.close();
+            rs.close();
+        }catch (SQLException e)
+        {
+            System.out.println("Không thể tìm sản phẩm: "+e.getMessage());
+        }
+        System.out.println("Result: "+list);
+        return list;
+    }
 
 
 }

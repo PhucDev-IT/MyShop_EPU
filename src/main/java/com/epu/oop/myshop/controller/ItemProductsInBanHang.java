@@ -4,6 +4,7 @@ package com.epu.oop.myshop.controller;
 import com.epu.oop.myshop.Dao.OrderDetails_Dao;
 import com.epu.oop.myshop.Dao.Order_Dao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.MyListener;
 import com.epu.oop.myshop.model.Product;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -58,6 +60,7 @@ public class ItemProductsInBanHang {
 
         this.prod = p;
         this.myListener = mylistener;
+
         try {
             image.setImage(new Image(p.getSrcImg()));
         }catch (Exception e){
@@ -68,14 +71,14 @@ public class ItemProductsInBanHang {
         SoLuong_label.setText(p.getQuantity()+"");
 
         DaBan_Label.setText(p.getSold()+"");
-        Locale lc = new Locale("vi","VN");
-        NumberFormat numf = NumberFormat.getInstance(lc);
+
         if(p.getTotalRevenue()!=null){
-            DoanhThu_Label.setText(numf.format(p.getTotalRevenue()+"đ"));
+            System.out.println(p.getTotalRevenue());
+            DoanhThu_Label.setText(App.numf.format(p.getTotalRevenue())+"đ");
         }else {
             DoanhThu_Label.setText("0đ");
         }
-        GiaBan_label.setText(numf.format(p.getPrice())+ "đ");
+        GiaBan_label.setText(App.numf.format(p.getPrice())+ "đ");
 
     }
 

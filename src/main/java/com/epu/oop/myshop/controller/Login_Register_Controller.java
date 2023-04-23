@@ -99,7 +99,7 @@ public class Login_Register_Controller implements Initializable{
     }
 
 
-    public void Register(ActionEvent e) throws FileNotFoundException, SQLException {
+    public void Register(ActionEvent e) throws SQLException {
 
         String name = NameTxt_Register.getText();
         String pass = PasswordTxt_register.getText();
@@ -116,6 +116,7 @@ public class Login_Register_Controller implements Initializable{
             u.setFullName(name);
             u.setEmail(email);
             u.setAccount(account);
+            u.setSrcAvatar("/com/epu/oop/myshop/image/profile/avatarNam.png");
 
             if(accountDao.checkRegister(account)==false)
             {

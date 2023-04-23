@@ -55,6 +55,9 @@ public class ProfileUserController implements Initializable {
     private Text MyShop_txt;
 
     // ------------------------------------- DASBROAD ---------------------------------------------------
+
+    @FXML
+    private Pane paneHeader_Main;
     @FXML
     private Label NameDefault_Label;
 
@@ -1129,7 +1132,7 @@ public class ProfileUserController implements Initializable {
             if (Temp.account.getPhanQuyen().equals("Seller")) {
                 HideForm();
                 banHang_Form.setVisible(true);
-                listProducts = userDao.listProducts(user);
+              //  listProducts = userDao.listProducts(user);
                 setDataInBanHangForm(listProducts);
             } else {
                 AlertNotification.showAlertWarning("", "Vui lòng thêm ngân hàng để trở thành người bán.");

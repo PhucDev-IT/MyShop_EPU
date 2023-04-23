@@ -63,20 +63,20 @@
                </font>
             </Label>
             <TextArea fx:id="moTa_txta" layoutX="10.0" layoutY="345.0" prefHeight="129.0" prefWidth="451.0" wrapText="true" />
-            <Button fx:id="ThemSP_btn" layoutX="243.0" layoutY="501.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Thêm" textFill="#fffbfb">
+            <Button fx:id="ThemSP_btn" layoutX="243.0" layoutY="501.0" mnemonicParsing="false" onAction="#AddProducts" prefHeight="26.0" prefWidth="74.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Thêm" textFill="#fffbfb">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
-            <Button disable="true" layoutX="19.0" layoutY="501.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="105.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Ngừng Bán" textFill="#fffbfb" fx:id="xoaSP_btn">
+            <Button disable="true" layoutX="19.0" layoutY="501.0" mnemonicParsing="false" onAction="#RemoveProducts" prefHeight="31.0" prefWidth="105.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Ngừng Bán" textFill="#fffbfb" fx:id="xoaSP_btn">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
-            <Button fx:id="SuaSP_btn" disable="true" layoutX="146.0" layoutY="502.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="73.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Sửa" textFill="#fffbfb">
+            <Button fx:id="SuaSP_btn" disable="true" layoutX="146.0" layoutY="502.0" mnemonicParsing="false" onAction="#UpdateProduct" prefHeight="26.0" prefWidth="73.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Sửa" textFill="#fffbfb">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
             <ChoiceBox fx:id="danhMuc_choisebox" layoutX="121.0" layoutY="274.0" prefHeight="31.0" prefWidth="169.0" />
-            <JFXButton fx:id="importImageHang_btn" buttonType="RAISED" layoutX="191.0" layoutY="57.0" prefHeight="30.0" prefWidth="89.0" ripplerFill="#d71313" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Chọn ảnh" textFill="#fcf8f8">
+            <JFXButton fx:id="importImageHang_btn" buttonType="RAISED" layoutX="191.0" layoutY="57.0" onAction="#addImgProduct" prefHeight="30.0" prefWidth="89.0" ripplerFill="#d71313" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Chọn ảnh" textFill="#fcf8f8">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></JFXButton>
@@ -109,20 +109,25 @@
                      </font></Label>
                </children>
             </AnchorPane>
-            <ScrollPane hbarPolicy="NEVER" layoutX="476.0" layoutY="27.0" prefHeight="535.0" prefWidth="725.0" vbarPolicy="NEVER">
+            <ScrollPane hbarPolicy="NEVER" layoutX="476.0" layoutY="27.0" onScroll="#eventScroll" prefHeight="535.0" prefWidth="725.0" vbarPolicy="NEVER">
                <content>
-                  <GridPane fx:id="grid_BanHangForm" prefHeight="0.0" prefWidth="2.0">
+                  <GridPane fx:id="grid_BanHangForm" prefHeight="0.0" prefWidth="2.0" vgap="5.0">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
+                     <padding>
+                        <Insets top="-30.0" />
+                     </padding>
                   </GridPane>
                </content>
             </ScrollPane>
-            <JFXButton layoutX="338.0" layoutY="502.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Tìm Sản Phẩm" textFill="WHITE">
+            <JFXButton fx:id="btnSearchProduct" layoutX="338.0" layoutY="502.0" onAction="#SearchProduct" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Tìm Sản Phẩm" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
+            <ImageView fx:id="imgLoadingData" fitHeight="71.0" fitWidth="92.0" layoutX="265.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="800.0" AnchorPane.topAnchor="200.0" />
+            <ImageView fx:id="imgRefreshSell" fitHeight="36.0" fitWidth="43.0" layoutX="409.0" layoutY="22.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="editProfile_Form" layoutX="-3.0" layoutY="85.0" prefHeight="565.0" prefWidth="1202.0" style="-fx-background-color: #fafafa;" visible="false">
@@ -198,37 +203,17 @@
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></JFXTextField>
-            <Separator layoutX="740.0" layoutY="260.0" prefHeight="4.0" prefWidth="150.0" />
-            <Label layoutX="905.0" layoutY="250.0" text="Ngân Hàng" />
-            <Separator layoutX="992.0" layoutY="260.0" prefHeight="4.0" prefWidth="169.0" />
-            <Label layoutX="749.0" layoutY="339.0" text="Tên Ngân Hàng:">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font>
-            </Label>
-            <Label layoutX="749.0" layoutY="290.0" text="Số Tài Khoản:">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font>
-            </Label>
-            <Label layoutX="749.0" layoutY="390.0" text="Chủ Sở Hữu:">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font>
-            </Label>
             <JFXTextField fx:id="Jtxt_CCCD" layoutX="174.0" layoutY="359.0" prefHeight="31.0" prefWidth="205.0" />
             <JFXTextField fx:id="Jtxt_SDT" layoutX="213.0" layoutY="467.0" />
             <JFXButton fx:id="btn_updateProfile" layoutX="507.0" layoutY="510.0" prefHeight="31.0" prefWidth="142.0" ripplerFill="#88e19a" style="-fx-background-color: #CCFF66;" text="Cập nhật" />
             <Separator layoutX="79.0" layoutY="87.0" prefHeight="4.0" prefWidth="99.0" />
             <Label layoutX="194.0" layoutY="77.0" text="Thông Tin Cá Nhân" />
             <Separator layoutX="335.0" layoutY="88.0" prefHeight="4.0" prefWidth="99.0" />
-            <JFXTextField fx:id="Jtxt_SoTaiKhoan" layoutX="879.0" layoutY="281.0" />
-            <JFXTextField fx:id="Jtxt_TenNganHang" layoutX="879.0" layoutY="332.0" />
-            <JFXTextField fx:id="Jtxt_ChuSoHuu" layoutX="878.0" layoutY="385.0" />
             <DatePicker fx:id="ngaySinh_datepicker" layoutX="175.0" layoutY="254.0" stylesheets="@../StyleCSS/Profile.css" />
+            <JFXButton layoutX="877.0" layoutY="242.0" style="-fx-background-color: green;" text="Đổi mật khẩu" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;">
+      <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;" visible="false">
          <children>
             <Label layoutX="92.0" layoutY="120.0" prefHeight="21.0" prefWidth="99.0" text="Xin chào:">
                <font>
@@ -250,9 +235,9 @@
                   <ImageView fx:id="Calendar_img" fitHeight="28.0" fitWidth="28.0" layoutX="32.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="154.0" layoutY="239.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="206.0" layoutY="197.0" prefHeight="87.0" prefWidth="299.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
-                  <Label layoutX="111.0" layoutY="30.0" text="Lịch sử mua hàng">
+                  <Label layoutX="87.0" layoutY="30.0" text="Lịch sử mua hàng">
                      <font>
                         <Font name="Arial" size="24.0" />
                      </font>
@@ -260,37 +245,37 @@
                   <ImageView fx:id="purchaseHistory" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="725.0" layoutY="239.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="683.0" layoutY="197.0" prefHeight="87.0" prefWidth="309.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
-                  <Label layoutX="106.0" layoutY="30.0" prefHeight="27.0" prefWidth="205.0" text="Liên kết ngân hàng">
+                  <Label layoutX="82.0" layoutY="30.0" prefHeight="27.0" prefWidth="205.0" text="Liên kết ngân hàng">
                      <font>
                         <Font name="Arial" size="24.0" />
                      </font>
                   </Label>
-                  <ImageView fx:id="bank_img" fitHeight="46.0" fitWidth="50.0" layoutX="32.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="bank_img" fitHeight="46.0" fitWidth="50.0" layoutX="22.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="154.0" layoutY="405.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="210.0" layoutY="322.0" prefHeight="87.0" prefWidth="299.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
-                  <Label layoutX="111.0" layoutY="30.0" text="Đổi mật khẩu">
+                  <Label layoutX="83.0" layoutY="30.0" text="Đổi mật khẩu">
                      <font>
                         <Font name="Arial" size="24.0" />
                      </font>
                   </Label>
-                  <ImageView fx:id="changePassword" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="changePassword" fitHeight="46.0" fitWidth="50.0" layoutX="22.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="725.0" layoutY="405.0" prefHeight="87.0" prefWidth="331.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <Pane layoutX="683.0" layoutY="322.0" prefHeight="87.0" prefWidth="309.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
-                  <Label layoutX="106.0" layoutY="30.0" prefHeight="27.0" prefWidth="205.0" text="Xem Voucher">
+                  <Label layoutX="87.0" layoutY="30.0" prefHeight="27.0" prefWidth="181.0" text="Xem Voucher">
                      <font>
                         <Font name="Arial" size="24.0" />
                      </font>
                   </Label>
-                  <ImageView fx:id="voucher_img" fitHeight="46.0" fitWidth="50.0" layoutX="35.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="voucher_img" fitHeight="46.0" fitWidth="50.0" layoutX="22.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="142.0" layoutY="26.0" prefHeight="61.0" prefWidth="921.0" style="-fx-background-color: white;">
+            <Pane fx:id="paneHeader_Main" layoutX="142.0" layoutY="26.0" prefHeight="61.0" prefWidth="921.0" style="-fx-background-color: white;" visible="false">
                <children>
                   <ImageView fx:id="imgIconTongDoanhThu" fitHeight="30.0" fitWidth="30.0" layoutX="768.0" layoutY="6.0" pickOnBounds="true" />
                   <Label fx:id="SumDoanhThu_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="805.0" layoutY="39.0" prefHeight="21.0" prefWidth="115.0" style="-fx-background-color: white;" text="0" textFill="#d30a0a" visible="false">
@@ -330,10 +315,31 @@
                   <ImageView fx:id="imgLoadingTwo" fitHeight="28.0" fitWidth="30.0" layoutX="243.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="imgLoadingThree" fitHeight="30.0" fitWidth="30.0" layoutX="576.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="imgLoadingFour" fitHeight="30.0" fitWidth="30.0" layoutX="804.0" layoutY="35.0" pickOnBounds="true" preserveRatio="true" />
-               </children></Pane>
+               </children>
+            </Pane>
+            <Pane layoutX="210.0" layoutY="450.0" prefHeight="87.0" prefWidth="299.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+               <children>
+                  <Label layoutX="78.0" layoutY="30.0" text="Tham gia bán hàng">
+                     <font>
+                        <Font name="Arial" size="24.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="img_ThamgiaBanHang" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </Pane>
+            <Pane layoutX="685.0" layoutY="450.0" prefHeight="87.0" prefWidth="309.0" style="-fx-background-color: #eee;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+               <children>
+                  <Label layoutX="84.0" layoutY="30.0" prefHeight="27.0" prefWidth="158.0" text="Trò chuyện với myshhop">
+                     <font>
+                        <Font name="Arial" size="24.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="img_tuVanKH" fitHeight="46.0" fitWidth="50.0" layoutX="22.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </Pane>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="soDuTK_Form" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: #F8F8FF;" visible="false">
+      <AnchorPane fx:id="soDuTK_Form" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: #F8F8FF;">
          <children>
             <Label layoutX="114.0" layoutY="41.0" text="Số Dư:">
                <font>
@@ -390,7 +396,7 @@
                   <Font name="System Bold" size="21.0" />
                </font>
             </Label>
-            <TextField fx:id="txtSoTienRut_RTForm" layoutX="323.0" layoutY="297.0" />
+            <TextField fx:id="txtSoTienRut_RTForm" layoutX="323.0" layoutY="297.0" onKeyPressed="#removeCharInput" />
             <JFXButton fx:id="btnRutTien" layoutX="323.0" layoutY="381.0" prefHeight="35.0" prefWidth="115.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Rút tiền" textFill="#fffbfb">
                <font>
                   <Font name="System Bold" size="15.0" />
@@ -412,7 +418,7 @@
                   </GridPane>
                </content></ScrollPane>
             <ImageView fx:id="icon_soDu" fitHeight="28.0" fitWidth="28.0" layoutX="79.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true" />
-            <AnchorPane fx:id="Anchor_chuyentienForm" layoutX="54.0" layoutY="134.0" prefHeight="294.0" prefWidth="601.0" style="-fx-background-color: #F8F8FF;" visible="false">
+            <AnchorPane fx:id="Anchor_chuyentienForm" layoutX="54.0" layoutY="134.0" prefHeight="294.0" prefWidth="601.0" style="-fx-background-color: #F8F8FF;">
                <children>
                   <Label layoutX="33.0" layoutY="56.0" text="Tài khoản nhận:">
                      <font>
@@ -425,7 +431,7 @@
                         <Font name="System Bold" size="21.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="soTienChuyen_txt" layoutX="207.0" layoutY="123.0" prefHeight="31.0" prefWidth="135.0" />
+                  <TextField fx:id="soTienChuyen_txt" layoutX="207.0" layoutY="123.0" onKeyPressed="#removeInputChar" prefHeight="31.0" prefWidth="135.0" />
                   <JFXButton fx:id="btnChuyenTien" layoutX="431.0" layoutY="180.0" prefHeight="35.0" prefWidth="115.0" styleClass="button-banHag" stylesheets="@../StyleCSS/Profile.css" text="Chuyển tiền" textFill="#fffbfb">
                      <font>
                         <Font name="System Bold" size="15.0" />
@@ -532,6 +538,56 @@
             </ScrollPane>
          </children>
       </AnchorPane>
+      <AnchorPane fx:id="paneLienKetBank" layoutX="-1.0" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" visible="false">
+         <children>
+            <Separator layoutX="91.0" layoutY="95.0" prefHeight="4.0" prefWidth="109.0" />
+            <Label layoutX="217.0" layoutY="86.0" text="Thông tin người dùng" />
+            <Separator layoutX="376.0" layoutY="95.0" prefHeight="4.0" prefWidth="109.0" />
+            <TextField fx:id="txtFullNameInBank" alignment="TOP_RIGHT" layoutX="85.0" layoutY="131.0" prefHeight="31.0" prefWidth="407.0" promptText="Họ tên đầy đủ trên chứng minh nhân dân" />
+            <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="86.0" layoutY="134.0" prefHeight="25.0" prefWidth="89.0" style="-fx-background-color: white;" text="Họ và tên:">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtCccdInBank" alignment="TOP_RIGHT" layoutX="85.0" layoutY="176.0" prefHeight="31.0" prefWidth="407.0" promptText="Số căn cước công dân" />
+            <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="86.0" layoutY="179.0" prefHeight="25.0" prefWidth="89.0" style="-fx-background-color: white;" text="Số CCCD:">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="68.0" layoutY="520.0" prefHeight="21.0" prefWidth="417.0" text="Vui lòng đảm báo tính chính xác của các thông tin đã cung cấp" />
+            <Separator layoutX="703.0" layoutY="98.0" prefHeight="4.0" prefWidth="109.0" />
+            <Label layoutX="829.0" layoutY="89.0" text="Thêm tài khoản ngân hàng" />
+            <Separator layoutX="1022.0" layoutY="98.0" prefHeight="4.0" prefWidth="142.0" />
+            <Label alignment="TOP_RIGHT" contentDisplay="RIGHT" layoutX="704.0" layoutY="134.0" prefHeight="25.0" prefWidth="124.0" style="-fx-background-color: white;" text="Tên ngân hàng:">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="cbNameBank" layoutX="876.0" layoutY="131.0" prefHeight="31.0" prefWidth="256.0" />
+            <Label alignment="TOP_LEFT" contentDisplay="RIGHT" layoutX="704.0" layoutY="194.0" prefHeight="25.0" prefWidth="124.0" style="-fx-background-color: white;" text="Tên chi nhánh:">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+            </Label>
+            <Label alignment="TOP_LEFT" contentDisplay="RIGHT" layoutX="704.0" layoutY="254.0" prefHeight="25.0" prefWidth="124.0" style="-fx-background-color: white;" text="Số tài khoản:">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+            </Label>
+            <Label alignment="TOP_LEFT" contentDisplay="RIGHT" layoutX="703.0" layoutY="310.0" prefHeight="26.0" prefWidth="150.0" style="-fx-background-color: white;" text="Tên chủ tài khoản:">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtTenChiNhanh" layoutX="875.0" layoutY="192.0" prefHeight="31.0" prefWidth="256.0" promptText="Điền tên chi nhánh" />
+            <TextField fx:id="txtSoTaiKhoan" layoutX="875.0" layoutY="252.0" prefHeight="31.0" prefWidth="256.0" promptText="Số tài khoản/thẻ ATM" />
+            <TextField fx:id="txtChuTaiKhoanBank" layoutX="875.0" layoutY="308.0" prefHeight="31.0" prefWidth="256.0" promptText="Điền họ tên đầy đủ" />
+            <JFXButton fx:id="btnAddBank" layoutX="919.0" layoutY="496.0" style="-fx-background-color: #eee;" text="Thêm ngân hàng" />
+            <JFXButton fx:id="btnUpdateBank" layoutX="798.0" layoutY="496.0" style="-fx-background-color: #eee;" text="Sửa thông tin" />
+            <JFXButton fx:id="btnDeleteBank" layoutX="1061.0" layoutY="496.0" prefHeight="31.0" prefWidth="96.0" style="-fx-background-color: #eee;" text="Xóa" />
+         </children>
+      </AnchorPane>
       <ImageView fx:id="menu_img" fitHeight="36.0" fitWidth="50.0" layoutX="5.0" layoutY="127.0" onMouseClicked="#eventMenu" pickOnBounds="true" />
       <Pane fx:id="asideLeft_Frm" focusTraversable="true" layoutY="116.0" onMouseExited="#eventMenu" prefHeight="535.0" prefWidth="169.0" style="-fx-background-color: #DDDDDD;" styleClass="item_aside" stylesheets="@../StyleCSS/Profile.css" visible="false">
          <children>
@@ -539,7 +595,7 @@
                <children>
                   <Pane prefHeight="103.0" prefWidth="158.0">
                      <children>
-                        <ImageView fx:id="avata_img" fitHeight="61.0" fitWidth="70.0" layoutX="49.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="avata_img" fitHeight="61.0" fitWidth="70.0" layoutX="49.0" layoutY="10.0" onMouseClicked="#addImgAvatar" pickOnBounds="true" preserveRatio="true" />
                         <Label fx:id="helloName_label" alignment="CENTER" layoutY="79.0" prefHeight="17.0" prefWidth="158.0" text="Nguyễn Văn Phúc">
                            <font>
                               <Font name="System Bold" size="12.0" />

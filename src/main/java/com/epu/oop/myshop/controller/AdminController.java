@@ -44,10 +44,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.epu.oop.myshop.JdbcConnection.DaoApp.connectionPool;
+
 
 public class AdminController implements Initializable {
-    private ConnectionPool connectionPool = new ConnectionPool();
+    private   ConnectionPool connectionPool = new ConnectionPool();
 
     private Account_Dao account_Dao = Account_Dao.getInstance(connectionPool);
 
@@ -698,7 +698,7 @@ public class AdminController implements Initializable {
 class RanDom extends Task<String> {
 
     private static final SecureRandom random = new SecureRandom();
-    private VoucherDao voucherDao = new VoucherDao(connectionPool);
+    private VoucherDao voucherDao;
 
     @Override
     protected String call() throws Exception {
