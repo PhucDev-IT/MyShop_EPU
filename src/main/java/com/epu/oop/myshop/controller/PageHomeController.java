@@ -1026,5 +1026,20 @@ public class PageHomeController implements Initializable {
         grid_Products.getChildren().clear();
         listvoucher.clear();
         listProduct.clear();
+        voucherSelected = null;
+        SelectedProduct = null;
+
+        img_iconSearch.setImage(null);
+        imgAvatar.setImage(null);
+        imgLoading.setImage(null);
+        imgVoucherOrder.setImage(null);
+        imgUserOrder.setImage(null);
+        imgPhoneOrder.setImage(null);
+        imgAddressOrder.setImage(null);
+        imgPayAtHome.setImage(null);
+        imgPayBank.setImage(null);
+
+        System.gc(); // Yêu cầu garbage collector thu hồi bộ nhớ
+
     }
 }

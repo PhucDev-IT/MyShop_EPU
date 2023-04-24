@@ -62,7 +62,7 @@
                <children>
                   <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" visible="false">
                      <children>
-                        <ScrollPane layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <ScrollPane layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: #FFFCFC;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
                               <GridPane fx:id="gridProductSearch" hgap="10.0" vgap="10.0">
                                 <rowConstraints>
@@ -388,7 +388,7 @@
                         <JFXButton fx:id="btnBuyProduct" layoutX="285.0" layoutY="520.0" onAction="#BuyProduct" style="-fx-background-color: #fff;" text="Mua" />
                      </children>
                   </Pane>
-                  <AnchorPane fx:id="paneOrderDetail" layoutX="15.0" layoutY="82.0" onMouseMoved="#hiddenListItemOfMenu" prefHeight="566.0" prefWidth="1296.0" style="-fx-background-color: #FFFFCC; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: green;" visible="false">
+                  <AnchorPane fx:id="paneOrderDetail" layoutX="15.0" layoutY="82.0" onMouseMoved="#hiddenListItemOfMenu" prefHeight="566.0" prefWidth="1296.0" style="-fx-background-color: #FAFAFA; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: green;" visible="false">
                      <children>
                         <Pane layoutX="102.0" layoutY="14.0" prefHeight="144.0" prefWidth="582.0">
                            <children>

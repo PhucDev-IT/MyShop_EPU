@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.controller;
 
 import com.epu.oop.myshop.Dao.Account_Dao;
+import com.epu.oop.myshop.Dao.PaymentHistory_Dao;
 import com.epu.oop.myshop.Dao.UserDao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
@@ -36,28 +37,27 @@ public class PaymentHistoryController {
     private ConnectionPool connectionPool = ConnectionPool.getInstance();
     private UserDao userDao = UserDao.getInstance(connectionPool);
 
-    public void setData(PaymentHistory p)
+    public void setData(Object[] obj)
     {
-        icon_RutTien_IMG.setImage(new Image(getClass().getResourceAsStream(p.getImgSrcIcon())));
-        ngayGiaoDich_Lb.setText(p.getNgayGiaoDich()+"");
-        soTien_lb.setText(App.numf.format(p.getSoTien())+"đ");
+        PaymentHistory p = (PaymentHistory) obj[0];
+        String nguoiNhan = (String) obj[1];
 
+
+        icon_RutTien_IMG.setImage(new Image(getClass().getResourceAsStream(p.getImgSrcIcon())));
+        soTien_lb.setText(App.numf.format(p.getSoTien())+"đ");
+        ngayGiaoDich_Lb.setText(p.getNgayGiaoDich()+"");
+
+        //Nếu là mua hàng thì account sẽ là NULL
         if(p.getAccount().getID()==0){
             tenGiaoDich_lb.setText(p.getTenGiaoDich());
             noidung.setText(p.getNoiDung());
-
-        }else{
-            if(Temp.account.getID()==p.getAccount().getID()){
-                tenGiaoDich_lb.setText("Nhận tiền");
-                String nguoiGui = userDao.searchPersonRemitters(p.getUser().getID());
-                noidung.setText("Nhận từ: "+nguoiGui);
-            }else {
-                    tenGiaoDich_lb.setText(p.getTenGiaoDich());
-                    noidung.setText("Người nhận: "+p.getNoiDung());
-                }
-
+        }else if(Temp.account.getID() == p.getAccount().getID()){   //Nếu là nhận tiền khi chuyển tiền có ghi ID ng nhận
+            tenGiaoDich_lb.setText("Nhận tiền");
+            noidung.setText("Nhận từ: "+p.getNoiDung());    //Nội dung sẽ là tên người chuyển
+        }else if(Temp.account.getID() == p.getUser().getID() && (p.getUser().getID()!=p.getAccount().getID())){
+            tenGiaoDich_lb.setText("Chuyển tiền");
+            noidung.setText("Chuyển đến: "+nguoiNhan);
         }
-
     }
 
 }

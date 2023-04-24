@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Order_Dao implements Dao_Interface<Order> {
     private final ConnectionPool jdbcUtil;
     private static Order_Dao instance;
@@ -254,54 +256,25 @@ public class Order_Dao implements Dao_Interface<Order> {
 
 
 
-    //Tính tổng hóa đơn đã bán trong ngày hôm nay
-    public Object[] OrderToDay(Date date,int ID) throws SQLException {
-        Object[] obj = new Object[2];
-
-            String sql = "select count(orders.ID) as Numbers , sum(ThanhTien) as Total from OrderDetails join orders " +
-                    "ON orderDetails.Order_ID = orders.Order_ID " +
-                    "AND NgayLapHD = ? " +
-                    "Join Product " +
-                    "ON OrderDetails.Product_ID = Product.MaSP " +
-                    "JOIN ProductSeller ON Product.MaSP = ProductSeller.Product_ID " +
-                    "AND ProductSeller.Users_ID = ?";
-        openConnection();
-        try(PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setDate(1,date);
-            statement.setInt(2,ID);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()){
-                obj[0] = rs.getInt("Numbers");
-                obj[1] = rs.getBigDecimal("Total");
-            }
-            statement.close();
-            rs.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            closeConnection();
-        }
-        return obj;
-    }
-
-
-
     //-------------------------- lỊCH SỬ MUA HÀNG ---------------------------------------------------
-    public List<Object[]> getPurchaseProducts(User u) throws SQLException {
+    public synchronized List<Object[]> getPurchaseProducts(User u, AtomicInteger lastIndex,int maxResult) throws SQLException {
         List<Object[]> results = new ArrayList<>();
 
 
-            String sql = "SELECT p.TenSP,p.SrcImg,cthd.Quantity,cthd.Price,HoaDon.NgayLapHD,Users.FullName " +
+            String sql = "SELECT p.TenSP,p.SrcImg,cthd.Quantity,cthd.Price,orders.NgayLapHD,Users.FullName " +
                     "FROM Product p INNER JOIN OrderDetails cthd " +
                     "ON p.MaSP = cthd.Product_ID " +
                     "INNER JOIN orders ON cthd.Order_ID = orders.Order_ID " +
                     "JOIN ProductSeller ON p.MaSP = ProductSeller.Product_ID " +
                     "JOIN Users ON ProductSeller.Users_ID = Users.Account_ID " +
                     "AND orders.Users_ID = ?" +
-                    " ORDER BY HoaDon.NgayLapHD DESC";
+                    " ORDER BY orders.NgayLapHD DESC" +
+                    " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
             openConnection();
         try(PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,u.getID());
+            statement.setInt(2,lastIndex.get());
+            statement.setInt(3,maxResult);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 Object[] obj = new Object[4];
@@ -317,7 +290,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 obj[3] = rs.getString("FullName");
                 results.add(obj);
             }
-
+            rs.close();
         }catch (Exception e)
         {
             e.printStackTrace();

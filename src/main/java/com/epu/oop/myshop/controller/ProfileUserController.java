@@ -325,6 +325,8 @@ public class ProfileUserController implements Initializable {
 
     //-------------------------------- FORM VOUCHER ------------------------------------
     @FXML
+    private ImageView imgLoadingVoucher;
+    @FXML
     private AnchorPane voucherForm;
     @FXML
     private GridPane gridVoucher;
@@ -792,7 +794,7 @@ public class ProfileUserController implements Initializable {
 
     }
 
-    public void RutTien(ActionEvent e) {
+    public void RutTien(ActionEvent e) throws SQLException {
         String soTienRut = deleteChar(txtSoTienRut_RTForm.getText());
         BigDecimal ruttien = new BigDecimal(soTienRut);
 
@@ -819,33 +821,33 @@ public class ProfileUserController implements Initializable {
     }
 
     //Showw form lịch sử rút tiền
-    public void showPaymentHistory() {
-        List<PaymentHistory> paymentHistoryList = paymentHistory_dao.listPaymentHistory(Temp.account);
-        int col = 0;
-        int row = 1;
-        try {
-            for (int i = 0; i < paymentHistoryList.size(); i++) {
-                FXMLLoader fxmlLoader = new FXMLLoader();
-                fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/PaymentHistory.fxml"));
-                AnchorPane anchorPane = fxmlLoader.load();
-                PaymentHistoryController item = fxmlLoader.getController();
-                item.setData(paymentHistoryList.get(i));
-                row++;
-                grid_Payment.add(anchorPane, col, row); // (child,column,row)
-                // set grid width
-                grid_Payment.setMinWidth(Region.USE_COMPUTED_SIZE);
-                grid_Payment.setPrefWidth(Region.USE_COMPUTED_SIZE);
-                grid_Payment.setMaxWidth(Region.USE_PREF_SIZE);
-
-                // set grid height
-                grid_Payment.setMinHeight(Region.USE_COMPUTED_SIZE);
-                grid_Payment.setPrefHeight(Region.USE_COMPUTED_SIZE);
-                grid_Payment.setMaxHeight(Region.USE_PREF_SIZE);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void showPaymentHistory() {
+//        List<PaymentHistory> paymentHistoryList = paymentHistory_dao.listPaymentHistory(Temp.account);
+//        int col = 0;
+//        int row = 1;
+//        try {
+//            for (int i = 0; i < paymentHistoryList.size(); i++) {
+//                FXMLLoader fxmlLoader = new FXMLLoader();
+//                fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/PaymentHistory.fxml"));
+//                AnchorPane anchorPane = fxmlLoader.load();
+//                PaymentHistoryController item = fxmlLoader.getController();
+//                item.setData(paymentHistoryList.get(i));
+//                row++;
+//                grid_Payment.add(anchorPane, col, row); // (child,column,row)
+//                // set grid width
+//                grid_Payment.setMinWidth(Region.USE_COMPUTED_SIZE);
+//                grid_Payment.setPrefWidth(Region.USE_COMPUTED_SIZE);
+//                grid_Payment.setMaxWidth(Region.USE_PREF_SIZE);
+//
+//                // set grid height
+//                grid_Payment.setMinHeight(Region.USE_COMPUTED_SIZE);
+//                grid_Payment.setPrefHeight(Region.USE_COMPUTED_SIZE);
+//                grid_Payment.setMaxHeight(Region.USE_PREF_SIZE);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @FXML
     public void clickPaneInRutTienForm(MouseEvent e) {
@@ -953,7 +955,7 @@ public class ProfileUserController implements Initializable {
     }
     BigDecimal tongTienDaMuaHang = new BigDecimal("0");
     public void PurchaseProducts() throws SQLException {
-        listPurchaseProducts = hoaDon_dao.getPurchaseProducts(user);
+      //  listPurchaseProducts = hoaDon_dao.getPurchaseProducts(user);
         grid_PurchaseProduct.getChildren().clear();
         int col = 0;
         int row = 1;
@@ -1127,7 +1129,7 @@ public class ProfileUserController implements Initializable {
             HideForm();
             soDuTK_Form.setVisible(true);
             showInformationRutTienForm();
-            showPaymentHistory();
+      //      showPaymentHistory();
         } else if (e.getSource() == sell_btn) {
             if (Temp.account.getPhanQuyen().equals("Seller")) {
                 HideForm();

@@ -41,7 +41,6 @@ public class ItemPurcharsedProduct implements Initializable {
     @FXML
     private Label ngayMua_label;
 
-    private OrderDetails cthd_dao;
 
     public Locale lc = new Locale("vi", "VN");
     public NumberFormat numf = NumberFormat.getInstance(lc);
@@ -51,7 +50,17 @@ public class ItemPurcharsedProduct implements Initializable {
 
             OrderDetails cthd = (OrderDetails) obj[1];
             Product product = (Product) obj[0];
-            imgProduct.setImage(new Image(product.getSrcImg()));
+
+            try{
+                if(product.getSrcImg().equals(":")){
+                    imgProduct.setImage(new Image(product.getSrcImg()));
+                }else{
+                    imgProduct.setImage(new Image(getClass().getResourceAsStream(product.getSrcImg())));
+                }
+            }catch (Exception e){
+                imgProduct.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+                System.out.println("Không load được ảnh: "+e.getMessage());
+            }
             nameProduct_lb.setText(product.getTenSP());
             price_label.setText(numf.format(cthd.getPrice())+"đ");
             Quantity_label.setText(cthd.getQuantity()+"");
@@ -63,7 +72,6 @@ public class ItemPurcharsedProduct implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cthd_dao = new OrderDetails();
         img_ThanhTien.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\thanhtien.png"));
     }
 }

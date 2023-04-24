@@ -3,6 +3,7 @@ package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Account;
+import com.epu.oop.myshop.model.PaymentHistory;
 import com.epu.oop.myshop.model.User;
 
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ public class Account_Dao implements Dao_Interface<Account> {
         int results = 0;
         String sql = "INSERT INTO Account(UserName,Passwords,Currency,Activity,PhanQuyen)" +
                 " VALUES (?,?,?,?,?)";
-            //Try - catch - resources : giúp tự động close, tránh rò rĩ tài nguyên
+
         Connection connection = null;
            try{
                connection = jdbcUtil.getConnection();
@@ -262,6 +263,56 @@ public class Account_Dao implements Dao_Interface<Account> {
             connection.close();
         }
         return check>0;
+    }
+
+    //Chuyển tiền, k dùng update vì method này sử dụng transaction tránh mất tiền oan
+    public boolean UpdatetransferMoney(Account sender, Account receiver, PaymentHistory paymentHistory) throws SQLException {
+        String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID,Account_ID)" +
+                " VALUES (?,?,?,?,?,?,?)";
+
+        String sql = "UPDATE Account SET " +
+                " Currency=? " +
+                " WHERE UserName=?";
+        Connection connection = null;
+        try {
+            connection = jdbcUtil.getConnection();
+            connection.setAutoCommit(false);
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement stmReceiver = connection.prepareStatement(sql);
+            PreparedStatement stmPayment = connection.prepareStatement(sqlPayment);
+
+            statement.setBigDecimal(1,sender.getMoney());
+            statement.setString(2,sender.getUserName());
+            statement.executeUpdate();
+
+            stmReceiver.setBigDecimal(1,receiver.getMoney());
+            stmReceiver.setString(2,receiver.getUserName());
+            stmReceiver.executeUpdate();
+
+            stmPayment.setString(1,paymentHistory.getTenGiaoDich());
+            stmPayment.setString(2,paymentHistory.getNoiDung());
+            stmPayment.setBigDecimal(3,paymentHistory.getSoTien());
+            stmPayment.setDate(4,paymentHistory.getNgayGiaoDich());
+            stmPayment.setString(5,paymentHistory.getImgSrcIcon());
+            stmPayment.setInt(6,paymentHistory.getUser().getID());
+            stmPayment.setInt(7,paymentHistory.getAccount().getID());
+
+            connection.commit();
+            statement.close();
+            stmReceiver.close();
+            stmPayment.close();
+            return true;
+        }catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+                System.out.println("Roll back: "+e.getMessage());
+            }
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return false;
     }
 
 

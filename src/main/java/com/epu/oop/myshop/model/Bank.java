@@ -17,7 +17,7 @@ public class Bank implements Serializable {
     private String soCCCD;
     private String TenNH;
 
-    public static Map<String,String> listBanks = new HashMap<>();
+    public static final Map<String,String> listBanks = pushBank();
 
     private String ChuSoHuu;
 
@@ -131,44 +131,45 @@ public class Bank implements Serializable {
 
 
 
-    public static final void pushBank(){
-        listBanks.put("BIDV", "Đầu tư và Phát triển Việt Nam");
-        listBanks.put("VPBank", "Việt Nam Thịnh Vượng");
-        listBanks.put("VietinBank", "Công thương Việt Nam");
-        listBanks.put("Vietcombank", "Ngoại Thương Việt Nam");
-        listBanks.put("MB", "Quân Đội");
-        listBanks.put("Techcombank", "Kỹ Thương");
-        listBanks.put("Agribank", "NN&PT Nông thôn Việt Nam");
-        listBanks.put("ACB", "Á Châu");
-        listBanks.put("SHB", "Sài Gòn – Hà Nội");
-        listBanks.put("VIB", "Quốc Tế ");
-        listBanks.put("HDBank", "Phát triển Thành phố Hồ Chí Minh");
-        listBanks.put("SeABank", "Đông Nam Á");
-        listBanks.put("VBSP", "Chính sách xã hội Việt Nam");
-        listBanks.put("Sacombank", "Sài Gòn Thương Tín");
-        listBanks.put("LienVietPostBank", "Bưu điện Liên Việt");
-        listBanks.put("MSB", "Hàng Hải");
-        listBanks.put("SCB", "Sài Gòn");
-        listBanks.put("VDB", "Phát triển Việt Nam");
-        listBanks.put("OCB", "Phương Đông");
-        listBanks.put("Eximbank", "Xuất Nhập Khẩu");
-        listBanks.put("TPBank", "Tiên Phong");
-        listBanks.put("PVcomBank", "Đại Chúng Việt Nam");
-        listBanks.put("Bac A Bank", "TMCP Bắc Á");
-        listBanks.put("Woori", "Woori Việt Nam");
-        listBanks.put("HSBC", "HSBC Việt Nam");
-        listBanks.put("SCBVL", "Standard Chartered Việt Nam");
-        listBanks.put("PBVN", "Public Bank Việt Nam");
-        listBanks.put("NCB", "Quốc dân");
-        listBanks.put("VietABank", "Việt Á");
-        listBanks.put("DongA Bank", "Đông Á");
-        listBanks.put("Vietbank", "Việt Nam Thương Tín");
-        listBanks.put("Nam A Bank", "Nam Á");
-        listBanks.put("OceanBank", "Đại Dương");
-        listBanks.put("CIMB", "CIMB Việt Nam");
-        listBanks.put("SAIGONBANK", "Sài Gòn Công Thương");
-        listBanks.put("BAOVIET Bank", "Bảo Việt");
-
+    public static final Map pushBank(){
+        Map<String,String> listBank = new HashMap<>();
+        listBank.put("BIDV", "Đầu tư và Phát triển Việt Nam");
+        listBank.put("VPBank", "Việt Nam Thịnh Vượng");
+        listBank.put("VietinBank", "Công thương Việt Nam");
+        listBank.put("Vietcombank", "Ngoại Thương Việt Nam");
+        listBank.put("MB", "Quân Đội");
+        listBank.put("Techcombank", "Kỹ Thương");
+        listBank.put("Agribank", "NN&PT Nông thôn Việt Nam");
+        listBank.put("ACB", "Á Châu");
+        listBank.put("SHB", "Sài Gòn – Hà Nội");
+        listBank.put("VIB", "Quốc Tế ");
+        listBank.put("HDBank", "Phát triển Thành phố Hồ Chí Minh");
+        listBank.put("SeABank", "Đông Nam Á");
+        listBank.put("VBSP", "Chính sách xã hội Việt Nam");
+        listBank.put("Sacombank", "Sài Gòn Thương Tín");
+        listBank.put("LienVietPostBank", "Bưu điện Liên Việt");
+        listBank.put("MSB", "Hàng Hải");
+        listBank.put("SCB", "Sài Gòn");
+        listBank.put("VDB", "Phát triển Việt Nam");
+        listBank.put("OCB", "Phương Đông");
+        listBank.put("Eximbank", "Xuất Nhập Khẩu");
+        listBank.put("TPBank", "Tiên Phong");
+        listBank.put("PVcomBank", "Đại Chúng Việt Nam");
+        listBank.put("Bac A Bank", "TMCP Bắc Á");
+        listBank.put("Woori", "Woori Việt Nam");
+        listBank.put("HSBC", "HSBC Việt Nam");
+        listBank.put("SCBVL", "Standard Chartered Việt Nam");
+        listBank.put("PBVN", "Public Bank Việt Nam");
+        listBank.put("NCB", "Quốc dân");
+        listBank.put("VietABank", "Việt Á");
+        listBank.put("DongA Bank", "Đông Á");
+        listBank.put("Vietbank", "Việt Nam Thương Tín");
+        listBank.put("Nam A Bank", "Nam Á");
+        listBank.put("OceanBank", "Đại Dương");
+        listBank.put("CIMB", "CIMB Việt Nam");
+        listBank.put("SAIGONBANK", "Sài Gòn Công Thương");
+        listBank.put("BAOVIET Bank", "Bảo Việt");
+        return listBank;
     }
 
 

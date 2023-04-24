@@ -416,7 +416,7 @@ public class Product_Dao implements Dao_Interface<Product>{
     }
 
     //Tìm product đang bán
-    public  List<Product> SearchProductOfSeller(User u,String keyword, AtomicInteger lastIndex, int maxProduct)
+    public synchronized List<Product> SearchProductOfSeller(User u,String keyword, AtomicInteger lastIndex, int maxProduct)
     {
         List<Product> list = new ArrayList<>();
 

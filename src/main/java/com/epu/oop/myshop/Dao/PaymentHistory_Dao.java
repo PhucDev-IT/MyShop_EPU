@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
     private final ConnectionPool jdbcUtil;
@@ -56,12 +58,13 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
     }
 
 
-    //Thanh toán cho myshop, mua hàng
-    public int PaymentMyShop(PaymentHistory paymentHistory) {
+    //Thanh toán cho myshop, mua hàng,nạp tiền
+    public int PaymentMyShop(PaymentHistory paymentHistory) throws SQLException {
         int results = 0;
+        Connection connection = null;
         try {
-            Connection connection = jdbcUtil.getConnection();
-
+             connection = jdbcUtil.getConnection();
+             connection.setAutoCommit(false);
             String sql = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
                     " VALUES (?,?,?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -77,9 +80,16 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
             results = statement.executeUpdate();
             System.out.println("Rút tiền: Có "+results +" thay đổi");
             statement.close();
-            connection.close();
+            connection.commit();
         }catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+                System.out.println("Roll back");
+            }
             e.printStackTrace();
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
         }
         return results;
     }
@@ -106,18 +116,26 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
 
 
     //Lịch sử giao dịch
-    public List<PaymentHistory> listPaymentHistory(Account a){
-        List<PaymentHistory> list = new ArrayList<>();
+    public List<Object[]> listPaymentHistory(Account a, AtomicInteger lastindex,int maxressul){
+        List<Object[]> list = new ArrayList<>();
         try {
             Connection connection = jdbcUtil.getConnection();
-            String sql = "SELECT pm.* from PaymentHistory pm " +
-                    "WHERE Users_ID = ? or Account_ID = ? " +
-                    "Order by NgayGiaoDich DESC";
+            String sql = " SELECT " +
+                    " PaymentHistory.*," +
+                    "CASE WHEN Account_ID IS NULL THEN 'Unknown' " +
+                    "ELSE (SELECT FullName FROM Users WHERE Account_ID=PaymentHistory.Account_ID) END AS NguoiNhan" +
+                    " FROM PaymentHistory " +
+                    "WHERE Users_ID = ? OR Account_ID = ? " +
+                    "ORDER BY NgayGiaoDich DESC " +
+                    "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1,a.getID());
             statement.setInt(2,a.getID());
+            statement.setInt(3,lastindex.get());
+            statement.setInt(4,maxressul);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
+                Object[] obj = new Object[2];
                 int ID = rs.getInt("ID");
                 String tenGiaoDich = rs.getString("TenGiaoDich");
                 String NoiDung = rs.getString("NoiDung");
@@ -126,7 +144,11 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
                 String src = rs.getString("SrcImgIcon");
                 int User_ID = rs.getInt("Users_ID");
                 int Account_ID = rs.getInt("Account_ID");
-                list.add(new PaymentHistory(ID,tenGiaoDich,NoiDung,soTien,ngayGiaoDich,src,new User(User_ID),new Account(Account_ID)));
+                String nguoiNhan = rs.getString("NguoiNhan");
+
+                obj[0] = new PaymentHistory(ID,tenGiaoDich,NoiDung,soTien,ngayGiaoDich,src,new User(User_ID),new Account(Account_ID));
+                obj[1] = nguoiNhan;
+                list.add(obj);
             }
             statement.close();
             connection.close();

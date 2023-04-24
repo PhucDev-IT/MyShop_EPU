@@ -35,11 +35,17 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,7 +58,7 @@ public class UserProfileController implements Initializable {
     static final String Nu = "Nữ";
     static final String Khac = "Khác";
 
-    static final int maxProduct = 10;
+    static final int maxResult = 10;
 
     @FXML
     private Text MyShop_txt;
@@ -61,6 +67,14 @@ public class UserProfileController implements Initializable {
     private ImageView imgLoadingData;
 
     // ------------------------------------- DASBROAD ---------------------------------------------------
+    @FXML
+    private Pane paneLienKetBank_btn;
+    @FXML
+    private Pane showVoucher_pane_btn;
+    @FXML
+    private Pane thamGiaBanHang_pane_btn;
+    @FXML
+    private Pane purchaseHistory_pane_btn;
     @FXML
     private ImageView img_tuVanKH;
     @FXML
@@ -126,6 +140,11 @@ public class UserProfileController implements Initializable {
     @FXML
     private ImageView voucher_img;
 
+    @FXML
+    private AnchorPane Anch_ThamGiaBanHang;
+    @FXML
+    private Text txtDieuKhoanBanHang;
+
 
     // ------------------ IMAGE - Profile Form ----------------------------------
 
@@ -177,8 +196,6 @@ public class UserProfileController implements Initializable {
 
     @FXML
     private Button xoaSP_btn;
-
-    private List<Category> listCategory;
 
 
 
@@ -234,6 +251,8 @@ public class UserProfileController implements Initializable {
     private ImageView img_SoDuTK;
 
     //------------------------------ LIÊN KẾT NGÂN HÀNG -----------------------------------------------------
+    @FXML
+    private AnchorPane paneLienKetBank;
     @FXML
     private TextField txtFullNameInBank;
 
@@ -320,7 +339,24 @@ public class UserProfileController implements Initializable {
     @FXML
     private AnchorPane soDuTK_Form;
 
-    // --------------------------------- FORM RÚT TIỀN--------------------------------------------------------------------
+    // --------------------------------- FORM RÚT TIỀN--------------------------------------------------------------------\
+    @FXML
+    private ScrollPane scrollWithdraw;
+    @FXML
+    private ImageView imgLoadingPayment;
+
+    @FXML
+    private TextField txtNapTien;
+
+    @FXML
+    private JFXButton btnNapTien;
+
+    @FXML
+    private JFXButton btnBackRutTien;
+
+    @FXML
+    private Pane paneNapTienForm;
+
 
     @FXML
     private Pane RutTienPane;   //Thuộc Pane chuyển tiền
@@ -370,8 +406,11 @@ public class UserProfileController implements Initializable {
     @FXML
     private TextField txtSoTienRut_RTForm;
     //-------------------------------- LỊCH SỬ MUA HÀNG -------------------------------------------
+
     List<Object[]> listPurchaseProducts = new ArrayList<>();
 
+    @FXML
+    private ImageView imgLoadingPurchased;
     @FXML
     private AnchorPane PurchaseProduct_Form;
 
@@ -401,12 +440,13 @@ public class UserProfileController implements Initializable {
 
     //-------------------------------- FORM VOUCHER ------------------------------------
     @FXML
+    private ImageView imgLoadingVoucher;
+    @FXML
     private AnchorPane voucherForm;
     @FXML
     private GridPane gridVoucher;
     private List<VoucherModel> listVouchers = new ArrayList<>();
 
-    private VoucherModel voucher;
     private MyListener<VoucherModel> myListener_Voucher;
     // -----------------------------------------------------
     @FXML
@@ -503,12 +543,12 @@ public class UserProfileController implements Initializable {
         lastIndex.set(0);
         listProducts.clear();
         grid_BanHangForm.getChildren().clear();
-        loadingData(e);
+        loadingDataProduct(e);
 
     }
 
     //Loading data
-    public synchronized void loadingData(Event e){
+    public synchronized void loadingDataProduct(Event e){
         imgLoadingData.setImage(new Image("C:\\Users\\84374\\Downloads\\Ellipsis-1.4s-583px.gif"));
         Task<Void> task = new Task<Void>() {
             @Override
@@ -525,10 +565,8 @@ public class UserProfileController implements Initializable {
                         ProductBySearch();
                     }else if(e instanceof ScrollEvent){
                         if(lastEvent.equals("select")){
-                            System.out.println("Cuộn cho select");
                             SelectDataProduct();
                         }else {
-                            System.out.println("Cuộn cho tìm kiếm");
                             ProductBySearch();
                         }
                     }
@@ -554,12 +592,12 @@ public class UserProfileController implements Initializable {
 
     private AtomicInteger lastIndex = new AtomicInteger(0);
 
-    public static AtomicBoolean isReusltProduct = new AtomicBoolean(false); //Ban đầu rỗng
+    public static AtomicBoolean isReuslts = new AtomicBoolean(false); //Ban đầu rỗng
 
     public void ProductBySearch(){
 
         try{
-            listProducts.addAll(product_dao.SearchProductOfSeller(user,nameProductSearch,lastIndex,maxProduct));
+            listProducts.addAll(product_dao.SearchProductOfSeller(user,nameProductSearch,lastIndex,maxResult));
         }catch (OutOfMemoryError e)
         {
             System.out.println("Tràn List: "+e.getMessage());
@@ -569,7 +607,7 @@ public class UserProfileController implements Initializable {
 
     public void SelectDataProduct(){
         try{
-            listProducts.addAll(product_dao.selectProductOfUser(user,lastIndex,maxProduct));
+            listProducts.addAll(product_dao.selectProductOfUser(user,lastIndex,maxResult));
         }catch (OutOfMemoryError | SQLException e)
         {
             System.out.println("Tràn List: "+e.getMessage());
@@ -583,17 +621,17 @@ public class UserProfileController implements Initializable {
         }
 
         if(listProducts.size() == lastIndex.get()){ //Nếu không có thêm sp mới thì đã hết sản phâ trong csdl gán false đ khỏi cuộn
-            isReusltProduct.set(false);
+            isReuslts.set(false);
         }else{
-            isReusltProduct.set(true);
+            isReuslts.set(true);
         }
         lastIndex.set(lastIndex.get() + (listProducts.size()-lastIndex.get()));
     }
 
     //Khi cuôộn sản phẩm trong bán sản phẩm
     public void eventScroll(ScrollEvent e){
-        if(isReusltProduct.get()){
-            loadingData(e);
+        if(isReuslts.get()){
+            loadingDataProduct(e);
         }
     }
 
@@ -786,13 +824,7 @@ public class UserProfileController implements Initializable {
         cbNameBank.setItems(listBank);
     }
     public void displayInformationBank() throws SQLException {
-
-        if(Temp.bank!=null){
-            bank = Temp.bank;
-        }else{
-            bank = bank_Dao.SelectByID(new Bank(user));
-            Temp.bank = bank;
-        }
+        paneLienKetBank.setVisible(true);
         setDataListBank();
         if(bank==null){
             btnDeleteBank.setDisable(true);
@@ -855,7 +887,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    public void deleteBank(ActionEvent e){
+        public void deleteBank(ActionEvent e){
         if(AlertNotification.showAlertConfirmation("Bạn chắc chắn xóa liên kết ngân hàng!","" +
                 "Đồng ý, việc mua bán có thể bị gián đoạn")){
             if(bank_Dao.Delete(bank)>0){
@@ -871,13 +903,17 @@ public class UserProfileController implements Initializable {
     public void showDataSoDuTaiKhoan() throws SQLException {
         labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
 
-        if(Temp.bank == null){
-            bank = bank_Dao.SelectByID(new Bank(user));
-            Temp.bank = bank;
-        }else{
+        if(bank == null){
+            btnRutTien.setDisable(true);
+            napTienPane.setDisable(true);
+        }else
+        {
             LbSTK_rutTienForm.setText(hiddenNumbersBank(bank.getSoTaiKhoan()));
             LbTenNH_RTForm.setText(bank.getTenNH());
             LbShuSoHuu_RTForm.setText(bank.getChuSoHuu());
+
+            btnRutTien.setDisable(false);
+            napTienPane.setDisable(false);
         }
     }
 
@@ -899,31 +935,38 @@ public class UserProfileController implements Initializable {
             removeChar(soTienChuyen_txt);
         }else if(e.getSource() == txtSoTienRut_RTForm){
             removeChar(txtSoTienRut_RTForm);
+        }else if(e.getSource() == txtNapTien){
+            removeChar(txtNapTien);
         }
     }
-    public void withdrawMoney(ActionEvent e){
 
-        if(isStringEmpty(txtSoTienRut_RTForm.getText())){
-            AlertNotification.showAlertWarning("","Nhập số tiền muốn rút!");
-        }else {
+    public void withdrawMoney(ActionEvent e) {
+
+        if (isStringEmpty(txtSoTienRut_RTForm.getText())) {
+            AlertNotification.showAlertWarning("", "Nhập số tiền muốn rút!");
+        } else {
 
             BigDecimal soTienRut = new BigDecimal(deleteChar(txtSoTienRut_RTForm.getText()));
             soTienRut.add(phiRutTien);
 
-            if (Temp.account.getMoney().compareTo(BigDecimal.ZERO) <= 0) {
+            if (Temp.account.getMoney().compareTo(soTienRut)<0) {
                 AlertNotification.showAlertWarning("", "Số dư không đủ!");
-            } else if (soTienRut.compareTo(Temp.account.getMoney()) > 0) {
-                AlertNotification.showAlertWarning("", "Số dư không đủ!");
-            }else{
-                String notification = "Số tiền bạn nhận được là: "+App.numf.format(soTienRut.subtract(phiRutTien));
-                if(AlertNotification.showAlertConfirmation(notification,"Bạn chắc chắn muốn rút?")){
-                    PaymentHistory paymentBank = new PaymentHistory("Rút tiền","Rút về ngân hàng", soTienRut,
-                            new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", Temp.user,null);
-                    Temp.account.setMoney(Temp.account.getMoney().subtract(soTienRut));
-                    if(account_dao.Update(Temp.account)>0){
-                        AlertNotification.showAlertSucces("Rút tiền thành công","");
-                    }else{
-                        AlertNotification.showAlertError("Có lỗi xảy ra, thử lại sau!","");
+            } else {
+                String notification = "Số tiền bạn nhận được là: " + App.numf.format(soTienRut.subtract(phiRutTien));
+                if (AlertNotification.showAlertConfirmation(notification, "Bạn chắc chắn muốn rút?")) {
+                    String pass = AlertNotification.textInputDialog("Rút tiền", "Nhập mật khẩu", "");
+                    if (Temp.account.getPassword().equals(pass)) {
+                        PaymentHistory paymentBank = new PaymentHistory("Rút tiền", "Rút về ngân hàng", soTienRut,
+                                new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", Temp.user, null);
+                        Temp.account.setMoney(Temp.account.getMoney().subtract(soTienRut));
+
+                        if (account_dao.Update(Temp.account) > 0) {
+                            labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
+                            AlertNotification.showAlertSucces("Rút tiền thành công", "");
+                            refreshPayment(e);
+                        } else {
+                            AlertNotification.showAlertError("Có lỗi xảy ra, thử lại sau!", "");
+                        }
                     }
                 }
             }
@@ -931,25 +974,367 @@ public class UserProfileController implements Initializable {
     }
 
     //Button Chuyển tiền
-    public void transferMoney(){
-        //Account a = account_dao.SelectByID();
+    public void transferMoney(ActionEvent e) throws SQLException {
 
-        if(isStringEmpty(taiKhoanNhan_txt.getText()) || isStringEmpty(soTienChuyen_txt.getText())){
-            AlertNotification.showAlertWarning("","Vui lòng nhập đầy đủ thông tin");
-        }else{
+        if (isStringEmpty(taiKhoanNhan_txt.getText()) || isStringEmpty(soTienChuyen_txt.getText())) {
+            AlertNotification.showAlertWarning("", "Vui lòng nhập đầy đủ thông tin");
+        } else {
+            BigDecimal soTienChuyen = new BigDecimal(deleteChar(soTienChuyen_txt.getText()));
+            if (Temp.account.getMoney().compareTo(soTienChuyen) >= 0) {
+
+                String pass = AlertNotification.textInputDialog("Chuyển tiền", "Nhập mật khẩu", "");
+                if (Temp.account.getPassword().equals(pass)) {
+
+                    Account a = account_dao.SelectByID(new Account(0, taiKhoanNhan_txt.getText(), ""));
+                    if (a == null) {
+                        AlertNotification.showAlertWarning("Người dùng không tồn tại", "");
+                    } else {
+                        PaymentHistory pm = new PaymentHistory("Chuyển tiền",user.getFullName(),soTienChuyen,new Date(System.currentTimeMillis()),
+                                "/com/epu/oop/myshop/image/profile/iconClickChuyenTien.png",user,a);
+                        Temp.account.setMoney(Temp.account.getMoney().subtract(soTienChuyen));
+                        a.setMoney(a.getMoney().add(soTienChuyen));
+                        if (account_dao.UpdatetransferMoney(Temp.account, a,pm)) {
+                            AlertNotification.showAlertSucces("Chuyển tiền thành công", "");
+                            labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
+                            refreshPayment(e);
+                        } else {
+                            AlertNotification.showAlertError("Có lỗi xảy ra", "Thử lại sau!");
+                        }
+                    }
+
+                }
+
+            }
 
         }
     }
 
+    //Button: Nạp tiền
+    public void napTien(ActionEvent e) throws SQLException {
+        if(isStringEmpty(txtNapTien.getText())){
+            AlertNotification.showAlertWarning("","Nhập số tiền bạn muốn nạp");
+        }else{
+            BigDecimal soTienNap = new BigDecimal(deleteChar(txtNapTien.getText()));
+            Temp.account.setMoney(Temp.account.getMoney().add(soTienNap));
+            PaymentHistory pm = new PaymentHistory("Nạp tiền","Từ STK: "+bank.getSoTaiKhoan(),soTienNap,new Date(System.currentTimeMillis()),
+                    "/com/epu/oop/myshop/image/profile/iconNapTien.png",user,null);
+            if(account_dao.Update(Temp.account)>0 && paymentHistory_dao.PaymentMyShop(pm)>0){
+                AlertNotification.showAlertSucces("Nạp tiền thành công","Cảm ơn bạn đã đồng hành với chúng tôi");
+                refreshPayment(e);
+            }else{
+                Temp.account.setMoney(Temp.account.getMoney().subtract(soTienNap));
+                AlertNotification.showAlertError("Hệ thống lỗi","");
+            }
+        }
+        labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
+    }
+
+
+    //Hiển thị lịch sử giao dịch
+
+    private List<Object[]> listPaymentHistory = new ArrayList<>();
+
+    public void refreshPayment(Event e){
+        rowPayment = 1;
+        lastIndex.set(0);
+        listPaymentHistory.clear();
+        grid_Payment.getChildren().clear();
+        loadingDataPaymentHistory();
+    }
+    //Cuộn xem lịch sử
+    public void scrollPayment(ScrollEvent e){
+        System.out.println(isReuslts.get());
+        if(isReuslts.get()){
+            loadingDataPaymentHistory();
+        }
+    }
+
+
+    public void CalcularPayment(){
+        listPaymentHistory.addAll(paymentHistory_dao.listPaymentHistory(Temp.account,lastIndex,maxResult));
+        for (int i = 0; i < listPaymentHistory.size() && i >= lastIndex.get(); i++) {
+            displayPaymentHistory(listPaymentHistory.get(i));
+        }
+        if(listPaymentHistory.size() == lastIndex.get()){ //Nếu không có thêm kq mới thì đã hết trong csdl gán false để khỏi cuộn
+            isReuslts.set(false);
+        }else{
+            isReuslts.set(true);
+        }
+        System.out.println("Chweck số luwognj payment: "+isReuslts+ " - "+listPaymentHistory.size());
+        lastIndex.set(lastIndex.get() + (listPaymentHistory.size()-lastIndex.get()));
+    }
+    int rowPayment = 1;
+    public void displayPaymentHistory(Object[] obj){
+
+        try {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/PaymentHistory.fxml"));
+                AnchorPane anchorPane = fxmlLoader.load();
+                PaymentHistoryController item = fxmlLoader.getController();
+                item.setData(obj);
+                grid_Payment.add(anchorPane, 0, rowPayment++); // (child,column,row)
+                // set grid width
+                grid_Payment.setMinWidth(Region.USE_COMPUTED_SIZE);
+                grid_Payment.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                grid_Payment.setMaxWidth(Region.USE_PREF_SIZE);
+
+                // set grid height
+                grid_Payment.setMinHeight(Region.USE_COMPUTED_SIZE);
+                grid_Payment.setPrefHeight(Region.USE_COMPUTED_SIZE);
+                grid_Payment.setMaxHeight(Region.USE_PREF_SIZE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void loadingDataPaymentHistory()
+    {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Platform.runLater(() -> imgLoadingPayment.setVisible(true));
+                Thread.sleep(200);
+
+                if(!isCancelled()){
+                    Platform.runLater(() -> CalcularPayment());
+                }
+
+                Platform.runLater(() -> imgLoadingPayment.setVisible(false));
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+        task.setOnSucceeded(event -> {
+            task.cancel();
+            thread.interrupt();
+        });
+    }
+
+    public void converFormSoDuTK(MouseEvent e){
+        paneNapTienForm.setVisible(false);
+        Anchor_chuyentienForm.setVisible(false);
+
+        if(e.getSource() == napTienPane){
+            paneNapTienForm.setVisible(true);
+        }else if(e.getSource() == ChuyenTienPane){
+            Anchor_chuyentienForm.setVisible(true);
+        }else if(e.getSource() == RutTienPane){
+
+        }else if(e.getSource()==btnBackRutTien){
+
+        }
+    }
+    //--------------------------------LỊCH SỬ MUA HÀNG---------------------------------------------
+
+    /*Giai thích:
+        -Type Atomic.. giúp an toàn trong ử dụng luồng, bởi các biến khi được sử dụng trong luồng gây ra result không chính xác
+       -Dùng các biến AtomicInteger lastIndex(tổng số lượng sp lấy ra) làm vị trí bắt đầu select của lần sau
+       -Dùng biến check để kiểm tra xem còn dữ liệu trong database hay không, mục đích để tránh việc truy vâấn nhiều lần
+       gây tốn tài nguyên do người dùng cuộn scrollpane liên tục
+       -Create method refresh make refrsh old data, và cập nhật lại số lượng truy vấn được sau cùng lastIndex
+       -Gọi task để cập nhật lại giao diện UI. Mỗi lần lấy dữ liệu xong thì tinh toán có giá trị trả về hay không....
+     */
+
+    public void loadingDataPurcharsedHistory(){
+        imgLoadingPurchased.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Platform.runLater(() -> imgLoadingPurchased.setVisible(true));
+                Thread.sleep(200);
+
+                Platform.runLater(() -> {
+                    try {
+                        getDataPrurchaseHistory();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                Thread.sleep(300);
+                Platform.runLater(() -> imgLoadingPurchased.setVisible(false));
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+        task.setOnSucceeded(event -> {
+            task.cancel();
+            thread.interrupt();
+        });
+    }
+
+    public void scrollPanePurchased(ScrollEvent e){
+        if(isReuslts.get()){
+            loadingDataPurcharsedHistory();
+        }
+    }
+
+    public void refreshDataPurchasedHistory(Event e){
+        listPurchaseProducts.clear();
+        lastIndex.set(0);
+        grid_PurchaseProduct.getChildren().clear();
+        rowPruchased = 1;
+        loadingDataPurcharsedHistory();
+
+    }
+    public void getDataPrurchaseHistory() throws SQLException {
+        listPurchaseProducts.addAll(hoaDon_dao.getPurchaseProducts(user,lastIndex,maxResult));
+        for(int i=0;i<listPurchaseProducts.size() && i>=lastIndex.get();i++){
+            showPurchasedHisoty(listPurchaseProducts.get(i));
+        }
+
+        if(listPurchaseProducts.size() <10 || listPurchaseProducts.size() == lastIndex.get()){
+            isReuslts.set(false);
+        }else{
+            isReuslts.set(true);
+        }
+        lastIndex.set(lastIndex.get() + (listPurchaseProducts.size()-lastIndex.get()));
+    }
+    int rowPruchased = 1;
+    public void showPurchasedHisoty(Object[] obj){
+        try {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/itemDaMuaHang.fxml"));
+                AnchorPane anchorPane = fxmlLoader.load();
+                ItemPurcharsedProduct item = fxmlLoader.getController();
+                item.setData(obj);
+                rowPruchased++;
+                grid_PurchaseProduct.add(anchorPane, col, rowPruchased); // (child,column,row)
+                // set grid width
+                grid_PurchaseProduct.setMinWidth(Region.USE_COMPUTED_SIZE);
+                grid_PurchaseProduct.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                grid_PurchaseProduct.setMaxWidth(Region.USE_PREF_SIZE);
+
+                // set grid height
+                grid_PurchaseProduct.setMinHeight(Region.USE_COMPUTED_SIZE);
+                grid_PurchaseProduct.setPrefHeight(Region.USE_COMPUTED_SIZE);
+                grid_PurchaseProduct.setMaxHeight(Region.USE_PREF_SIZE);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Vinh danh người dùng mua nhiều sản phẩm
 
 
 
 
 
+    //-------------------------------------- DANH SÁCH VOUCHER --------------------------------------------------
+    @FXML
+    private Label lb_notVoucher;
+    public void DisplayVoucherForm() throws InterruptedException {
+        voucherForm.setVisible(true);
+        listVouchers = voucherDao.getVoucherConTime(user.getID());
+        if(listVouchers.size()>0){
+            lb_notVoucher.setVisible(false);
+        setDataVoucher();
+        }else{
+            lb_notVoucher.setVisible(true);
+        }
 
 
+    }
+    public void setDataVoucher() {
+        int col = 0;
+        int row = 1;
+
+        try {
+            for (int i = 0; i < listVouchers.size(); i++) {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/Voucher.fxml"));
+                AnchorPane anchorPane = fxmlLoader.load();
+                VoucherController item = fxmlLoader.getController();
+                item.setData(myListener_Voucher,listVouchers.get(i));
+
+                row++;
+                gridVoucher.add(anchorPane, col, row); // (child,column,row)
+                // set grid width
+                gridVoucher.setMinWidth(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setMaxWidth(Region.USE_PREF_SIZE);
+
+                // set grid height
+                gridVoucher.setMinHeight(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setPrefHeight(Region.USE_COMPUTED_SIZE);
+                gridVoucher.setMaxHeight(Region.USE_PREF_SIZE);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
+    //--------------------------THAM GIA BÁN HÀNG -----------------------------------------------------
+    @FXML
+    private CheckBox checkBoxJoinSell;
+    @FXML
+    private JFXButton btnCancelRequest;
+
+    @FXML
+    private JFXButton btnRequest;
+
+    public void loadingDataJoinSell(){
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                if(isCancelled()){
+                    return null;
+                }
+                Platform.runLater(() -> setDataJoinSell());
+
+                return null;
+            }
+        };
+        new Thread(task).start();
+    }
+    public void setDataJoinSell(){
+
+        try{
+            String filepath = "D:\\EPU_JAVA\\MyShop_EPU\\src\\main\\resources\\com\\epu\\oop\\myshop\\Text\\DieuKhoanBanHang.txt";
+            String content = String.join("\n", Files.readAllLines(Paths.get("D:\\EPU_JAVA\\MyShop_EPU\\src\\main\\resources\\com\\epu\\oop\\myshop\\Text\\DieuKhoanBanHang.txt")));
+            txtDieuKhoanBanHang.setText(content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void checkProfile(){
+        if(bank==null || isStringEmpty(user.getFullName()) || isStringEmpty(user.getAddress()) || user.getDateOfBirth()==null
+        || isStringEmpty(user.getCanCuocCongDan()) || isStringEmpty(user.getNumberPhone())){
+            AlertNotification.showAlertWarning("","Vui lòng cập nhật đầy đủ thông tin\nVà liên kết ngân hàng để được duyệt yêu cầu");
+        }else {
+            LocalDate today = LocalDate.now();
+
+            // Tính số năm giữa hai ngày
+            int age = Period.between(user.getDateOfBirth().toLocalDate(), today).getYears();
+            if(age>=18){
+                Temp.account.setPhanQuyen("Seller");
+                if(account_dao.Update(Temp.account)>0){
+                    AlertNotification.showAlertSucces("Chúc mừng bạn đã trở thành người bán hàng.","Cảm ơn bạn đã đồng hành cùng chúng tôi");
+                }else{
+                    AlertNotification.showAlertError("","Có lỗi xảy ra");
+                }
+            }
+        }
+    }
+
+    public void btnJoinSell(ActionEvent e){
+        if(e.getSource() == btnRequest){
+            if(checkBoxJoinSell.isSelected()){
+                checkProfile();
+            }else {
+                AlertNotification.showAlertWarning("","Bạn chưa đồng ý điều khoản của chúng tôi");
+            }
+        }else if(e.getSource() == btnCancelRequest){
+            Anch_ThamGiaBanHang.setVisible(false);
+            dashboard_form.setVisible(true);
+        }
+    }
 
 
     public void calculateMoneyMain() throws SQLException {
@@ -1031,9 +1416,12 @@ public class UserProfileController implements Initializable {
 
         }else{
             user = userDao.SelectByID(new User(Temp.account.getID()));
-
         }
-
+        try {
+            bank = bank_Dao.SelectByID(new Bank(user));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         NameDefault_Label.setText(user.getFullName());
         helloName_label.setText(user.getFullName());
         try{
@@ -1048,9 +1436,16 @@ public class UserProfileController implements Initializable {
         editProfile_Form.setVisible(false);
         banHang_Form.setVisible(false);
         soDuTK_Form.setVisible(false);
+        paneLienKetBank.setVisible(false);
+        PurchaseProduct_Form.setVisible(false);
+        voucherForm.setVisible(false);
+        grid_BanHangForm.getChildren().clear();
+        grid_Payment.getChildren().clear();
+        gridVoucher.getChildren().clear();
+        Anch_ThamGiaBanHang.setVisible(false);
     }
     //Click chuyển form
-    public void clickConverForm(MouseEvent event) throws IOException {
+    public void clickConverForm(MouseEvent event) throws IOException, SQLException, InterruptedException {
         hiddenAllForm();
         if(event.getSource() == dashboard_btn){
             dashboard_form.setVisible(true);
@@ -1062,29 +1457,41 @@ public class UserProfileController implements Initializable {
             if(Temp.account.getPhanQuyen().equals("Seller")){
                 setValueCategory();
                 banHang_Form.setVisible(true);
-                loadingData(event);
+                refreshDataInSell(event);
             }else{
                 AlertNotification.showAlertWarning("","Đăng ký tở thành người bán cùng chúng tôi");
             }
 
         }else if(event.getSource() == soDuTK_btn){
             soDuTK_Form.setVisible(true);
-
-        }else if(event.getSource() == logout_btn){
-            if (AlertNotification.showAlertConfirmation("", "Bạn muốn đăng xuất?")) {
-                Temp.account = null;
-                ConverForm.showForm((Stage) ((Node) event.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
-            }
+            refreshPayment(event);
         }else if (event.getSource() == MyShop_txt) {
-
+            clearScene();
             ConverForm.showForm((Stage) ((Node) event.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
+        }else if(event.getSource() == paneLienKetBank_btn){
+            displayInformationBank();
+        }else if(event.getSource()==purchaseHistory_pane_btn){
+            PurchaseProduct_Form.setVisible(true);
+            refreshDataPurchasedHistory(event);
+        }else if(event.getSource() == showVoucher_pane_btn){
+            DisplayVoucherForm();
+        }else if(event.getSource() == thamGiaBanHang_pane_btn){
+            Anch_ThamGiaBanHang.setVisible(true);
+            loadingDataJoinSell();
         }
     }
 
 
-    public void click(MouseEvent e){
+
+    public void click(MouseEvent e) throws IOException {
         if(e.getSource() == imgRefreshSell){
             refreshDataInSell(e);
+        }else if(e.getSource() == logout_btn){
+            if (AlertNotification.showAlertConfirmation("", "Bạn muốn đăng xuất?")) {
+                Temp.account = null;
+                clearScene();
+                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
+            }
         }
     }
     //Xử lý CSS hover và click menu, nếu dùng chung hàm trên khi hidden form sẽ mất all
@@ -1106,11 +1513,13 @@ public class UserProfileController implements Initializable {
         imgLoadingTwo.setImage(new Image("C:\\Users\\84374\\Downloads\\Spinner-0.5s-277px.gif"));
         imgLoadingThree.setImage(new Image("C:\\Users\\84374\\Downloads\\Spinner-0.5s-277px.gif"));
         imgLoadingFour.setImage(new Image("C:\\Users\\84374\\Downloads\\Spinner-0.5s-277px.gif"));
+        imgLoadingPayment.setImage(new Image("C:\\Users\\84374\\Downloads\\Ripple-1s-470px.gif"));
 
         imgIconDaBan.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconDaBanHang.jpg"));
         imgIconTongDoanhThu.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconTongDoanhThu.jpg"));
         imgIconDaBanToday.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconDaBan1.jpg"));
         iconDoanhThuToDay.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconDoanhThuToday.png"));
+
 
         img_tuVanKH.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-tu-van-khach-hang.png")));
         img_ThamgiaBanHang.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon_tham-gia-ban-hang.png")));
@@ -1131,6 +1540,10 @@ public class UserProfileController implements Initializable {
         imgRutTien.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconRutTien.png")));
 
         imgRefreshSell.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\icon_refresh.jpg"));
+
+        imageThanhVien.setImage(new Image("C:\\Users\\84374\\Downloads\\Black Modern Id Card.png"));
+        imgPhone.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconPhone.png"));
+        imgAdress.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconAddress.png"));
     }
 
 
@@ -1139,6 +1552,7 @@ public class UserProfileController implements Initializable {
 
         DateTime_label.setText(App.timeDay);
         loadImage();
+
 
         if(Temp.account.getPhanQuyen().equals("Seller")) {
             paneHeader_Main.setVisible(true);
@@ -1149,5 +1563,52 @@ public class UserProfileController implements Initializable {
             }
         }
 
+
+
+    }
+
+
+    public void clearScene(){
+        listPaymentHistory.clear();
+        listProducts.clear();
+        listPurchaseProducts.clear();
+        grid_Payment.getChildren().clear();
+        grid_PurchaseProduct.getChildren().clear();
+        grid_BanHangForm.getChildren().clear();
+        gridVoucher.getChildren().clear();
+
+        imgloadingOne.setImage(null);
+        imgLoadingTwo.setImage(null);
+        imgLoadingThree.setImage(null);
+        imgLoadingFour.setImage(null);
+        imgLoadingPayment.setImage(null);
+
+        imgIconDaBan.setImage(null);
+        imgIconTongDoanhThu.setImage(null);
+        imgIconDaBanToday.setImage(null);
+        iconDoanhThuToDay.setImage(null);
+
+
+        img_tuVanKH.setImage(null);
+        img_ThamgiaBanHang.setImage(null);
+        menu_img.setImage(null);
+        icon_soDu.setImage(null);
+        img_Dashboard.setImage(null);
+        img_SoDuTK.setImage(null);
+        img_SuaHoSo.setImage(null);
+        img_Logout.setImage(null);
+        img_BanHang.setImage(null);
+        purchaseHistory.setImage(null);
+        Calendar_img.setImage(null);
+        changePassword.setImage(null);
+        voucher_img.setImage(null);
+        bank_img.setImage(null);
+        img_clickChuyenTien.setImage(null);
+        img_clickNapTien.setImage(null);
+        imgRutTien.setImage(null);
+
+        imgRefreshSell.setImage(null);
+        Thread.interrupted();
+        System.gc();
     }
 }
