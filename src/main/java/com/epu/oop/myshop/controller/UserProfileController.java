@@ -539,11 +539,14 @@ public class UserProfileController implements Initializable {
     public void refreshDataInSell(Event e){
         SuaSP_btn.setDisable(true);
         xoaSP_btn.setDisable(true);
+        row=1;
+        col=0;
         clearTextData();
         lastIndex.set(0);
         listProducts.clear();
         grid_BanHangForm.getChildren().clear();
         loadingDataProduct(e);
+
 
     }
 
@@ -567,11 +570,11 @@ public class UserProfileController implements Initializable {
                         if(lastEvent.equals("select")){
                             SelectDataProduct();
                         }else {
+                            System.out.println("cuộn tìm kiêm");
                             ProductBySearch();
                         }
                     }
                     else {
-                        System.out.println("scrool");
                         SelectDataProduct();
                     }
                 });
@@ -595,23 +598,28 @@ public class UserProfileController implements Initializable {
     public static AtomicBoolean isReuslts = new AtomicBoolean(false); //Ban đầu rỗng
 
     public void ProductBySearch(){
-
+        lastEvent = "search";
         try{
             listProducts.addAll(product_dao.SearchProductOfSeller(user,nameProductSearch,lastIndex,maxResult));
-        }catch (OutOfMemoryError e)
+        }catch (Exception e)
         {
+            listProducts.clear();
             System.out.println("Tràn List: "+e.getMessage());
         }
         calculateNumbers();
     }
 
     public void SelectDataProduct(){
+
+        lastEvent = "select";
         try{
             listProducts.addAll(product_dao.selectProductOfUser(user,lastIndex,maxResult));
         }catch (OutOfMemoryError | SQLException e)
         {
             System.out.println("Tràn List: "+e.getMessage());
+            listProducts.clear();
         }
+
         calculateNumbers();
     }
     public void calculateNumbers()  {
@@ -626,6 +634,7 @@ public class UserProfileController implements Initializable {
             isReuslts.set(true);
         }
         lastIndex.set(lastIndex.get() + (listProducts.size()-lastIndex.get()));
+        System.out.println("Số lượng: "+lastIndex);
     }
 
     //Khi cuôộn sản phẩm trong bán sản phẩm
@@ -1240,8 +1249,8 @@ public class UserProfileController implements Initializable {
 
     }
     public void setDataVoucher() {
-        int col = 0;
-        int row = 1;
+        int colVoucher = 0;
+        int rowVoucher = 1;
 
         try {
             for (int i = 0; i < listVouchers.size(); i++) {
@@ -1251,8 +1260,8 @@ public class UserProfileController implements Initializable {
                 VoucherController item = fxmlLoader.getController();
                 item.setData(myListener_Voucher,listVouchers.get(i));
 
-                row++;
-                gridVoucher.add(anchorPane, col, row); // (child,column,row)
+                rowVoucher++;
+                gridVoucher.add(anchorPane, colVoucher, rowVoucher); // (child,column,row)
                 // set grid width
                 gridVoucher.setMinWidth(Region.USE_COMPUTED_SIZE);
                 gridVoucher.setPrefWidth(Region.USE_COMPUTED_SIZE);
@@ -1336,9 +1345,9 @@ public class UserProfileController implements Initializable {
         }
     }
 
-
+    private Object[] obj;
     public void calculateMoneyMain() throws SQLException {
-        Object[] obj = product_dao.sumTotalOrder(new User(Temp.account));
+
 
         if(obj!=null){
             soDonHangtoday_lb.setText(obj[2]+"");
@@ -1364,8 +1373,6 @@ public class UserProfileController implements Initializable {
             SumDaBan_lb.setText("0");
             SumDoanhThu_lb.setText("0");
         }
-
-
     }
     public void loadTotalOrder() throws InterruptedException {
         Task<Void> task = new Task<Void>() {
@@ -1374,39 +1381,34 @@ public class UserProfileController implements Initializable {
                 if (isCancelled()) {
                     return null;
                 }
-                Platform.runLater(() -> getObjectUser());
-                if (isCancelled()) {
-                    return null;
-                }
-                Thread.sleep(2000);
-                Platform.runLater(() -> {
-                    try {
-                        calculateMoneyMain();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
                 Thread.sleep(1000);
-                if (isCancelled()) {
-                    return null;
-                }
-                Platform.runLater(() -> {
-                    imgloadingOne.setVisible(false);
-                    imgLoadingTwo.setVisible(false);
-                    imgLoadingThree.setVisible(false);
-                    imgLoadingFour.setVisible(false);
-                    SumDoanhThu_lb.setVisible(true);
-                    SumDaBan_lb.setVisible(true);
-                    doanhThuToday_lb.setVisible(true);
-                    soDonHangtoday_lb.setVisible(true);
-                });
+                obj = product_dao.sumTotalOrder(new User(Temp.account.getID()));
                 return null;
             }
 
         };
         Thread thread = new Thread(task);
         thread.start();
+
         task.setOnSucceeded(event -> {
+            Platform.runLater(() -> {
+                try {
+                    calculateMoneyMain();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            Platform.runLater(() -> {
+                imgloadingOne.setVisible(false);
+                imgLoadingTwo.setVisible(false);
+                imgLoadingThree.setVisible(false);
+                imgLoadingFour.setVisible(false);
+                SumDoanhThu_lb.setVisible(true);
+                SumDaBan_lb.setVisible(true);
+                doanhThuToday_lb.setVisible(true);
+                soDonHangtoday_lb.setVisible(true);
+            });
+            System.out.println("Stop thread");
             thread.interrupt();
         });
     }
@@ -1553,7 +1555,7 @@ public class UserProfileController implements Initializable {
         DateTime_label.setText(App.timeDay);
         loadImage();
 
-
+        Platform.runLater(() -> getObjectUser());
         if(Temp.account.getPhanQuyen().equals("Seller")) {
             paneHeader_Main.setVisible(true);
             try {
@@ -1562,7 +1564,6 @@ public class UserProfileController implements Initializable {
                 throw new RuntimeException(e);
             }
         }
-
 
 
     }

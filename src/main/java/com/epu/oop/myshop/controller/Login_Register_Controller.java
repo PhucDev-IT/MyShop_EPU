@@ -74,7 +74,6 @@ public class Login_Register_Controller implements Initializable{
         String userName = userName_txt.getText();
         String Pass = password_txt.getText();
 
-
         if(userName.isEmpty()|| Pass.isEmpty())
         {
             AlertNotification.showAlertWarning("","Vui lòng nhập thông tin đầy đủ");
@@ -83,19 +82,15 @@ public class Login_Register_Controller implements Initializable{
         //Do user name k phải khóa chính nên phải tạo obj lấy đối tượng trong db để truy vấn ng dùng
         Account resul = accountDao.checkLogin(new Account(0,userName,Pass));
         if(resul!=null) {
-
             Temp.account = resul;
             try{
-
                 ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-
         }else {
             AlertNotification.showAlertError("ERROR!","Tài khoản hoặc mật khẩu không chính xác");
         }
-
     }
 
 
@@ -120,7 +115,6 @@ public class Login_Register_Controller implements Initializable{
 
             if(accountDao.checkRegister(account)==false)
             {
-
                 boolean result = accountDao.signUpUser(account,u);
                 if(result)
                 {

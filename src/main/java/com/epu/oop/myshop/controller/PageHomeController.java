@@ -47,6 +47,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.DoubleToIntFunction;
 import java.util.logging.Handler;
 
 public class PageHomeController implements Initializable {
@@ -194,6 +195,8 @@ public class PageHomeController implements Initializable {
 
 
     //-------------------------------------- MAIN ------------------------------------------------------------------
+    @FXML
+    private ScrollPane scrollProductSearch;
     @FXML
     private AnchorPane paneLoading;
     @FXML
@@ -363,26 +366,35 @@ public class PageHomeController implements Initializable {
 
     //-------------------------------------------- HIỂN THỊ CÁC SẢN PHẨM THUỘC DANH MUC ?------------
 
+    /*
+    - Mỗi lần chon 1 danh mục bất kỳ sẽ tính tổng số product thuộc danh mục  đó  để tiến hành phân trang và set số lượng cho pagi..
+    -B2: Truy vấn dữ liệu thuộc category vừa nhấn băt đầu với trang thứ nhất
+    -Mỗi khi nhấn sang 1 page mới sẽ clear data cũ và truy vấn sản phẩm thuộc trang tiếp theo, các  sản phẩm sẽ được set
+    lên UI của PageFactory của pagination.
+     */
 
     //Tính số trang và lấy dữ liệu từ cachedRowSet để hiển thị lên GUI
+    int totalPages = 0;
     public void calculatePage() throws SQLException {
-        int totalPages = 0;
+
         int totalProducts = 0;
+
         totalProducts = product_Dao.getNumbersPages(keyCategory);
+
         totalPages = (int) Math.ceil((double) totalProducts / maxProductsOfPage);
+
         if (totalProducts <= 0) {
             lbNoData.setVisible(true);
         } else {
             lbNoData.setVisible(false);
-        }
-        pagination.setPageCount(totalPages > 0 ? totalPages : 1);
 
-        pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1
-        listProduct.clear();
-        listProduct.addAll(product_Dao.getProductsByPage(keyCategory, pageSelected, maxProductsOfPage));
+            pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1
+
+            listProduct.clear();
+            listProduct.addAll(product_Dao.getProductsByPage(keyCategory, pageSelected, maxProductsOfPage));
+        }
         paneProductMarket.setVisible(true);
         paneListProductSearch.setVisible(false);
-        loadDataProducts();
 
     }
 
@@ -407,6 +419,10 @@ public class PageHomeController implements Initializable {
         });
     }
 
+    /*
+    -Để tiết kiệm bộ nhớ, giải phóng các node trên grid khi không còn dùng
+    -Cần set lại matrix cho grid để không bị  trùng lên nhau v clear grid product để hiện phân trang
+     */
     public void loadDataProducts() throws SQLException {
 
         numbersBuyProduct = 1;
@@ -414,16 +430,13 @@ public class PageHomeController implements Initializable {
         paneOrderDetail.setVisible(false);
         row = 1;
         col = 0;
+
         grid_Products.getChildren().clear();
         gridProductSearch.getChildren().clear();
-        for (Product product : listProduct) {
-            if (paneProductMarket.isVisible()) {
-                setDataProduct(product, grid_Products);
-            } else if (paneListProductSearch.isVisible()) {
-                setDataProduct(product, gridProductSearch);
-            }
-        }
 
+            for (Product product : listProduct) {
+                setDataProduct(product, grid_Products);
+            }
     }
 
     int row = 1;
@@ -467,25 +480,40 @@ public class PageHomeController implements Initializable {
                 if (isCancelled()) { // Kiểm tra task có bị hủy hay không
                     return null;
                 }
-                Platform.runLater(() -> {
                     try {
                         if (e instanceof MouseEvent) {
                             calculatePage();
-                        } else if (e instanceof ActionEvent || e instanceof ScrollEvent) {
-                            loadDataProductSearch();
+                        } else if (e.getSource() ==SearchProduct_txt || e.getSource() ==scrollProductSearch) {
+                            listProduct.addAll(product_Dao.SearchProducts(SearchProduct_txt.getText(), lastIndex, maxProductSearch));
                         }
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                });
-                Thread.sleep(1000);
-                Platform.runLater(() -> {
-                    paneLoading.setVisible(false);
-                });
+
                 return null;
             }
         };
-        new Thread(task).start();
+        Thread thread = new Thread(task);
+        thread.start();
+
+        task.setOnSucceeded(event -> {
+            if (e.getSource() ==SearchProduct_txt || e.getSource() == scrollProductSearch) {
+                loadDataProductSearch();
+            }else if(e instanceof MouseEvent){
+
+                try {
+                    pagination.setPageCount(totalPages > 0 ? totalPages : 1);
+                    loadDataProducts();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            Platform.runLater(() -> {
+                paneLoading.setVisible(false);
+            });
+            thread.interrupt();
+        });
     }
 
     //------------------------------------- HIỂN THỊ THÔNG TIN SẢN Phẩm VỪA CHỌN--------------------------------
@@ -594,11 +622,8 @@ public class PageHomeController implements Initializable {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-
                     Platform.runLater(() -> paneLoading.setVisible(true));
                     Thread.sleep(200);
-
-                    Platform.runLater(() -> {
                         try{
                             if(e.getSource() == payAtHome){
                                 checkAddOrder=PayProductAtHome(hoaDon, ctHoaDon);
@@ -608,42 +633,45 @@ public class PageHomeController implements Initializable {
                         }catch (SQLException e){
                             throw new RuntimeException(e);
                         }
-
-                    });
-                    Thread.sleep(1000);
-                    Platform.runLater(() -> {
-                        System.out.println(checkAddOrder);
-                        if (checkAddOrder) {
-                            for (Product pro : listProduct) {
-                                if (pro.getID() == SelectedProduct.getID()) {
-                                    pro.setQuantity(pro.getQuantity() - numbersBuyProduct);
-                                    pro.setSold(pro.getSold() + numbersBuyProduct);
-                                    break;
-                                }
-                            }
-                            try {
-                                loadDataProducts();
-                            } catch (SQLException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        }
-                    });
-                    Platform.runLater(() -> paneLoading.setVisible(false));
                     return null;
                 }
             };
 
-            new Thread(task).start();
+            Thread thread = new Thread(task);
+            thread.start();
+
+            task.setOnSucceeded(event -> {
+
+                if (checkAddOrder) {
+                    for (Product pro : listProduct) {
+                        if (pro.getID() == SelectedProduct.getID()) {
+                            pro.setQuantity(pro.getQuantity() - numbersBuyProduct);
+                            pro.setSold(pro.getSold() + numbersBuyProduct);
+                            break;
+                        }
+                    }
+                    Platform.runLater(() -> {
+                        AlertNotification.showAlertSucces("Mua hàng thành công!", "Cảm ơn bạn đã mua hàng");
+                        try {
+                            loadDataProducts();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+                }else{
+                    Platform.runLater(() -> AlertNotification.showAlertError("", "Có lỗi xảy ra"));
+                }
+
+                Platform.runLater(() -> paneLoading.setVisible(false));
+                thread.interrupt();
+            });
         }
 
     }
 
     public boolean PayProductAtHome(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
         if (checkAddOrder = order_dao.OrderDetailsPayAtHome(hoaDon, ctHoaDon)) {
-            AlertNotification.showAlertSucces("Mua hàng thành công!", "Cảm ơn bạn đã mua hàng");
             return true;
-        } else {
-            AlertNotification.showAlertError("", "Có lỗi xảy ra");
         }
         return false;
     }
@@ -658,14 +686,11 @@ public class PageHomeController implements Initializable {
                         new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconThanhToan.jpg", Temp.user, null);
                 Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
                 if (checkAddOrder = order_dao.OrderDetailsPayByBank(hoaDon, ctHoaDon, paymentBank)) {
-                    AlertNotification.showAlertSucces("Mua hàng thành công!", "Cảm ơn bạn đã mua hàng");
                     return true;
-                } else {
-                    AlertNotification.showAlertError("", "Có lỗi xảy ra");
                 }
             }
         } else {
-            AlertNotification.showAlertWarning("", "Liên kết ngân hàng trước khi thanh toán!");
+            Platform.runLater(() -> AlertNotification.showAlertWarning("", "Liên kết ngân hàng trước khi thanh toán!"));
         }
         return false;
     }
@@ -781,20 +806,27 @@ public class PageHomeController implements Initializable {
     private final int maxProductSearch = 15;
 
     public void loadDataProductSearch() {
-        listProduct.clear();
-        listProduct.addAll(product_Dao.SearchProducts(SearchProduct_txt.getText(), lastIndex, maxProductSearch));
-
-        System.out.println(listProduct.size());
-
-        for (Product product : listProduct) {
-            paneListProductSearch.setVisible(true);
-            setDataProduct(product, gridProductSearch);
+        paneListProductSearch.setVisible(true);
+        if(listProduct.size()<=0){
+            lbNoData.setVisible(true);
+        }else{
+            lbNoData.setVisible(false);
         }
+        for(int i=0;i<listProduct.size() && i>=lastIndex.get();i++){
+            setDataProduct(listProduct.get(i), gridProductSearch);
+        }
+        lastIndex.set(lastIndex.get() + (listProduct.size()-lastIndex.get()) ); // thay đổi giá trị của biến lastIndex
+        System.out.println(lastIndex.get());
     }
 
-    public void getNameProductSearch(ActionEvent e) {
+    public synchronized void getNameProductSearch(ActionEvent e) {
         if (!checkStringIsempty(SearchProduct_txt.getText())) {
+            resetBackgroundMenu();
+            row = 1;
+            col = 0;
+            grid_Products.getChildren().clear();
             lastIndex.set(0);   //Vì sau khi nhấn tìm lại thì vị trí bắt đầu đang bị nhảy lên cao r
+            listProduct.clear();
             hideForm();
             loadData(e);
         }
@@ -842,6 +874,15 @@ public class PageHomeController implements Initializable {
         item6_pane.setVisible(false);
     }
 
+    public void resetBackgroundMenu(){
+        menu1_btn.setStyle("-fx-background-color: #fff");
+        menu2_btn.setStyle("-fx-background-color: #fff");
+        menu3_btn.setStyle("-fx-background-color: #fff");
+        menu4_btn.setStyle("-fx-background-color: #fff");
+        menu5_btn.setStyle("-fx-background-color: #fff");
+        menu6_btn.setStyle("-fx-background-color: #fff");
+        menu7_btn.setStyle("-fx-background-color: #fff");
+    }
     public void displayBackgroundItemNav(MouseEvent event) {
         menu1_btn.setStyle("-fx-background-color: #fff");
         menu2_btn.setStyle("-fx-background-color: #fff");

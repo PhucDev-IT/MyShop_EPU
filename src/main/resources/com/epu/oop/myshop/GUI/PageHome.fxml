@@ -60,11 +60,11 @@
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
                <children>
-                  <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" visible="false">
+                  <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: red;" visible="false">
                      <children>
-                        <ScrollPane layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: #FFFCFC;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <ScrollPane fx:id="scrollProductSearch" layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: #FFFCFC;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
-                              <GridPane fx:id="gridProductSearch" hgap="10.0" vgap="10.0">
+                              <GridPane fx:id="gridProductSearch" hgap="10.0" prefHeight="0.0" prefWidth="0.0" vgap="10.0">
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
@@ -139,11 +139,6 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                               </GridPane>
-                              <Label fx:id="lbNoData" layoutX="543.0" layoutY="258.0" prefHeight="35.0" prefWidth="188.0" text="Không có dữ liệu" visible="false">
-                                 <font>
-                                    <Font size="24.0" />
-                                 </font>
-                              </Label>
                            </children>
                         </AnchorPane>
                      </children>
@@ -566,5 +561,10 @@
             </AnchorPane>
          </center>
       </BorderPane>
+      <Label fx:id="lbNoData" prefHeight="40.0" prefWidth="219.0" text="Không có dữ liệu" visible="false" AnchorPane.leftAnchor="520.0" AnchorPane.topAnchor="400.0">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

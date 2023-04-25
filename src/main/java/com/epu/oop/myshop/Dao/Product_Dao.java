@@ -153,21 +153,15 @@ public class Product_Dao implements Dao_Interface<Product>{
     public synchronized List<Product> getProductsByPage(int category,int page,int maxProduct) {
         List<Product> list = new ArrayList<>();
         int startIndex = (page-1)*maxProduct;
-        String sql = "SELECT p.*, u.FullName FROM Product p JOIN ProductSeller ps " +
-                " ON p.MaSP = ps.Product_ID " +
-                " JOIN Users u ON ps.Users_ID = u.Account_ID" +
-                " WHERE Category_ID = ? " +
-                " AND p.Activity = 'ON' " +
-                " ORDER BY MaSP" +
-                "  OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "{call proc_getProductOfPages(?,?,?)}";
 
         try{
             openConnection();
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setInt(1, category);
-            pstmt.setInt(2, startIndex);
-            pstmt.setInt(3, maxProduct);
-            ResultSet rs = pstmt.executeQuery();
+            CallableStatement statement = connection.prepareCall(sql);
+            statement.setInt(1, category);
+            statement.setInt(2, startIndex);
+            statement.setInt(3, maxProduct);
+            ResultSet rs = statement.executeQuery();
 
             while (rs.next()){
                 int ID = rs.getInt("MaSP");
@@ -183,7 +177,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,new User(nameSeller)));
             }
             rs.close();
-            pstmt.close();
+            statement.close();
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra: "+e.getMessage());
         }finally {
@@ -298,20 +292,15 @@ public class Product_Dao implements Dao_Interface<Product>{
     {
         List<Product> list = new ArrayList<>();
 
-        String sql = "SELECT p.*, u.FullName FROM Product p JOIN ProductSeller ps " +
-                " ON p.MaSP = ps.Product_ID " +
-                " JOIN Users u ON ps.Users_ID = u.Account_ID" +
-                " WHERE p.TenSP LIKE ? " +
-                " AND p.Activity = 'ON' " +
-                " ORDER BY MaSP" +
-                "  OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "{call proc_SearchProduct(?,?,?)}";
         try(Connection connection = jdbcUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
+            CallableStatement statement = connection.prepareCall(sql)){
             statement.setString(1,"%"+keyword+"%");
             statement.setInt(2,lastIndex.get());
             statement.setInt(3,maxProduct);
 
             ResultSet rs = statement.executeQuery();
+
             while (rs.next()){
                 int ID = rs.getInt("MaSP");
                 String TenSP = rs.getString("TenSP");
@@ -326,18 +315,20 @@ public class Product_Dao implements Dao_Interface<Product>{
 
                 list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,new User(nameSeller)));
             }
-            statement.close();
             rs.close();
-            lastIndex.set(lastIndex.get() + 15); // thay đổi giá trị của biến lastIndex
         }catch (SQLException e)
         {
+            e.printStackTrace();
             System.out.println("Không thể tìm sản phẩm: "+e.getMessage());
+            return null;
         }
+
         return list;
     }
 
     //Tổng doanh thu người dùng đã bán
     public Object[] sumTotalOrder(User u) throws SQLException {
+        System.out.println(u);
         Object[] obj = new Object[4];
         openConnection();
         String sql = "SELECT CAST(SUM(Sold) AS INT) AS sold , CAST(SUM(TotalRevenue) AS DECIMAL) as total " +
@@ -359,6 +350,8 @@ public class Product_Dao implements Dao_Interface<Product>{
                 obj[0] = rs.getInt("sold");
                 obj[1] = rs.getBigDecimal("total");
             }
+
+
             stmOderToday.setInt(1,u.getID());
             ResultSet resultSet = stmOderToday.executeQuery();
             while (resultSet.next()){
@@ -383,7 +376,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 "ON Product.MaSP = ProductSeller.Product_ID " +
                 " AND ProductSeller.Users_ID = ?"+
                 " AND Product.Activity = 'ON' " +
-                " ORDER BY MaSP " +
+                " ORDER BY TotalRevenue " +
                 " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
 
         try(PreparedStatement statement = connection.prepareStatement(sql)){

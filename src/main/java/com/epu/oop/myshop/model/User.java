@@ -165,12 +165,18 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User [ID=" + ID + ", FullName=" + FullName + ", Gender=" + Gender + ", dateOfBirth=" + dateOfBirth
-                + ", Address=" + Address + ", CanCuocCongDan=" + CanCuocCongDan + ", Email=" + Email + ", numberPhone="
-                + numberPhone + ", SrcAvatar=" + SrcAvatar + "]";
+        return "User{" +
+                "ID=" + ID +
+                ", FullName='" + FullName + '\'' +
+                ", Gender='" + Gender + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", Address='" + Address + '\'' +
+                ", CanCuocCongDan='" + CanCuocCongDan + '\'' +
+                ", Email='" + Email + '\'' +
+                ", numberPhone='" + numberPhone + '\'' +
+                ", SrcAvatar='" + SrcAvatar + '\'' +
+                ", account=" + account +
+                '}';
     }
-
-
-
 }
 

@@ -442,6 +442,22 @@ public class CreateSQL {
             " FOREIGN KEY(Account_ID) REFERENCES Account(ID)" +
             ");";
 
+    //------------- TẠO CHỈ MỤC - TĂNG TỐC TRUY VẤN
+    String indexProduct ="CREATE INDEX idx_MaSP ON Product(MaSP); " +
+                        "CREATE INDEX idx_Category_ID ON Product(Category_ID); " +
+                         "CREATE INDEX idx_Activity ON Product(Activity);";
+
+    String indexUser = "CREATE INDEX idx_Account_ID ON Users(Account_ID)";
+
+    String indexOrder = "CREATE INDEX idx_OrderID ON Orders(Order_ID) " +
+            "CREATE INDEX idx_UsersID ON Orders(Users_ID) " +
+            "CREATE INDEX idx_NgayLapHD ON Orders(NgayLapHD)";
+
+    String indexPayment = "CREATE INDEX idx_IDPayment ON PaymentHistory(ID) " +
+            "CREATE INDEX idx_Users_ID ON PaymentHistory(Users_ID) " +
+            "CREATE INDEX idx_Account_ID ON PaymentHistory(Account_ID)";
+
+
     private final String TriggerOne = "CREATE TRIGGER TRIG_Update_MoneySeller ON OrderDetails" +
             " FOR INSERT " +
             " AS" +
@@ -479,4 +495,64 @@ public class CreateSQL {
             "    SET Currency = Currency - (SELECT ThanhTien FROM inserted) " +
             "    WHERE Account.ID = (SELECT Users_ID FROM inserted) " +
             "END";
+
+    private final String proc_getProductOfPages = "CREATE PROC proc_getProductOfPages " +
+            " @Category_ID INT," +
+            " @Offset int, " +
+            " @Limit int" +
+            "AS " +
+            "BEGIN " +
+            " SELECT p.*, u.FullName FROM Product p JOIN ProductSeller ps " +
+            " ON p.MaSP = ps.Product_ID " +
+            " JOIN Users u ON ps.Users_ID = u.Account_ID " +
+            " WHERE Category_ID = @Category_ID " +
+            " AND p.Activity = 'ON'" +
+            " ORDER BY MaSP" +
+            " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
+            " END";
+
+    private final String proc_SearchProduct = "CREATE PROC proc_SearchProduct " +
+            " @nameProduct NVARCHAR(40), " +
+            " @Offset int, " +
+            " @Limit int" +
+            " AS " +
+            " BEGIN " +
+            " SELECT p.*, u.FullName FROM Product p JOIN ProductSeller ps " +
+            " ON p.MaSP = ps.Product_ID " +
+            " JOIN Users u ON ps.Users_ID = u.Account_ID " +
+            " WHERE p.TenSP LIKE @nameProduct " +
+            " AND p.Activity = 'ON' " +
+            " ORDER BY MaSP " +
+            " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
+            " END";
+
+    private final String proc_selectProd_User = "CREATE PROC prcd_getProduct_ofSeller " +
+            " @User_ID INT, " +
+            " @Offset int, " +
+            " @Limit int " +
+            " AS " +
+            " BEGIN " +
+            " SELECT Product.* FROM Product INNER JOIN ProductSeller  " +
+            " ON Product.MaSP = ProductSeller.Product_ID " +
+            " AND ProductSeller.Users_ID = @User_ID " +
+            " AND Product.Activity = 'ON' " +
+            " ORDER BY TotalRevenue " +
+            " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
+            " END";
+
+    private final String proc_PaymentHistory = "CREATE PROC pcd_PaymentHistory " +
+            " @User_ID INT, " +
+            " @Offset int, " +
+            " @Limit int " +
+            " AS " +
+            " BEGIN " +
+            " SELECT " +
+            " PaymentHistory.*, " +
+            " CASE WHEN Account_ID IS NULL THEN 'Unknown' " +
+            " ELSE (SELECT FullName FROM Users WHERE Account_ID=PaymentHistory.Account_ID) END AS NguoiNhan " +
+            " FROM PaymentHistory " +
+            " WHERE Users_ID = @User_ID OR Account_ID = @User_ID " +
+            " ORDER BY NgayGiaoDich DESC " +
+            " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
+            " END";
 }
