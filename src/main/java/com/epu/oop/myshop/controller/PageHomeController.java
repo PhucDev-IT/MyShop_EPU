@@ -12,18 +12,13 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -31,8 +26,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -40,16 +33,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.DoubleToIntFunction;
-import java.util.logging.Handler;
-
 public class PageHomeController implements Initializable {
     @FXML
     private ImageView imgLoading;
@@ -658,8 +644,6 @@ public class PageHomeController implements Initializable {
                             throw new RuntimeException(ex);
                         }
                     });
-                }else{
-                    Platform.runLater(() -> AlertNotification.showAlertError("", "Có lỗi xảy ra"));
                 }
 
                 Platform.runLater(() -> paneLoading.setVisible(false));
@@ -672,6 +656,8 @@ public class PageHomeController implements Initializable {
     public boolean PayProductAtHome(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
         if (checkAddOrder = order_dao.OrderDetailsPayAtHome(hoaDon, ctHoaDon)) {
             return true;
+        }else{
+            Platform.runLater(() -> AlertNotification.showAlertError("", "Có lỗi xảy ra"));
         }
         return false;
     }
@@ -680,13 +666,15 @@ public class PageHomeController implements Initializable {
         Temp.bank = bank_dao.SelectByID(new Bank(Temp.user));
         if (Temp.bank != null) {
             if (Temp.account.getMoney().compareTo(thanhTien) <= 0) {
-                AlertNotification.showAlertWarning("Số dư không đủ!", "Vui lòng nạp thêm tiền...");
+                Platform.runLater(() -> AlertNotification.showAlertWarning("Số dư không đủ!", "Vui lòng nạp thêm tiền..."));
             } else {
                 PaymentHistory paymentBank = new PaymentHistory("Mua Hàng", "Thanh toán cho MyShop", thanhTien,
                         new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconThanhToan.jpg", Temp.user, null);
                 Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
                 if (checkAddOrder = order_dao.OrderDetailsPayByBank(hoaDon, ctHoaDon, paymentBank)) {
                     return true;
+                }else{
+                    Platform.runLater(() -> AlertNotification.showAlertError("", "Có lỗi xảy ra"));
                 }
             }
         } else {
@@ -801,6 +789,11 @@ public class PageHomeController implements Initializable {
             }
     }
 
+    public void hiddenFormVoucher(MouseEvent e)
+    {
+        paneVoucher.setVisible(false);
+    }
+
     //--------------------------------------TÌM KIẾM SẢN PHẨM-----------------------------------------
     private AtomicInteger lastIndex = new AtomicInteger(0);
     private final int maxProductSearch = 15;
@@ -808,15 +801,18 @@ public class PageHomeController implements Initializable {
     public void loadDataProductSearch() {
         paneListProductSearch.setVisible(true);
         if(listProduct.size()<=0){
+
             lbNoData.setVisible(true);
         }else{
             lbNoData.setVisible(false);
         }
-        for(int i=0;i<listProduct.size() && i>=lastIndex.get();i++){
-            setDataProduct(listProduct.get(i), gridProductSearch);
+        int index = lastIndex.get();
+        while(index<listProduct.size()){
+            setDataProduct(listProduct.get(index), gridProductSearch);
+            index++;
         }
         lastIndex.set(lastIndex.get() + (listProduct.size()-lastIndex.get()) ); // thay đổi giá trị của biến lastIndex
-        System.out.println(lastIndex.get());
+
     }
 
     public synchronized void getNameProductSearch(ActionEvent e) {
@@ -826,7 +822,8 @@ public class PageHomeController implements Initializable {
             col = 0;
             grid_Products.getChildren().clear();
             lastIndex.set(0);   //Vì sau khi nhấn tìm lại thì vị trí bắt đầu đang bị nhảy lên cao r
-            listProduct.clear();
+            listProduct.clear();    //Giai phong bộ nhớ  các node khng dùng đến
+            gridProductSearch.getChildren().clear();
             hideForm();
             loadData(e);
         }
@@ -1003,9 +1000,9 @@ public class PageHomeController implements Initializable {
         imgAvatar.setImage((new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_User.png"))));
         imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
         imgVoucherOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/voucher.png")));
-        imgUserOrder.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_User.png"))));
-        imgPhoneOrder.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconPhone.png"));
-        imgAddressOrder.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconAddress.png"));
+        imgUserOrder.setImage(new Image("C:\\Users\\84374\\Downloads\\iconUser.png"));
+        imgPhoneOrder.setImage(new Image("C:\\Users\\84374\\Downloads\\iconPhone.png"));
+        imgAddressOrder.setImage(new Image("C:\\Users\\84374\\Downloads\\iconAddress.png"));
         imgPayAtHome.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"));
         imgPayBank.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconThanhToan.jpg"))));
     }

@@ -3,7 +3,6 @@ module com.epu.oop.myshop {
     requires javafx.fxml;
     requires java.sql;
     requires java.naming;
-    requires mssql.jdbc;
     requires com.jfoenix;
     requires java.sql.rowset;
     requires com.zaxxer.hikari;

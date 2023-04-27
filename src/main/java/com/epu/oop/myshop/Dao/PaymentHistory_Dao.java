@@ -120,19 +120,11 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
         List<Object[]> list = new ArrayList<>();
         try {
             Connection connection = jdbcUtil.getConnection();
-            String sql = " SELECT " +
-                    " PaymentHistory.*," +
-                    "CASE WHEN Account_ID IS NULL THEN 'Unknown' " +
-                    "ELSE (SELECT FullName FROM Users WHERE Account_ID=PaymentHistory.Account_ID) END AS NguoiNhan" +
-                    " FROM PaymentHistory " +
-                    "WHERE Users_ID = ? OR Account_ID = ? " +
-                    "ORDER BY NgayGiaoDich DESC " +
-                    "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-            PreparedStatement statement = connection.prepareStatement(sql);
+            String sql = "{call proc_PaymentHistory(?,?,?)}";
+            CallableStatement statement = connection.prepareCall(sql);
             statement.setInt(1,a.getID());
-            statement.setInt(2,a.getID());
-            statement.setInt(3,lastindex.get());
-            statement.setInt(4,maxressul);
+            statement.setInt(2,lastindex.get());
+            statement.setInt(3,maxressul);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 Object[] obj = new Object[2];

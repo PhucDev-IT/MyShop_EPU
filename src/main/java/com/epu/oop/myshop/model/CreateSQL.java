@@ -1,6 +1,13 @@
 package com.epu.oop.myshop.model;
 
+import com.epu.oop.myshop.Dao.Product_Dao;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+
+import java.math.BigDecimal;
 import java.sql.*;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateSQL {
     public static final String databaseName = "MyShop";
@@ -14,17 +21,17 @@ public class CreateSQL {
     public static final String userName = "sa";
     public static final String password = "123456";
 
-    private boolean check = false;
-
 
    
-    public boolean checkExistDatabase(){
+    public boolean checkExistDatabase() throws SQLException {
+        Connection conn = null;
         try {
             Class.forName(driver);
-            Connection connection = DriverManager.getConnection(url, userName, password);
-            Statement statement = connection.createStatement();
+            conn = DriverManager.getConnection(url, userName, password);
+            Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT name FROM sys.databases WHERE name = '" + databaseName + "'");
             if (resultSet.next()) {
+                System.out.println("Đã tồn tại");
                 return true;    //Nếu tồn tại trả về kq không rỗng
             } else {
                 return false;
@@ -34,298 +41,436 @@ public class CreateSQL {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-
-    public void restoreData() throws SQLException {
-        Connection conn = null;
-        String sql = "USE master RESTORE DATABASE YourDatabaseName FROM DISK='D:\\myshop.bak' WITH REPLACE;";
-        try {
-            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, userName, password);
-            conn.setAutoCommit(false);
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.executeUpdate();
-
-            conn.commit();
-        } catch (SQLException e) {
-            if(conn!=null){
-                conn.rollback();
-                System.out.println("Roll back restore: "+e.getMessage());
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }finally {
-            conn.setAutoCommit(true);
             conn.close();
         }
     }
 
+
+//    public void restoreData() throws SQLException {
+//        Connection conn = null;
+//        String sql = "USE master RESTORE DATABASE YourDatabaseName FROM DISK='D:\\myshop.bak' WITH REPLACE;";
+//        try {
+//            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
+//            Class.forName(driver);
+//            conn = DriverManager.getConnection(url, userName, password);
+//            conn.setAutoCommit(false);
+//            PreparedStatement statement = conn.prepareStatement(sql);
+//            statement.executeUpdate();
+//
+//            conn.commit();
+//        } catch (SQLException e) {
+//            if(conn!=null){
+//                conn.rollback();
+//                System.out.println("Roll back restore: "+e.getMessage());
+//            }
+//        } catch (ClassNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }finally {
+//            conn.setAutoCommit(true);
+//            conn.close();
+//        }
+//    }
+
+    public void autoCreate() throws SQLException, ClassNotFoundException {
+        if (createDatabase()) {
+            if (creatTable())
+               // if (createTigger())
+                    if (createIndex())
+                        if (createProcedure())
+                            if (insertData())
+                                if (insertDataChild())
+                                    setDataOnDatabase();
+        } else {
+            //Xóa database
+        }
+
+    }
     public boolean createDatabase() throws SQLException {
         Connection conn = null;
         try{
             // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
             Class.forName(driver);
-            conn = DriverManager.getConnection(url,userName,password);
+            conn = DriverManager.getConnection(url, userName, password);
+
             conn.setAutoCommit(false);
             Statement stmt = conn.createStatement();
             String sql = "CREATE DATABASE "+databaseName;
 
-            stmt.executeUpdate(sql);
+           stmt.executeUpdate(sql);
             conn.commit();
+
             System.out.println("Tạo database thành công");
-            return true;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             if (conn != null) {
                 conn.rollback();
             }
             System.out.println("Không thể tạo databse: "+e.getMessage());
-        } finally {
+            return false;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
             conn.setAutoCommit(true);
             conn.close();
         }
-        return false;
+        return true;
     }
-//
-//    private void creatTable() throws SQLException, IOException {
-//        if(!check){
-//            return;
-//        }
-//        Connection conn = null;
-//        Statement stm = null;
-//        try {
-//            Class.forName(driver);
-//            conn = DriverManager.getConnection(urlConnect,userName,password);
-//
-//            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
-//            conn.setAutoCommit(false);
-//            stm = conn.createStatement();
-//
-//            stm.executeUpdate(TblAccount);
-//            stm.executeUpdate(TblUser);
-//            stm.executeUpdate(TblBank);
-//            stm.executeUpdate(TblCategory);
-//            stm.executeUpdate(TblProduct);
-//            stm.executeUpdate(TblProductSeller);
-//            stm.executeUpdate(Tblvoucher);
-//            stm.executeUpdate(TblVoucherUser);
-//            stm.executeUpdate(Tblorder);
-//            stm.executeUpdate(TblOrderDtails);
-//            stm.executeUpdate(TblPaymentHistory);
-//
-//            conn.commit();
-//
-//            System.out.println("Tạo table thành công");
-//        }catch (SQLException | ClassNotFoundException e) {
-//            if (conn != null) {
-//                conn.rollback();
-//            }
-//            check = false;
-//            System.out.println("Không thể tạo table: "+e.getMessage());
-//        } finally {
-//            if(stm!=null){
-//                stm.close();
-//            }
-//            conn.setAutoCommit(true);
-//            conn.close();
-//        }
-//
-//    }
-//
-//    public void createTigger() throws SQLException {
-//        if(!check){
-//            return;
-//        }
-//        Connection conn = null;
-//            Statement stm = null;
-//            try {
-//                Class.forName(driver);
-//                conn = DriverManager.getConnection(urlConnect,userName,password);
-//                // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
-//                conn.setAutoCommit(false);
-//                stm = conn.createStatement();
-//
-//                stm.executeUpdate(TriggerOne);
-//                stm.executeUpdate(TriggerTwo);
-//                stm.executeUpdate(TriggerThree);
-//                conn.commit();
-//                System.out.println("Tạo trigger thành công");
-//            } catch (SQLException e) {
-//                if (conn != null) {
-//                    conn.rollback();
-//                    check = false;
-//                }
-//                System.out.println("Không thể tạo trigger: "+e.getMessage());
-//            } catch (ClassNotFoundException e) {
-//                throw new RuntimeException(e);
-//            } finally {
-//                if (stm != null) {
-//                    stm.close();
-//                }
-//                conn.setAutoCommit(true);
-//                conn.close();
-//            }
-//
-//    }
-//
-//    //Test dữ liệu tự động
-//
-//    public void insertDataChild() throws SQLException {
-//        if(!check){
-//            return;
-//        }
-//        Connection conn = null;
-//        PreparedStatement preUser = null;
-//        PreparedStatement preProduct = null;
-//        PreparedStatement preProSeler = null;
-//        try{
-//            conn = ConnectionPool.getConnection();
-//            conn.setAutoCommit(false);
-//
-//            String sqlUser = "INSERT INTO Users(Account_ID,FullName,Email)" +
-//                    " VALUES (?,?,?)";
-//
-//            String sqlProduct = "INSERT INTO Product(TenSP,SoLuong,DonGia,MoTa,SrcImg,Category_ID)" +
-//                    " VALUES (?,?,?,?,?,?)";
-//            String sqlProdSeller = "INSERT INTO ProductSeller (Product_ID,Users_ID) " +
-//                    "VALUES (?,?)";
-//
-//            preUser = conn.prepareStatement(sqlUser);
-//            preUser.setInt(1,1);
-//            preUser.setString(2,"ADMIN");
-//            preUser.setString(3,"nguyenvanphuc362003@gmail.com");
-//            preUser.executeUpdate();
-//
-//            preUser.setInt(1,2);
-//            preUser.setString(2,"Nguyễn Văn Phúc");
-//            preUser.setString(3,"myshop@gmail.com");
-//            preUser.executeUpdate();
-//
-//            preUser.setInt(1,3);
-//            preUser.setString(2,"Hoàng Hải Nam");
-//            preUser.setString(3,"hainam@gmail.com");
-//            preUser.executeUpdate();
-//
-//            preUser.setInt(1,4);
-//            preUser.setString(2,"Trần Thị Ngọc Trinh");
-//            preUser.setString(3,"trinhsat@gmail.com");
-//            preUser.executeUpdate();
-//
-//            conn.commit();
-//            System.out.println("Tạo bảng khóa ngoại thành công");
-//        } catch (SQLException e) {
-//            if(conn!=null){
-//                conn.rollback();
-//                check = false;
-//            }
-//            System.out.println("Không thêm được dữ liệu: "+e.getMessage());
-//        }finally {
-//
-//            if(preProduct!=null){
-//                preProduct.close();
-//            }
-//
-//            if(preUser!=null){
-//                preUser.close();
-//            }
-//
-//            if(preProSeler!=null) preProSeler.close();
-//
-//            conn.setAutoCommit(true);
-//            conn.close();
-//        }
-//    }
-//    public void insertData() throws SQLException {
-//        if(!check){
-//            return;
-//        }
-//        Connection conn = null;
-//        PreparedStatement preaccount = null;
-//
-//        PreparedStatement preCategory = null;
-//
-//        try{
-//            conn = ConnectionPool.getConnection();
-//            conn.setAutoCommit(false);
-//
-//            String sqlAccount = "INSERT INTO Account(UserName,Passwords,PhanQuyen)" +
-//                    " VALUES (?,?,?)";
-//
-//            String sqlCategory = "INSERT INTO Category(Category_ID,TenDanhMuc)" +
-//                    " VALUES (?,?)";
-//
-//            preaccount = conn.prepareStatement(sqlAccount);
-//            preaccount.setString(1,"admin");
-//            preaccount.setString(2,"admin");
-//            preaccount.setString(3,"ADMIN");
-//            preaccount.executeUpdate();
-//
-//            preaccount.setString(1,"myshop@gmail.com");
-//            preaccount.setString(2,"123456");
-//            preaccount.setString(3,"Member");
-//            preaccount.executeUpdate();
-//
-//            preaccount.setString(1,"hainam@gmail.com");
-//            preaccount.setString(2,"123456");
-//            preaccount.setString(3,"Member");
-//            preaccount.executeUpdate();
-//
-//            preaccount.setString(1,"xinchao@gmail.com");
-//            preaccount.setString(2,"123456");
-//            preaccount.setString(3,"Member");
-//            preaccount.executeUpdate();
-//
-//
-//            preCategory = conn.prepareStatement(sqlCategory);
-//            Category category = new Category();
-//            for(Map.Entry<String,Integer> entry : category.listCategory.entrySet()) {
-//                preCategory.setInt(1,entry.getValue());
-//                preCategory.setString(2,entry.getKey());
-//                preCategory.executeUpdate();
-//            }
-//
-//            conn.commit();
-//            System.out.println("Tạo bảng khóa chính thành công");
-//        } catch (SQLException e) {
-//            if(conn!=null){
-//                conn.rollback();
-//                check = false;
-//            }
-//            System.out.println("Không thêm được dữ liệu: "+e.getMessage());
-//        }finally {
-//
-//            if(preaccount!=null){
-//                preaccount.close();
-//            }
-//
-//            if(preCategory!=null){
-//                preCategory.close();
-//            }
-//
-//            conn.setAutoCommit(true);
-//            conn.close();
-//        }
-//    }
-//
-//    public void setDataOnDatabase(){
-//        if(!check){
-//            return;
-//        }
-//        Product_Dao productDao = Product_Dao.getInstance();
-//        Random random = new Random();
-//        for (int i = 1; i < 10000; i++) {
-//            Product product = new Product("Sản phẩm " + i, (random.nextInt(9200) + 1), BigDecimal.valueOf(123 * i), "Không nói gì",
-//                    "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(24) + 1, new User(random.nextInt(3) + 2));
-//            try {
-//                productDao.Insert(product);
-//            } catch (SQLException e) {
-//                throw new RuntimeException(e);
-//            }
-//            System.out.println(i);
-//        }
-//    }
+
+    public boolean creatTable() throws SQLException {
+        Statement stm = null;
+        int result = 1;
+        Connection connection = null;
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(urlConnect, userName, password);
+            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
+            connection.setAutoCommit(false);
+            stm = connection.createStatement();
+
+            stm.executeUpdate(TblAccount);
+            stm.executeUpdate(TblUser);
+            stm.executeUpdate(TblBank);
+            stm.executeUpdate(TblCategory);
+            stm.executeUpdate(TblProduct);
+            stm.executeUpdate(TblProductSeller);
+            stm.executeUpdate(Tblvoucher);
+            stm.executeUpdate(TblVoucherUser);
+            stm.executeUpdate(Tblorder);
+            stm.executeUpdate(TblOrderDtails);
+            stm.executeUpdate(TblPaymentHistory);
+
+            connection.commit();
+
+            System.out.println("Tạo table thành công");
+        }catch (SQLException e) {
+            if (connection != null) {
+                connection.rollback();
+            }
+            result = 0;
+            System.out.println("Không thể tạo table: "+e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(stm!=null){
+                stm.close();
+            }
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return result>0;
+    }
+
+    public boolean createTigger() throws SQLException {
+            Statement stm = null;
+            Connection connection = null;
+            try {
+                Class.forName(driver);
+                connection = DriverManager.getConnection(urlConnect, userName, password);
+                // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
+                connection.setAutoCommit(false);
+                stm = connection.createStatement();
+
+                stm.executeUpdate(TriggerOne);
+                stm.executeUpdate(TriggerTwo);
+                stm.executeUpdate(TriggerThree);
+                connection.commit();
+               // System.out.println("Tạo trigger thành công");
+            } catch (SQLException e) {
+                if (connection != null) {
+                    connection.rollback();
+                }
+              //  System.out.println("Không thể tạo trigger: ");
+                e.printStackTrace();
+                return false;
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (stm != null) {
+                    stm.close();
+                }
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        return true;
+    }
+    public boolean createIndex() throws SQLException {
+
+        AtomicBoolean check = new AtomicBoolean(true);
+        Statement stm = null;
+        Connection connection = null;
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(urlConnect, userName, password);
+            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
+            connection.setAutoCommit(false);
+            stm = connection.createStatement();
+            stm.executeUpdate(indexUser);
+            stm.executeUpdate(indexOrder);
+            stm.executeUpdate(indexPayment);
+            stm.executeUpdate(indexProduct);
+            stm.executeUpdate(indexProductSeller);
+            connection.commit();
+            System.out.println("Tạo index thành công");
+        } catch (SQLException e) {
+            if (connection != null) {
+                connection.rollback();
+                check.set(false);
+            }
+            System.out.println("Không thể tạo index: "+e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return check.get() == true;
+    }
+
+    public boolean createProcedure() throws SQLException {
+
+        Statement stm = null;
+        Connection connection = null;
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(urlConnect,userName,password);
+            // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
+            connection.setAutoCommit(false);
+            stm = connection.createStatement();
+            stm.executeUpdate(proc_getProductOfPages);
+            stm.executeUpdate(proc_PaymentHistory);
+            stm.executeUpdate(proc_SearchProduct);
+            stm.executeUpdate(proc_selectProd_User);
+            connection.commit();
+            System.out.println("Tạo Procedure thành công");
+        } catch (SQLException e) {
+            if (connection != null) {
+                connection.rollback();
+            }
+            System.out.println("Không thể tạo Procedure: "+e.getMessage());
+            return false;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return true;
+    }
+    //Test dữ liệu tự động
+
+    public boolean insertDataChild() throws SQLException {
+        AtomicBoolean check = new AtomicBoolean(true);
+        PreparedStatement preUser = null;
+        PreparedStatement preProduct = null;
+        PreparedStatement preProSeler = null;
+        Connection connection = null;
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(urlConnect, userName, password);
+            connection.setAutoCommit(false);
+
+            String sqlUser = "INSERT INTO Users(Account_ID,FullName,Email)" +
+                    " VALUES (?,?,?)";
+
+
+            preUser = connection.prepareStatement(sqlUser);
+            preUser.setInt(1,1);
+            preUser.setString(2,"ADMIN");
+            preUser.setString(3,"nguyenvanphuc362003@gmail.com");
+            preUser.executeUpdate();
+
+            preUser.setInt(1,2);
+            preUser.setString(2,"Nguyễn Văn Phúc");
+            preUser.setString(3,"myshop@gmail.com");
+            preUser.executeUpdate();
+
+            preUser.setInt(1,3);
+            preUser.setString(2,"Hoàng Hải Nam");
+            preUser.setString(3,"hainam@gmail.com");
+            preUser.executeUpdate();
+
+            preUser.setInt(1,4);
+            preUser.setString(2,"Trần Thị Ngọc Trinh");
+            preUser.setString(3,"trinhsat@gmail.com");
+            preUser.executeUpdate();
+
+            connection.commit();
+            System.out.println("Thêm dữ liệu khóa ngoài thành công");
+        } catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+            }
+            check.set(false);
+            System.out.println("Không thêm được dữ liệu: "+e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+
+            if(preProduct!=null){
+                preProduct.close();
+            }
+
+            if(preUser!=null){
+                preUser.close();
+            }
+
+            if(preProSeler!=null) preProSeler.close();
+
+            connection.setAutoCommit(true);
+
+            connection.close();
+        }
+        return check.get();
+    }
+    public boolean insertData() throws SQLException {
+        PreparedStatement preaccount = null;
+
+        PreparedStatement preCategory = null;
+        Connection connection = null;
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(urlConnect, userName, password);
+            connection.setAutoCommit(false);
+
+            String sqlAccount = "INSERT INTO Account(UserName,Passwords,PhanQuyen)" +
+                    " VALUES (?,?,?)";
+
+            String sqlCategory = "INSERT INTO Category(Category_ID,TenDanhMuc)" +
+                    " VALUES (?,?)";
+
+            preaccount = connection.prepareStatement(sqlAccount);
+            preaccount.setString(1,"admin");
+            preaccount.setString(2,"admin");
+            preaccount.setString(3,"ADMIN");
+            preaccount.executeUpdate();
+
+            preaccount.setString(1,"myshop@gmail.com");
+            preaccount.setString(2,"123456");
+            preaccount.setString(3,"Member");
+            preaccount.executeUpdate();
+
+            preaccount.setString(1,"hainam@gmail.com");
+            preaccount.setString(2,"123456");
+            preaccount.setString(3,"Member");
+            preaccount.executeUpdate();
+
+            preaccount.setString(1,"xinchao@gmail.com");
+            preaccount.setString(2,"123456");
+            preaccount.setString(3,"Member");
+            preaccount.executeUpdate();
+
+
+            preCategory = connection.prepareStatement(sqlCategory);
+            Category category = new Category();
+            for(Map.Entry<String,Integer> entry : category.listCategory.entrySet()) {
+                preCategory.setInt(1,entry.getValue());
+                preCategory.setString(2,entry.getKey());
+                preCategory.executeUpdate();
+            }
+
+            connection.commit();
+            System.out.println("Tạo bảng khóa chính thành công");
+        } catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+            }
+            System.out.println("Không thêm được dữ liệu: "+e.getMessage());
+            return false;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+
+            if(preaccount!=null){
+                preaccount.close();
+            }
+
+            if(preCategory!=null){
+                preCategory.close();
+            }
+
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return true;
+    }
+
+    public void setDataOnDatabase() throws ClassNotFoundException, SQLException {
+        Class.forName(driver);
+        Connection connection = DriverManager.getConnection(urlConnect, userName, password);
+
+        Random random = new Random();
+        for (int i = 1; i < 10000; i++) {
+            Product product = new Product(0,"Sản phẩm " + i, (random.nextInt(9200) + 1), BigDecimal.valueOf(123 * i), "Không nói gì",
+                    "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(24) + 1, new User(random.nextInt(3) + 2));
+            try {
+                Insert(product,connection);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(i);
+        }
+        connection.close();
+    }
+
+    public synchronized boolean Insert(Product t,Connection connection) throws SQLException {
+        int check = 0;
+        PreparedStatement preProduct = null;
+        PreparedStatement preProSeller = null;
+
+        try {
+            connection.setAutoCommit(false);
+            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
+            String sqlProductSeller = "INSERT INTO ProductSeller(Product_ID,Users_ID) " +
+                    "VALUES (?,?)";
+            preProduct = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
+
+            preProduct.setString(1,t.getTenSP());
+            preProduct.setInt(2,t.getQuantity());
+            preProduct.setBigDecimal(3,t.getPrice());
+            preProduct.setString(4,t.getMoTa());
+            preProduct.setString(5,t.getSrcImg());
+            preProduct.setInt(6,t.getCategory());
+            preProduct.executeUpdate();
+
+            int index ;
+
+            try(ResultSet rs= preProduct.getGeneratedKeys()){
+                if(rs.next()){
+                    index = rs.getInt(1);
+                }else {
+                    throw new SQLException("Không thể thm dữ liệu bảng product");
+                }
+
+            }
+            preProSeller = connection.prepareStatement(sqlProductSeller);
+            preProSeller.setInt(1,index);
+            preProSeller.setInt(2,t.getUser().getID());
+
+            check = preProSeller.executeUpdate();
+
+            connection.commit();
+        }catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+                System.out.println("Roll Back: "+e.getMessage());
+            }
+        }finally {
+            if(preProduct!=null)    preProduct.close();
+
+            if(preProSeller!=null)  preProSeller.close();
+            connection.setAutoCommit(true);
+         //   connection.close();
+        }
+        return check>0;
+    }
 
 
     private final String TblAccount = "CREATE TABLE Account ("+
@@ -354,6 +499,8 @@ public class CreateSQL {
             "( " +
             " SoTaiKhoan VARCHAR(20) PRIMARY KEY, " +
             " TenNH NVARCHAR(20), " +
+            " TenChiNhanh NVARCHAR(100), " +
+            " SoCCCD VARCHAR(25),"+
             " ChuSoHuu NVARCHAR(50), " +
             " Users_ID INT," +
             " FOREIGN KEY (Users_ID) REFERENCES Users(Account_ID) " +
@@ -457,7 +604,8 @@ public class CreateSQL {
             "CREATE INDEX idx_Users_ID ON PaymentHistory(Users_ID) " +
             "CREATE INDEX idx_Account_ID ON PaymentHistory(Account_ID)";
 
-
+    String indexProductSeller = "CREATE INDEX idx_Users_ID ON ProductSeller(Users_ID) " +
+            "CREATE INDEX idx_Product_ID ON ProductSeller(Product_ID)";
     private final String TriggerOne = "CREATE TRIGGER TRIG_Update_MoneySeller ON OrderDetails" +
             " FOR INSERT " +
             " AS" +
@@ -500,8 +648,8 @@ public class CreateSQL {
             " @Category_ID INT," +
             " @Offset int, " +
             " @Limit int" +
-            "AS " +
-            "BEGIN " +
+            " AS " +
+            " BEGIN " +
             " SELECT p.*, u.FullName FROM Product p JOIN ProductSeller ps " +
             " ON p.MaSP = ps.Product_ID " +
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
@@ -526,7 +674,7 @@ public class CreateSQL {
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
-    private final String proc_selectProd_User = "CREATE PROC prcd_getProduct_ofSeller " +
+    private final String proc_selectProd_User = "CREATE PROC proc_getProduct_ofSeller " +
             " @User_ID INT, " +
             " @Offset int, " +
             " @Limit int " +
@@ -536,11 +684,11 @@ public class CreateSQL {
             " ON Product.MaSP = ProductSeller.Product_ID " +
             " AND ProductSeller.Users_ID = @User_ID " +
             " AND Product.Activity = 'ON' " +
-            " ORDER BY TotalRevenue " +
+            " ORDER BY MaSP " +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
-    private final String proc_PaymentHistory = "CREATE PROC pcd_PaymentHistory " +
+    private final String proc_PaymentHistory = "CREATE PROC proc_PaymentHistory " +
             " @User_ID INT, " +
             " @Offset int, " +
             " @Limit int " +

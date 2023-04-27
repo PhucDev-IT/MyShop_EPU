@@ -27,8 +27,8 @@ public class Bank_Dao implements Dao_Interface<Bank> {
     public boolean Insert(Bank t) throws SQLException {
         int results = 0;
 
-            String sql = "INSERT INTO Bank(SoTaiKhoan,TenNH,ChuSoHuu,Users_ID)" +
-                    " VALUES (?,?,?,?)";
+            String sql = "INSERT INTO Bank(SoTaiKhoan,TenNH,TenChiNhanh,ChuSoHuu,SoCCCD,Users_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
         Connection connection = null;
         try {
              connection = jdbcUtil.getConnection();
@@ -36,8 +36,10 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1,t.getSoTaiKhoan());
             statement.setString(2,t.getTenNH());
-            statement.setString(3,t.getChuSoHuu());
-            statement.setInt(4,t.getUser().getID());
+            statement.setString(3,t.getTenChiNhanh());
+            statement.setString(4,t.getChuSoHuu());
+            statement.setString(5,t.getSoCCCD());
+            statement.setInt(6,t.getUser().getID());
 
             //Bước 3:Thực thi câu lệnh
             results = statement.executeUpdate();
@@ -83,8 +85,10 @@ public class Bank_Dao implements Dao_Interface<Bank> {
                 String TenNH = rs.getString("TenNH");
                 String ChuSoHuu = rs.getString("ChuSoHuu");
                 int user_id = rs.getInt("Users_ID");
+                String tenChiNhanh = rs.getString("TenChiNhanh");
+                String SoCCCD = rs.getString("SoCCCD");
 
-                bank = new Bank(SoTaiKhoan,TenNH,ChuSoHuu,new User(user_id));
+                bank = new Bank(SoTaiKhoan,TenNH,tenChiNhanh,ChuSoHuu,SoCCCD,new User(user_id));
             }
             statement.close();
             rs.close();
@@ -111,6 +115,8 @@ public class Bank_Dao implements Dao_Interface<Bank> {
                     " SoTaiKhoan=?," +
                     " TenNH=?," +
                     " ChuSoHuu=?," +
+                    " TenChiNhanh = ?," +
+                    " SoCCCD = ?" +
                     " WHERE Users_ID=?";
         Connection connection = null;
         try {
@@ -120,7 +126,9 @@ public class Bank_Dao implements Dao_Interface<Bank> {
             statement.setString(1,t.getSoTaiKhoan());
             statement.setString(2,t.getTenNH());
             statement.setString(3,t.getChuSoHuu());
-            statement.setInt(4,t.getUser().getID());
+            statement.setString(4,t.getTenChiNhanh());
+            statement.setString(5,t.getSoCCCD());
+            statement.setInt(6,t.getUser().getID());
 
             results = statement.executeUpdate();
             System.out.println("Có "+results +" thay đổi");

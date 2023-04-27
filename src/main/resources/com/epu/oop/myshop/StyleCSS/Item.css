@@ -65,4 +65,13 @@
     -fx-border-radius: 1%;
     -fx-border-color: white;
 }
+.item-product-ofBanHang{
+    -fx-background-color:  #CCCCCC;
+    -fx-border-radius:20;
+    -fx-background-radius: 20px;
+    -fx-border-color:red;
+}
+.item-product-ofBanHang:hover{
+    -fx-background-color: #faf6f3;
+}
 

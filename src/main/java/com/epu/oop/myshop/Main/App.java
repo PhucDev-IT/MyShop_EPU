@@ -46,7 +46,7 @@ public class App extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         CreateSQL cr = new CreateSQL();
         if(cr.checkExistDatabase()){

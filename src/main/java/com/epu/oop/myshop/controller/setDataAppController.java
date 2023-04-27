@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class setDataAppController implements Initializable {
 
@@ -32,20 +34,14 @@ public class setDataAppController implements Initializable {
 
 
 
-    private void setData() {
+    private void setData() throws SQLException, ClassNotFoundException {
         CreateSQL cr = new CreateSQL();
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-               try{
-                   if(cr.createDatabase()) {
-                       cr.restoreData();
-                   }
-               }catch (SQLException e){
-                   e.printStackTrace();
-               }
-                System.out.println("hello");
                 Thread.sleep(2000);
+                    cr.autoCreate();
+                Thread.sleep(500);
                Platform.runLater(()->{
                    try {
                        ConverForm.showForm((Stage) imgLoading.getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
@@ -56,6 +52,18 @@ public class setDataAppController implements Initializable {
                return null;
             }
         };
+        Thread thread = new Thread(task);
+        thread.start();
+        task.setOnSucceeded(event -> {
+            thread.interrupt();
+        });
+    }
+    AtomicBoolean check  = new AtomicBoolean(true);
+    public void event(MouseEvent e) throws SQLException, ClassNotFoundException {
+//        if (check.get()){
+//            System.out.println("Vào");
+//            setData();
+//        }
     }
 
     @Override
@@ -65,28 +73,13 @@ public class setDataAppController implements Initializable {
         imgLoading.setFitWidth(1000);
         imgLoading.setPreserveRatio(true);
 
-        CreateSQL cr = new CreateSQL();
-        try{
-            if(cr.createDatabase()) {
-                cr.restoreData();
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-
         try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
+            setData();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        Platform.runLater(()->{
-            try {
-                ConverForm.showForm((Stage) imgLoading.getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
 
     }
 }

@@ -183,7 +183,6 @@ public class Account_Dao implements Dao_Interface<Account> {
     public Account checkLogin(Account account)
     {
         Account a = null;
-
             String sql = "SELECT * FROM Account " +
                     "WHERE UserName=? " +
                     "AND Passwords = ?";
@@ -208,7 +207,6 @@ public class Account_Dao implements Dao_Interface<Account> {
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra: "+e.getMessage());
         }
-
        return a;
     }
 

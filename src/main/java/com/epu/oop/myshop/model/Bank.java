@@ -27,12 +27,7 @@ public class Bank implements Serializable {
     public Bank() {pushBank();}
 
 
-    public Bank(String soTaiKhoan, String tenNH, String chuSoHuu, User user) {
-        SoTaiKhoan = soTaiKhoan;
-        TenNH = tenNH;
-        ChuSoHuu = chuSoHuu;
-        this.user = user;
-    }
+
     public Bank(User u)
     {
         this.user = u;
@@ -105,9 +100,15 @@ public class Bank implements Serializable {
 
     @Override
     public String toString() {
-        return "Bank [SoTaiKhoan=" + SoTaiKhoan + ", TenNH=" + TenNH + ", ChuSoHuu=" + ChuSoHuu + "]";
+        return "Bank{" +
+                "SoTaiKhoan='" + SoTaiKhoan + '\'' +
+                ", tenChiNhanh='" + tenChiNhanh + '\'' +
+                ", soCCCD='" + soCCCD + '\'' +
+                ", TenNH='" + TenNH + '\'' +
+                ", ChuSoHuu='" + ChuSoHuu + '\'' +
+                ", user=" + user +
+                '}';
     }
-
 
     @Override
     public int hashCode() {

@@ -2,9 +2,13 @@ package com.epu.oop.myshop.Main;
 
 import com.epu.oop.myshop.Dao.Product_Dao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.model.CreateSQL;
+import com.epu.oop.myshop.model.Product;
 import com.epu.oop.myshop.model.User;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Test{
@@ -26,12 +30,17 @@ public class Test{
 //                System.out.println(i);
 //        }
 //
-        ConnectionPool connectionPool = ConnectionPool.getInstance();
-        Product_Dao product_dao = Product_Dao.getInstance(connectionPool);
+//        ConnectionPool connectionPool = ConnectionPool.getInstance();
+//        Product_Dao product_dao = Product_Dao.getInstance(connectionPool);
+//
+//        CreateSQL cr = new CreateSQL();
+//        cr.autoCreate();
 
-        Object[] obj1 = product_dao.sumTotalOrder(new User(5));
-
-        System.out.println("Finnish");
+//        List<Product> list = product_dao.selectProductOfUser(new User(5),new AtomicInteger(0),10);
+//
+//        System.out.println(list);
+CreateSQL cr =  new CreateSQL();
+        cr.autoCreate();
     }
 
 

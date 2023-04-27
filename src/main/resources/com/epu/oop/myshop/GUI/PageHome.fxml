@@ -60,22 +60,19 @@
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
                <children>
-                  <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: red;" visible="false">
+                  <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: white;" visible="false">
                      <children>
-                        <ScrollPane fx:id="scrollProductSearch" layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: #FFFCFC;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <ScrollPane fx:id="scrollProductSearch" layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
                               <GridPane fx:id="gridProductSearch" hgap="10.0" prefHeight="0.0" prefWidth="0.0" vgap="10.0">
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <padding>
-                                    <Insets top="-30.0" />
+                                    <Insets left="30.0" top="-30.0" />
                                  </padding>
                               </GridPane>
                            </content>
-                           <padding>
-                              <Insets left="30.0" />
-                           </padding>
                         </ScrollPane>
                      </children>
                   </AnchorPane>
@@ -432,17 +429,17 @@
                                     <Font name="Times New Roman Bold Italic" size="18.0" />
                                  </font>
                               </Label>
-                              <ImageView fx:id="imgUserOrder" fitHeight="27.0" fitWidth="27.0" layoutX="33.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
+                              <ImageView fx:id="imgUserOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
                               <Label fx:id="nameUserOder_lb" layoutX="69.0" layoutY="54.0" prefHeight="19.0" prefWidth="273.0" text="Nguyễn Văn Phúc">
                                  <font>
                                     <Font name="Times New Roman Bold" size="16.0" />
                                  </font>
                               </Label>
-                              <ImageView fx:id="imgPhoneOrder" fitHeight="27.0" fitWidth="27.0" layoutX="33.0" layoutY="81.0" pickOnBounds="true" />
+                              <ImageView fx:id="imgPhoneOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="81.0" pickOnBounds="true" />
                               <Label layoutX="69.0" layoutY="84.0" text="+84" />
-                              <Label fx:id="phoneUserOder_lb" layoutX="98.0" layoutY="83.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
-                              <ImageView fx:id="imgAddressOrder" fitHeight="27.0" fitWidth="27.0" layoutX="33.0" layoutY="111.0" pickOnBounds="true" />
-                              <Label layoutX="65.0" layoutY="114.0" text="Địa chỉ nhận hàng:">
+                              <Label fx:id="phoneUserOder_lb" layoutX="99.0" layoutY="84.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
+                              <ImageView fx:id="imgAddressOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="111.0" pickOnBounds="true" />
+                              <Label layoutX="68.0" layoutY="114.0" text="Địa chỉ nhận hàng:">
                                  <font>
                                     <Font name="Times New Roman Italic" size="16.0" />
                                  </font>
@@ -531,7 +528,7 @@
                         </Label>
                         <Pane fx:id="paneVoucher" layoutX="398.0" layoutY="14.0" prefHeight="526.0" prefWidth="662.0" style="-fx-background-color: white;" visible="false">
                            <children>
-                              <ScrollPane prefHeight="526.0" prefWidth="662.0">
+                              <ScrollPane layoutY="22.0" prefHeight="504.0" prefWidth="662.0" style="-fx-background-color: white;">
                                  <content>
                                     <GridPane fx:id="gridVoucher" prefHeight="0.0" prefWidth="3.0" vgap="5.0">
                                       <rowConstraints>
@@ -543,6 +540,11 @@
                                     </GridPane>
                                  </content>
                               </ScrollPane>
+                              <Text fill="#ff0505" layoutX="643.0" layoutY="17.0" onMouseClicked="#hiddenFormVoucher" strokeType="OUTSIDE" strokeWidth="0.0" text="x">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Text>
                            </children>
                         </Pane>
                         <Label fx:id="closeOrderDetail" layoutX="1275.0" layoutY="2.0" onMouseClicked="#closeForm" text="x" textFill="#ff0808">
@@ -554,7 +556,7 @@
                   </AnchorPane>
                   <AnchorPane fx:id="paneLoading" layoutX="41.0" layoutY="-63.0" prefHeight="723.0" prefWidth="1326.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-63.0">
                      <children>
-                        <ImageView fx:id="imgLoading" fitHeight="76.0" fitWidth="94.0" layoutX="562.0" layoutY="311.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="imgLoading" fitHeight="76.0" fitWidth="94.0" layoutX="581.0" layoutY="311.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </AnchorPane>
                </children>

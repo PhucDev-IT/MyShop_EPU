@@ -462,17 +462,17 @@ public class ProfileUserController implements Initializable {
             if (isStringEmpty(chusoHuu) || isStringEmpty(tenNganHang) || isStringEmpty(stk)) {
                 AlertNotification.showAlertWarning("WARNING", "Vui lòng nhập đầy đủ thông tin ngân hàng của bạn");
             } else {
-                Bank bankInsert = new Bank(stk, tenNganHang, chusoHuu, user);
-                if (bank_Dao.Insert(bankInsert)) {
+              //  Bank bankInsert = new Bank(stk, tenNganHang, chusoHuu, user);
+            //    if (bank_Dao.Insert(bankInsert)) {
                     if (Jtxt_CCCD.isEditable()) {
                         user.setCanCuocCongDan(Jtxt_CCCD.getText());
                         userDao.Update(user);
                     }
-                    bank = bankInsert;
+             //       bank = bankInsert;
                     AlertNotification.showAlertSucces("", "Cảm ơn bạn đã liên kết ngân hàng với MyShop.");
-                } else {
+             //   } else {
                     AlertNotification.showAlertError("", "Có lỗi xảy ra, Thử lại sau!");
-                }
+             //   }
             }
 
         }

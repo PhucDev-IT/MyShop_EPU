@@ -62,7 +62,10 @@ public class ItemProductsInBanHang {
         this.myListener = mylistener;
 
         try {
-            image.setImage(new Image(p.getSrcImg()));
+            if(!p.getSrcImg().contains(":")){
+                image.setImage(new Image(getClass().getResourceAsStream(p.getSrcImg())));
+            }else
+                image.setImage(new Image(p.getSrcImg()));
         }catch (Exception e){
             image.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
             System.out.println("Lỗi: "+e.getMessage());
@@ -73,7 +76,6 @@ public class ItemProductsInBanHang {
         DaBan_Label.setText(p.getSold()+"");
 
         if(p.getTotalRevenue()!=null){
-            System.out.println(p.getTotalRevenue());
             DoanhThu_Label.setText(App.numf.format(p.getTotalRevenue())+"đ");
         }else {
             DoanhThu_Label.setText("0đ");

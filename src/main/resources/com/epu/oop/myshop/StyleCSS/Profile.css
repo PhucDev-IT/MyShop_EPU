@@ -8,10 +8,17 @@
 .item_aside:hover{
 	-fx-background-color: green;
 }
-.Pane{
+.pane-main{
 	-fx-background-radius: 20;
-	-fx-background-color: white;
+	-fx-background-color: #eee;
 }
+
+.pane-main:hover{
+	-fx-background-color: #F2F9B7;
+	-fx-border-radius: 20;
+	-fx-border-color: green;
+}
+
 .button-banHag{
 	-fx-background-color:#336699;
 	-fx-boder-radius:13;

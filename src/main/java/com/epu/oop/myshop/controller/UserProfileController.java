@@ -37,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -281,6 +282,8 @@ public class UserProfileController implements Initializable {
     private JFXButton btnDeleteBank;
 
     // ----------------------Hiện thông tin - Sửa thông tin cá nhân---------------------------------------
+    @FXML
+    private Pane paneHoverAvatar;
 
     @FXML
     private JFXButton btn_updateProfile;
@@ -562,25 +565,19 @@ public class UserProfileController implements Initializable {
                     return null;
                 }
                 Thread.sleep(200);
-                Platform.runLater(() -> {
 
                     if(e.getSource() == btnSearchProduct){  //Nếu nhấn tìm kiếm thì
                         ProductBySearch();
                     }else if(e instanceof ScrollEvent){
                         if(lastEvent.equals("select")){
-                            SelectDataProduct();
+                           SelectDataProduct();
                         }else {
-                            System.out.println("cuộn tìm kiêm");
                             ProductBySearch();
                         }
-                    }
+                   }
                     else {
                         SelectDataProduct();
-                    }
-                });
-
-                Thread.sleep(400);
-                Platform.runLater(() -> imgLoadingData.setVisible(false));
+                   }
 
                 return null;
             }
@@ -588,12 +585,14 @@ public class UserProfileController implements Initializable {
         Thread thread = new Thread(task);
         thread.start();
         task.setOnSucceeded(event -> {
+            Platform.runLater(() -> calculateNumbers());
+            Platform.runLater(() -> imgLoadingData.setVisible(false));
             System.out.println("close thread");
             thread.interrupt();
         });
     }
 
-    private AtomicInteger lastIndex = new AtomicInteger(0);
+    private AtomicInteger lastIndex = new AtomicInteger(-10);
 
     public static AtomicBoolean isReuslts = new AtomicBoolean(false); //Ban đầu rỗng
 
@@ -606,27 +605,31 @@ public class UserProfileController implements Initializable {
             listProducts.clear();
             System.out.println("Tràn List: "+e.getMessage());
         }
-        calculateNumbers();
+      //  calculateNumbers();
     }
 
     public void SelectDataProduct(){
 
         lastEvent = "select";
         try{
+            System.out.println("Vào đây");
             listProducts.addAll(product_dao.selectProductOfUser(user,lastIndex,maxResult));
         }catch (OutOfMemoryError | SQLException e)
         {
             System.out.println("Tràn List: "+e.getMessage());
             listProducts.clear();
         }
-
-        calculateNumbers();
     }
     public void calculateNumbers()  {
-
-        for (int i = 0; i < listProducts.size() && i >= lastIndex.get(); i++) {
-            setDataInBanHangForm(listProducts.get(i));
+        System.out.println(listProducts.size());
+        int index = lastIndex.get();
+        while(index<listProducts.size()){
+            setDataInBanHangForm(listProducts.get(index));
+            index++;
         }
+//        for (int i = 0; i < listProducts.size() && i >= lastIndex.get(); i++) {
+//            setDataInBanHangForm(listProducts.get(i));
+//        }
 
         if(listProducts.size() == lastIndex.get()){ //Nếu không có thêm sp mới thì đã hết sản phâ trong csdl gán false đ khỏi cuộn
             isReuslts.set(false);
@@ -634,7 +637,6 @@ public class UserProfileController implements Initializable {
             isReuslts.set(true);
         }
         lastIndex.set(lastIndex.get() + (listProducts.size()-lastIndex.get()));
-        System.out.println("Số lượng: "+lastIndex);
     }
 
     //Khi cuôộn sản phẩm trong bán sản phẩm
@@ -648,7 +650,6 @@ public class UserProfileController implements Initializable {
 
         String nameSP = tenHang_txt.getText();
         int SoLuong = Integer.parseInt(soLuong_txt.getText());
-
         // Mục đích khi người bán nhập giá bán có các kí tự thì ....
         String giaBan = deleteChar(DonGia_txt.getText());
         BigDecimal DonGia = new BigDecimal(giaBan);
@@ -673,7 +674,7 @@ public class UserProfileController implements Initializable {
                 clearTextData();
                 grid_BanHangForm.getChildren().clear();     //Nếu để trong setDataInBanHangForm khi cuộn sẽ mất d liệu
                 for(Product product:listProducts)
-                setDataInBanHangForm(product);
+                    setDataInBanHangForm(product);
             }
         }
     }
@@ -745,7 +746,11 @@ public class UserProfileController implements Initializable {
                 pro_onclick = t;
 
                 try {
-                    imgSP.setImage(new Image(t.getSrcImg()));
+                    if(!t.getSrcImg().contains(":")){
+                        imgSP.setImage(new Image(getClass().getResourceAsStream(t.getSrcImg())));
+                    }else
+                        imgSP.setImage(new Image(t.getSrcImg()));
+
                 }catch (Exception e){
                     imgSP.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
                 }
@@ -1069,7 +1074,6 @@ public class UserProfileController implements Initializable {
         }else{
             isReuslts.set(true);
         }
-        System.out.println("Chweck số luwognj payment: "+isReuslts+ " - "+listPaymentHistory.size());
         lastIndex.set(lastIndex.get() + (listPaymentHistory.size()-lastIndex.get()));
     }
     int rowPayment = 1;
@@ -1111,6 +1115,7 @@ public class UserProfileController implements Initializable {
 
                 Platform.runLater(() -> imgLoadingPayment.setVisible(false));
                 return null;
+
             }
         };
         Thread thread = new Thread(task);
@@ -1119,7 +1124,10 @@ public class UserProfileController implements Initializable {
             task.cancel();
             thread.interrupt();
         });
+
+
     }
+
 
     public void converFormSoDuTK(MouseEvent e){
         paneNapTienForm.setVisible(false);
@@ -1305,9 +1313,11 @@ public class UserProfileController implements Initializable {
 
         try{
             String filepath = "D:\\EPU_JAVA\\MyShop_EPU\\src\\main\\resources\\com\\epu\\oop\\myshop\\Text\\DieuKhoanBanHang.txt";
-            String content = String.join("\n", Files.readAllLines(Paths.get("D:\\EPU_JAVA\\MyShop_EPU\\src\\main\\resources\\com\\epu\\oop\\myshop\\Text\\DieuKhoanBanHang.txt")));
+            String content = String.join("\n", Files.readAllLines(Paths.get(getClass().getResource("/com/epu/oop/myshop/Text/DieuKhoanBanHang.txt").toURI())));
             txtDieuKhoanBanHang.setText(content);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
@@ -1345,22 +1355,24 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    private Object[] obj;
+    //--------------------------- SỬA THÔNG TIN  CÁ NHÂN-----------------------------------------------
+
+    private Object[] objects;
     public void calculateMoneyMain() throws SQLException {
 
 
-        if(obj!=null){
-            soDonHangtoday_lb.setText(obj[2]+"");
-            if(obj[3]!=null) {
-                doanhThuToday_lb.setText(App.numf.format(obj[3]) + " đ");
+        if(objects!=null){
+            soDonHangtoday_lb.setText(objects[2]+"");
+            if(objects[3]!=null) {
+                doanhThuToday_lb.setText(App.numf.format(objects[3]) + " đ");
             }else {
                 doanhThuToday_lb.setText("0");
             }
-            SumDaBan_lb.setText(obj[0]+"");
-            if(obj[1]!=null){
-                SumDoanhThu_lb.setText(App.numf.format(obj[1]) +" đ");
-                BigDecimal sumdoanhthu = new BigDecimal(obj[1]+"");
-                if(sumdoanhthu.compareTo(BigDecimal.valueOf(100000000))>=0 && Integer.parseInt(obj[0]+"")>10000){
+            SumDaBan_lb.setText(objects[0]+"");
+            if(objects[1]!=null){
+                SumDoanhThu_lb.setText(App.numf.format(objects[1]) +" đ");
+                BigDecimal sumdoanhthu = new BigDecimal(objects[1]+"");
+                if(sumdoanhthu.compareTo(BigDecimal.valueOf(100000000))>=0 && Integer.parseInt(objects[0]+"")>10000){
                     RankSeller.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\bestseller.jpg"));
                 }
             }else {
@@ -1381,8 +1393,15 @@ public class UserProfileController implements Initializable {
                 if (isCancelled()) {
                     return null;
                 }
-                Thread.sleep(1000);
-                obj = product_dao.sumTotalOrder(new User(Temp.account.getID()));
+                //Thread.sleep(1000);
+                objects = product_dao.sumTotalOrder(new User(Temp.account.getID()));
+                Platform.runLater(() -> {
+                    try {
+                        calculateMoneyMain();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 return null;
             }
 
@@ -1391,13 +1410,8 @@ public class UserProfileController implements Initializable {
         thread.start();
 
         task.setOnSucceeded(event -> {
-            Platform.runLater(() -> {
-                try {
-                    calculateMoneyMain();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+
+
             Platform.runLater(() -> {
                 imgloadingOne.setVisible(false);
                 imgLoadingTwo.setVisible(false);

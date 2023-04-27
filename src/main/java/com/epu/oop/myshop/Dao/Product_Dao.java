@@ -327,7 +327,7 @@ public class Product_Dao implements Dao_Interface<Product>{
     }
 
     //Tổng doanh thu người dùng đã bán
-    public Object[] sumTotalOrder(User u) throws SQLException {
+    public synchronized Object[] sumTotalOrder(User u) throws SQLException {
         System.out.println(u);
         Object[] obj = new Object[4];
         openConnection();
@@ -372,14 +372,8 @@ public class Product_Dao implements Dao_Interface<Product>{
     public synchronized List<Product> selectProductOfUser(User u,AtomicInteger lastIndex,int maxProduct) throws SQLException {
         List<Product> list = new ArrayList<>();
         openConnection();
-        String sql = "SELECT Product.* FROM Product INNER JOIN ProductSeller " +
-                "ON Product.MaSP = ProductSeller.Product_ID " +
-                " AND ProductSeller.Users_ID = ?"+
-                " AND Product.Activity = 'ON' " +
-                " ORDER BY TotalRevenue " +
-                " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
-
-        try(PreparedStatement statement = connection.prepareStatement(sql)){
+        String sql = "{call proc_getProduct_ofSeller(?,?,?)}";
+        try(CallableStatement statement = connection.prepareCall(sql)){
             statement.setInt(1,u.getID());
             statement.setInt(2,lastIndex.get());
             statement.setInt(3,maxProduct);
@@ -404,7 +398,7 @@ public class Product_Dao implements Dao_Interface<Product>{
         }finally {
             closeConnection();
         }
-
+        System.out.println("Success");
         return list;
     }
 
@@ -446,7 +440,6 @@ public class Product_Dao implements Dao_Interface<Product>{
         {
             System.out.println("Không thể tìm sản phẩm: "+e.getMessage());
         }
-        System.out.println("Result: "+list);
         return list;
     }
 
