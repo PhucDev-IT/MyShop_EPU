@@ -72,6 +72,6 @@ public class ItemPurcharsedProduct implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        img_ThanhTien.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\thanhtien.png"));
+        img_ThanhTien.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/vi-tien.png")));
     }
 }

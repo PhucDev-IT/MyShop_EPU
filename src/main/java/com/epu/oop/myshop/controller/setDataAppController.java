@@ -44,7 +44,7 @@ public class setDataAppController implements Initializable {
                 Thread.sleep(500);
                Platform.runLater(()->{
                    try {
-                       ConverForm.showForm((Stage) imgLoading.getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
+                       ConverForm.showForm((Stage) imgLoading.getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
                    } catch (IOException e) {
                        throw new RuntimeException(e);
                    }
@@ -69,7 +69,7 @@ public class setDataAppController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        imgLoading.setImage(new Image("C:\\Users\\84374\\Downloads\\ezgif.com-resize.gif"));
+        imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/ezgif.com-resize.gif")));
         imgLoading.setFitWidth(1000);
         imgLoading.setPreserveRatio(true);
 

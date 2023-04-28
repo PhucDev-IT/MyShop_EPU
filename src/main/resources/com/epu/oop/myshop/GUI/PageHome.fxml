@@ -437,7 +437,7 @@
                               </Label>
                               <ImageView fx:id="imgPhoneOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="81.0" pickOnBounds="true" />
                               <Label layoutX="69.0" layoutY="84.0" text="+84" />
-                              <Label fx:id="phoneUserOder_lb" layoutX="99.0" layoutY="84.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
+                              <Label fx:id="phoneUserOder_lb" layoutX="98.0" layoutY="82.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
                               <ImageView fx:id="imgAddressOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="111.0" pickOnBounds="true" />
                               <Label layoutX="68.0" layoutY="114.0" text="Địa chỉ nhận hàng:">
                                  <font>
@@ -498,7 +498,7 @@
                         </Pane>
                         <Pane fx:id="payAtHome" layoutX="328.0" layoutY="411.0" onMouseClicked="#PayProduct" prefHeight="80.0" prefWidth="230.0" style="-fx-background-color: white; -fx-border-color: green; -fx-border-radius: 15;">
                            <children>
-                              <ImageView fx:id="imgPayAtHome" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" />
+                              <ImageView fx:id="imgPayAtHome" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="22.0" pickOnBounds="true" />
                               <Text layoutX="77.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thanh toán sau khi nhận hàng" textAlignment="CENTER" wrappingWidth="140.67090225219727">
                                  <font>
                                     <Font name="Times New Roman" size="15.0" />

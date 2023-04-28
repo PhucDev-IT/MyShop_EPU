@@ -72,8 +72,6 @@ public class AdminController implements Initializable {
     @FXML
     private AnchorPane QLDanhMuc_Form;
 
-    @FXML
-    private ImageView Category_img;
 
 
 
@@ -402,7 +400,7 @@ public class AdminController implements Initializable {
             if (!tileGiamGia_txt.getText().equals("")) {
                 String sale = tileGiamGia_txt.getText();
                 if (sale.contains("%")) {
-                    sale = sale.replace("%", " ");
+                    sale = sale.replace("%", "");
                 }
                 tilegiamgia = (Float.parseFloat(sale));
             }
@@ -595,19 +593,18 @@ public class AdminController implements Initializable {
     public void ConverScene(ActionEvent e) {
         if (e.getSource() == QLAccount_Btn) {
             QLSanPham_Form.setVisible(false);
-            QLDanhMuc_Form.setVisible(false);
             QLVoucher_form.setVisible(false);
             QLAccount_Form.setVisible(true);
             initTableInAccountForm();
 
         } else if (e.getSource() == QLProduct_Btn) {
-            QLDanhMuc_Form.setVisible(false);
+
             QLAccount_Form.setVisible(false);
             QLVoucher_form.setVisible(false);
             QLSanPham_Form.setVisible(true);
             //setDataProducts();
         }else if(e.getSource() == QLVoucher_btn){
-            QLDanhMuc_Form.setVisible(false);
+
             QLAccount_Form.setVisible(false);
             QLSanPham_Form.setVisible(false);
             QLVoucher_form.setVisible(true);
@@ -630,7 +627,7 @@ public class AdminController implements Initializable {
         }else if(e.getSource() == logout_btn)
         {
             Temp.account=null;
-            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/oop/myshop/GUI/LoginForm.fxml");
+            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/oop/myshop/GUI/LoginForm.fxml","Đăng nhập");
         }
     }
 
@@ -698,7 +695,8 @@ public class AdminController implements Initializable {
 class RanDom extends Task<String> {
 
     private static final SecureRandom random = new SecureRandom();
-    private VoucherDao voucherDao;
+    private ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
 
     @Override
     protected String call() throws Exception {

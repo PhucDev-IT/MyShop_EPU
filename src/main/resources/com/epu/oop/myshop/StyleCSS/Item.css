@@ -75,3 +75,17 @@
     -fx-background-color: #faf6f3;
 }
 
+#myshop{
+    -fx-font: italic small-caps bold 26px/2 cursive;
+    -fx-stroke: #5cec5c;	/* được sử dụng để thiết lập màu cho viền */
+    -fx-stroke-width: 2px;	/* Thiết lập độ rộng của viền */
+    -fx-stroke-type: OUTSIDE;	/* được sử dụng để tạo ra viền bên ngoài văn bản. */
+}
+#myshop:hover{
+
+    -fx-text-fill: #ffffff;
+    -fx-stroke: #1303d7;
+    -fx-stroke-width: 1px;
+}
+
+

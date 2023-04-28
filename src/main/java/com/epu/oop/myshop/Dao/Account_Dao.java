@@ -313,5 +313,51 @@ public class Account_Dao implements Dao_Interface<Account> {
         return false;
     }
 
+    //----------------- KHÓA TÀI KHOẢN ĐĂNG NHẬP ---------------------------------
+    public boolean lockAccount(String userName)
+    {
+        String sql = "UPDATE Account" +
+                " SET Activity = 'LOCK' " +
+                " WHERE userName = ?";
+        try(Connection connection = jdbcUtil.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1,userName);
+            return statement.executeUpdate()>0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    //-------------------------- QUÊN MẬT KHẨU ĐĂNG NHẬP--------------------------------------
 
+    public boolean changeFogotPass(String userName,String password) throws SQLException {
+        int result = 0;
+        String sql = "UPDATE Account" +
+                " SET Passwords = ? " +
+                " WHERE userName = ?";
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = jdbcUtil.getConnection();
+            connection.setAutoCommit(false);
+
+             statement = connection.prepareStatement(sql);
+            statement.setString(1,password);
+            statement.setString(2,userName);
+
+            result= statement.executeUpdate() ;
+
+            connection.commit();
+        } catch (SQLException e) {
+            if(connection!=null)
+            {
+                connection.rollback();
+                System.out.println("Roll back: "+e.getMessage());
+            }
+        }finally {
+            if(statement!=null) statement.close();
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return result>0;
+    }
 }

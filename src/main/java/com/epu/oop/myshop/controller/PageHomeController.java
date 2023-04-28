@@ -584,7 +584,7 @@ public class PageHomeController implements Initializable {
                 }
             } else {
                 if (AlertNotification.showAlertConfirmation("Bạn chưa đăng nhập", "Đăng nhập để mua hàng?")) {
-                    ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/LoginForm.fxml");
+                    ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/LoginForm.fxml","Đăng nhập");
                 }
             }
         }
@@ -909,10 +909,10 @@ public class PageHomeController implements Initializable {
     public void EventAuthForm(MouseEvent e) throws IOException {
         if (e.getSource() == SignIn_lb) {
             freeResources();
-            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/LoginForm.fxml");
+            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/LoginForm.fxml","Đăng nhập");
         } else if (e.getSource() == SignUp_lb) {
             freeResources();
-            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/RegisterForm.fxml");
+            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/RegisterForm.fxml","Đăng ký");
         }
     }
 
@@ -996,14 +996,14 @@ public class PageHomeController implements Initializable {
     }
 
     private void showImage() {
-        img_iconSearch.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconSearch.png"));
+        img_iconSearch.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconSearch.png")));
         imgAvatar.setImage((new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_User.png"))));
         imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
         imgVoucherOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/voucher.png")));
-        imgUserOrder.setImage(new Image("C:\\Users\\84374\\Downloads\\iconUser.png"));
-        imgPhoneOrder.setImage(new Image("C:\\Users\\84374\\Downloads\\iconPhone.png"));
-        imgAddressOrder.setImage(new Image("C:\\Users\\84374\\Downloads\\iconAddress.png"));
-        imgPayAtHome.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"));
+        imgUserOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconUser.png")));
+        imgPhoneOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconPhone.png")));
+        imgAddressOrder.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconAddress.png")));
+        imgPayAtHome.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconFreeShip.jpg")));
         imgPayBank.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconThanhToan.jpg"))));
     }
 
@@ -1021,7 +1021,11 @@ public class PageHomeController implements Initializable {
     public void click(MouseEvent e) throws IOException {
         if (e.getSource() == imgAvatar) {
             freeResources();
-            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/ProfileUser.fxml");
+           if(Temp.account.getPhanQuyen().equals("ADMIN")){
+               ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/AdminForm.fxml","Quản lý phần mềm");
+           }else {
+               ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/ProfileUser.fxml","Hồ sơ");
+           }
         }
 
     }

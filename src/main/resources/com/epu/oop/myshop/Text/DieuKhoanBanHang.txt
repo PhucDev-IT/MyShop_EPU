@@ -2,19 +2,19 @@ A. QUY ĐỊNH CHUNG:
 
 1.     Nguyên tắc chung
 
-a. Đăng bán sản phẩm trên Shopee là hoạt động của Người bán dùng hàng hóa, dịch vụ và tài liệu về hàng hóa, dịch vụ để giới thiệu với khách hàng về hàng hóa, dịch vụ đó.
+a. Đăng bán sản phẩm trên MyShop là hoạt động của Người bán dùng hàng hóa, dịch vụ và tài liệu về hàng hóa, dịch vụ để giới thiệu với khách hàng về hàng hóa, dịch vụ đó.
 
-b. Khi đăng bán sản phẩm trên Shopee, Người bán có trách nhiệm tuân thủ các quy định tại Điều 117, Điều 120.4, Điều 121 của Luật thương mại và các văn bản quy phạm pháp luật có liên quan đến hoạt động trưng bày, giới thiệu hàng hóa, dịch vụ.
+b. Khi đăng bán sản phẩm trên MyShop, Người bán có trách nhiệm tuân thủ các quy định tại Điều 117, Điều 120.4, Điều 121 của Luật thương mại và các văn bản quy phạm pháp luật có liên quan đến hoạt động trưng bày, giới thiệu hàng hóa, dịch vụ.
 
-c. Tất cả chứng từ mà Người bán được yêu cầu cung cấp thì Người bán phải đảm bảo và cam kết tất cả các chứng từ mà Người bán cung cấp cho Shopee đều được scan từ chứng từ gốc, không được làm giả, chỉnh sửa, tẩy xóa.
+c. Tất cả chứng từ mà Người bán được yêu cầu cung cấp thì Người bán phải đảm bảo và cam kết tất cả các chứng từ mà Người bán cung cấp cho MyShop đều được scan từ chứng từ gốc, không được làm giả, chỉnh sửa, tẩy xóa.
 
 2.     Các nội dung không được phép đăng bán
 
-Người dùng được quyền đăng các sản phẩm lên Shopee nhằm mục đích kinh doanh. Tuy nhiên, NGHIÊM CẤM người dùng đăng tải những sản phẩm có nội dung sau đây:
+Người dùng được quyền đăng các sản phẩm lên MyShop nhằm mục đích kinh doanh. Tuy nhiên, NGHIÊM CẤM người dùng đăng tải những sản phẩm có nội dung sau đây:
 
 a. Phản động, chống phá, bài xích tôn giáo, khiêu dâm, bạo lực, đi ngược lại thuần phong mỹ tục, truyền thống và văn hóa Việt Nam;
 
-b. Đăng thông tin rác, phá rối hay làm mất uy tín của các dịch vụ do Shopee cung cấp;
+b. Đăng thông tin rác, phá rối hay làm mất uy tín của các dịch vụ do MyShop cung cấp;
 
 c. Xúc phạm, khích bác đến người khác dưới bất kỳ hình thức nào;
 
@@ -34,7 +34,7 @@ j. Hạn chế tối đa những sản phẩm mang tính cá nhân (như hình c
 
 j. Vi phạm quyền sở hữu trí tuệ và/hoặc bất kỳ nhãn hiệu hàng hóa nào của bất kỳ bên thứ ba nào;
 
-k. Các sản phẩm nằm trong Danh sách sản phẩm bị cấm/hạn chế của Shopee.
+k. Các sản phẩm nằm trong Danh sách sản phẩm bị cấm/hạn chế của MyShop.
 
 3.     Các hành vi không được thực hiện
 
@@ -59,5 +59,6 @@ i. Đăng bán một sản phẩm lặp đi lặp lại (spam) trên cùng một
 j. Thay đổi nội dung tin đăng để gian lận đánh giá
 
     Bằng việc tham gia kinh doanh và đồng hành cùng MyShop trên con đường dài, đồng ý điều khoản của chúng tôi và "Gửi yêu cầu" để trở thành thành viên của chúng tôi.
+
 
 

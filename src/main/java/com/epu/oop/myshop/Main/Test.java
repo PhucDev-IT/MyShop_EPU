@@ -36,11 +36,8 @@ public class Test{
 //        CreateSQL cr = new CreateSQL();
 //        cr.autoCreate();
 
-//        List<Product> list = product_dao.selectProductOfUser(new User(5),new AtomicInteger(0),10);
-//
-//        System.out.println(list);
-CreateSQL cr =  new CreateSQL();
-        cr.autoCreate();
+
+
     }
 
 

@@ -47,7 +47,17 @@ public class VoucherController {
         this.myListener = myListener;
         this.voucher = vc;
 
-        imgVoucher.setImage(new Image(vc.getImgVoucher()));
+        try{
+            if(vc.getImgVoucher().equals(":")){
+                imgVoucher.setImage(new Image(vc.getImgVoucher()));
+            }else{
+                imgVoucher.setImage(new Image(getClass().getResourceAsStream(vc.getImgVoucher())));
+            }
+        }catch (Exception e){
+            imgVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+            System.out.println("Không load được ảnh: "+e.getMessage());
+        }
+
         maVoucher_lb.setText(vc.getMaVoucher());
         soLuong_lb.setText(vc.getSoLuong()+"");
         NoiDung_lb.setText(vc.getNoiDung());

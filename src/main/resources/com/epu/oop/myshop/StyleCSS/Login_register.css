@@ -14,4 +14,17 @@
 .dichuot:pressed{
 	-fx-background-color: #3333CC;
 }
-
+.register:hover
+{
+	-fx-text-fill: white;
+}
+.register:pressed{
+	-fx-text-fill: green;
+}
+.convert-login:hover
+{
+	-fx-text-fill: #d981eb;
+}
+.convert-login:pressed{
+	-fx-text-fill: #fbfc8d;
+}

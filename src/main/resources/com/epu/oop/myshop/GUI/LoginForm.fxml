@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXPasswordField?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="loginForm_Pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="386.0" prefWidth="692.0" style="-fx-background-color: #F4AB6A;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.Login_Register_Controller">
+<AnchorPane fx:id="loginForm_Pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="386.0" prefWidth="692.0" style="-fx-background-color: #F4AB6A;" stylesheets="@../StyleCSS/Item.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.LoginController">
    <children>
       <AnchorPane layoutX="380.0" layoutY="63.0" prefHeight="302.0" prefWidth="275.0" style="-fx-background-color: #FFFF99; -fx-background-radius: 25;">
          <children>
@@ -18,7 +23,7 @@
                   <Font name="System Bold" size="26.0" />
                </font>
             </Label>
-            <Hyperlink fx:id="forgotPass_link" layoutX="86.0" layoutY="270.0" text="Quên mật khẩu?" />
+            <Hyperlink fx:id="forgotPass_link" layoutX="86.0" layoutY="270.0" onMouseClicked="#click" text="Quên mật khẩu?" />
             <JFXTextField fx:id="userName_txt" focusColor="#a41736" labelFloat="true" layoutX="54.0" layoutY="101.0" promptText="Email" unFocusColor="#432fc9">
                <font>
                   <Font name="Calibri" size="15.0" />
@@ -32,30 +37,71 @@
             </Button>
          </children>
       </AnchorPane>
-      <Label fx:id="register_label" layoutX="123.0" layoutY="331.0" onMouseClicked="#click" styleClass="dichuot" stylesheets="@../StyleCSS/Login_register.css" text="Đăng ký tại đây" />
-      <Label layoutX="43.0" layoutY="112.0" text="Chào mừng đến với MyShop">
+      <Label fx:id="register_label" layoutX="109.0" layoutY="337.0" onMouseClicked="#click" styleClass="register" stylesheets="@../StyleCSS/Login_register.css" text="Đăng ký tại đây" textFill="#2f2f2f" underline="true">
          <font>
-            <Font name="System Bold Italic" size="22.0" />
+            <Font name="Arial" size="17.0" />
+         </font></Label>
+      <Label layoutX="62.0" layoutY="56.0" prefHeight="38.0" prefWidth="246.0" text="Chào mừng đến với">
+         <font>
+            <Font name="System Bold Italic" size="26.0" />
          </font>
       </Label>
-      <Pane layoutY="-2.0" prefHeight="30.0" prefWidth="692.0" style="-fx-background-color: white;">
+      <Text id="myshop" fx:id="myshop" fill="WHITE" layoutX="118.0" layoutY="122.0" onMouseClicked="#click" strokeType="OUTSIDE" strokeWidth="0.0" text="MYSHOP" />
+      <ImageView fx:id="imgOfLogin" fitHeight="150.0" fitWidth="268.0" layoutX="47.0" layoutY="156.0" pickOnBounds="true" preserveRatio="true" />
+      <AnchorPane fx:id="paneForgot_pass" layoutX="54.0" layoutY="75.0" prefHeight="386.0" prefWidth="692.0" style="-fx-background-color: #f1f5d0;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="minisize_label" alignment="CENTER" layoutX="621.0" layoutY="-12.0" onMousePressed="#minisize" prefHeight="51.0" prefWidth="29.0" text="-">
+            <TextField fx:id="txt_Email_forpass" alignment="CENTER" layoutX="184.0" layoutY="130.0" prefHeight="31.0" prefWidth="324.0" promptText="Nhập tài khoản Email cần tìm">
                <font>
-                  <Font name="System Bold" size="32.0" />
+                  <Font name="Calibri" size="17.0" />
+               </font></TextField>
+            <Label layoutX="81.0" layoutY="37.0" text="Quên mật khẩu?">
+               <font>
+                  <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Label id="close" layoutX="664.0" layoutY="6.0" onMousePressed="#close" styleClass="dichuot" stylesheets="@../StyleCSS/Login_register.css" text="X">
+            <Text layoutX="81.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nhập địa chỉ Email đã đăng ký của bạn để lấy lại mật khẩu." />
+            <JFXButton fx:id="btnSend" layoutX="425.0" layoutY="193.0" onAction="#requestEmail" prefHeight="28.0" prefWidth="74.0" style="-fx-background-color: #9999FF;" text="Gửi">
                <font>
-                  <Font name="System Bold" size="15.0" />
+                  <Font name="Arial Bold" size="16.0" />
+               </font>
+            </JFXButton>
+            <Pane fx:id="pane_getPass" layoutX="168.0" layoutY="183.0" prefHeight="162.0" prefWidth="349.0" style="-fx-background-color: #f1f5d0;" visible="false">
+               <children>
+                  <Pane layoutX="19.0" layoutY="71.0" prefHeight="38.0" prefWidth="161.0" style="-fx-background-color: white; -fx-background-radius: 10;">
+                     <children>
+                        <Label fx:id="txtRandom_password" alignment="CENTER" ellipsisString="100" layoutY="9.0" prefHeight="21.0" prefWidth="161.0" text="Label" textFill="#01e82b">
+                           <font>
+                              <Font name="Arial" size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets left="5.0" right="3.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </Pane>
+                  <Label layoutX="24.0" layoutY="38.0" text="Mật khẩu mới:">
+                     <font>
+                        <Font name="Calibri Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="btn_gui_lai_ma" layoutX="195.0" layoutY="74.0" mnemonicParsing="false" onMouseClicked="#click" prefHeight="31.0" prefWidth="65.0" style="-fx-background-color: #33FF66;" text="Reset">
+                     <font>
+                        <Font name="Arial" size="15.0" />
+                     </font></Button>
+                  <Label fx:id="lb_runTime" alignment="CENTER" layoutX="195.0" layoutY="73.0" prefHeight="35.0" prefWidth="36.0" style="-fx-background-color: #FF6633; -fx-background-radius: 10;" text="60" visible="false">
+                     <font>
+                        <Font name="Calibri Bold" size="19.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <ImageView fx:id="imgGoBackLogin" fitHeight="21.0" fitWidth="36.0" layoutX="14.0" layoutY="18.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
+            <Label layoutX="338.0" layoutY="367.0" text="Mọi thắc mắc xin liên hệ Nguyễn Văn Phúc - 0374164756" textFill="#8a8282">
+               <font>
+                  <Font name="Times New Roman Italic" size="15.0" />
                </font>
             </Label>
          </children>
-      </Pane>
-      <Label fx:id="khach_label" layoutX="90.0" layoutY="262.0" onMouseClicked="#click" prefHeight="30.0" prefWidth="195.0" text="Đăng nhập với tư cách KHÁCH" textFill="#b70e0e">
-         <font>
-            <Font name="System Bold Italic" size="13.0" />
-         </font>
-      </Label>
+      </AnchorPane>
    </children>
 </AnchorPane>

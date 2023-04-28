@@ -555,7 +555,7 @@ public class UserProfileController implements Initializable {
 
     //Loading data
     public synchronized void loadingDataProduct(Event e){
-        imgLoadingData.setImage(new Image("C:\\Users\\84374\\Downloads\\Ellipsis-1.4s-583px.gif"));
+        imgLoadingData.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading2.gif")));
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -869,7 +869,7 @@ public class UserProfileController implements Initializable {
 
         if(!hovaTen.equals(chuTaiKhoan) && (!isStringEmpty(hovaTen) || !isStringEmpty(chuTaiKhoan))){
             AlertNotification.showAlertWarning("","Họ và tên và chủ sở hữu phải giống nhau");
-        }else if(CCCD.length()<=8 || stk.length()<=9){
+        }else if(CCCD.length()<=10 || stk.length()<=10){
             AlertNotification.showAlertWarning("Vui lòng nhập chính xác căn cước công dân và số tài khoản!","");
         }else if(isStringEmpty(tenNganHang) || isStringEmpty(chiNhanh)){
             AlertNotification.showAlertWarning("Vui lòng nhập đầy đủ thông tin","");
@@ -931,6 +931,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
+    //Xóa các kí tự khi chỉ cho nhập số
     public void removeChar(TextField txt) {
         txt.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.matches(".*[^0-9].*")) {
@@ -1312,7 +1313,6 @@ public class UserProfileController implements Initializable {
     public void setDataJoinSell(){
 
         try{
-            String filepath = "D:\\EPU_JAVA\\MyShop_EPU\\src\\main\\resources\\com\\epu\\oop\\myshop\\Text\\DieuKhoanBanHang.txt";
             String content = String.join("\n", Files.readAllLines(Paths.get(getClass().getResource("/com/epu/oop/myshop/Text/DieuKhoanBanHang.txt").toURI())));
             txtDieuKhoanBanHang.setText(content);
         } catch (IOException e) {
@@ -1325,7 +1325,7 @@ public class UserProfileController implements Initializable {
     public void checkProfile(){
         if(bank==null || isStringEmpty(user.getFullName()) || isStringEmpty(user.getAddress()) || user.getDateOfBirth()==null
         || isStringEmpty(user.getCanCuocCongDan()) || isStringEmpty(user.getNumberPhone())){
-            AlertNotification.showAlertWarning("","Vui lòng cập nhật đầy đủ thông tin\nVà liên kết ngân hàng để được duyệt yêu cầu");
+            AlertNotification.showAlertWarning("","Vui lòng cập nhật đầy đủ thông tin\nVà liên kết ngân hàng để tham gia bán hàng");
         }else {
             LocalDate today = LocalDate.now();
 
@@ -1334,9 +1334,12 @@ public class UserProfileController implements Initializable {
             if(age>=18){
                 Temp.account.setPhanQuyen("Seller");
                 if(account_dao.Update(Temp.account)>0){
+                    Anch_ThamGiaBanHang.setVisible(false);
                     AlertNotification.showAlertSucces("Chúc mừng bạn đã trở thành người bán hàng.","Cảm ơn bạn đã đồng hành cùng chúng tôi");
+
                 }else{
                     AlertNotification.showAlertError("","Có lỗi xảy ra");
+                    Temp.account.setPhanQuyen("Member");
                 }
             }
         }
@@ -1373,7 +1376,7 @@ public class UserProfileController implements Initializable {
                 SumDoanhThu_lb.setText(App.numf.format(objects[1]) +" đ");
                 BigDecimal sumdoanhthu = new BigDecimal(objects[1]+"");
                 if(sumdoanhthu.compareTo(BigDecimal.valueOf(100000000))>=0 && Integer.parseInt(objects[0]+"")>10000){
-                    RankSeller.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\bestseller.jpg"));
+                    RankSeller.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-best-seller.png")));
                 }
             }else {
                 SumDoanhThu_lb.setText("0");
@@ -1483,7 +1486,7 @@ public class UserProfileController implements Initializable {
             refreshPayment(event);
         }else if (event.getSource() == MyShop_txt) {
             clearScene();
-            ConverForm.showForm((Stage) ((Node) event.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
+            ConverForm.showForm((Stage) ((Node) event.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
         }else if(event.getSource() == paneLienKetBank_btn){
             displayInformationBank();
         }else if(event.getSource()==purchaseHistory_pane_btn){
@@ -1492,8 +1495,13 @@ public class UserProfileController implements Initializable {
         }else if(event.getSource() == showVoucher_pane_btn){
             DisplayVoucherForm();
         }else if(event.getSource() == thamGiaBanHang_pane_btn){
-            Anch_ThamGiaBanHang.setVisible(true);
-            loadingDataJoinSell();
+            if(Temp.account.getPhanQuyen().equals("Seller")){
+                AlertNotification.showAlertWarning("","Bạn đã trở thành người bán rồi!");
+                dashboard_form.setVisible(true);
+            }else {
+                Anch_ThamGiaBanHang.setVisible(true);
+                loadingDataJoinSell();
+            }
         }
     }
 
@@ -1506,7 +1514,7 @@ public class UserProfileController implements Initializable {
             if (AlertNotification.showAlertConfirmation("", "Bạn muốn đăng xuất?")) {
                 Temp.account = null;
                 clearScene();
-                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml");
+                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
             }
         }
     }
@@ -1525,16 +1533,17 @@ public class UserProfileController implements Initializable {
 
     public void loadImage(){
 
-        imgloadingOne.setImage(new Image("C:\\Users\\84374\\Downloads\\Spinner-0.5s-277px.gif"));
-        imgLoadingTwo.setImage(new Image("C:\\Users\\84374\\Downloads\\Spinner-0.5s-277px.gif"));
-        imgLoadingThree.setImage(new Image("C:\\Users\\84374\\Downloads\\Spinner-0.5s-277px.gif"));
-        imgLoadingFour.setImage(new Image("C:\\Users\\84374\\Downloads\\Spinner-0.5s-277px.gif"));
-        imgLoadingPayment.setImage(new Image("C:\\Users\\84374\\Downloads\\Ripple-1s-470px.gif"));
+        imgloadingOne.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
+        imgLoadingTwo.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
+        imgLoadingThree.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
+        imgLoadingFour.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
 
-        imgIconDaBan.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconDaBanHang.jpg"));
-        imgIconTongDoanhThu.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconTongDoanhThu.jpg"));
-        imgIconDaBanToday.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconDaBan1.jpg"));
-        iconDoanhThuToDay.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconDoanhThuToday.png"));
+        imgLoadingPayment.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading1.gif")));
+
+        imgIconDaBan.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-tong-so-hang-da-ban.png")));
+        imgIconTongDoanhThu.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-tang-truong-kinh-te.png")));
+        imgIconDaBanToday.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-don-hang.jpg")));
+        iconDoanhThuToDay.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/iconDoanhThuToday.png")));
 
 
         img_tuVanKH.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-tu-van-khach-hang.png")));
@@ -1555,11 +1564,11 @@ public class UserProfileController implements Initializable {
         img_clickNapTien.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/iconNapTien.png")));
         imgRutTien.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconRutTien.png")));
 
-        imgRefreshSell.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\icon_refresh.jpg"));
+        imgRefreshSell.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-refresh.png")));
 
-        imageThanhVien.setImage(new Image("C:\\Users\\84374\\Downloads\\Black Modern Id Card.png"));
-        imgPhone.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconPhone.png"));
-        imgAdress.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconAddress.png"));
+      //  imageThanhVien.setImage(new Image("C:\\Users\\84374\\Downloads\\Black Modern Id Card.png"));
+       // imgPhone.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconPhone.png"));
+       // imgAdress.setImage(new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconAddress.png"));
     }
 
 
