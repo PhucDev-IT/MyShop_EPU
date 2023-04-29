@@ -241,8 +241,12 @@ public class LoginController implements Initializable{
 
         if(accountDao.changeFogotPass(txt_Email_forpass.getText(),newPassword)){
             txtRandom_password.setText(newPassword);
+            txt_Email_forpass.setEditable(false);
+            pane_getPass.setVisible(true);
         }else{
+            pane_getPass.setVisible(false);
             AlertNotification.showAlertError("Có lỗi xảy ra","Email không tồn tại");
+
         }
     }
     //Button: Nhấn Gửi
@@ -251,8 +255,6 @@ public class LoginController implements Initializable{
 
         if(checkEmail(txt_Email_forpass.getText())){
             randomPassword();
-            txt_Email_forpass.setEditable(false);
-            pane_getPass.setVisible(true);
         }
     }
 

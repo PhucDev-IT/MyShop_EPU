@@ -64,6 +64,12 @@ public class PageHomeController implements Initializable {
     @FXML
     private Pane paneUser;  //Chứa img user dẫn đến form thông tin
 
+    @FXML
+    private ImageView img_shopping_cart;
+
+    @FXML
+    private ImageView img_Messenger;
+
     //-------------------------- Navbar - MENU -------------------------------------------
     @FXML
     private JFXButton menu1_btn;
@@ -251,6 +257,8 @@ public class PageHomeController implements Initializable {
 
     //------------------------------ CHI TIẾT MUA HÀNG ---------------------------------------------------
     @FXML
+    private JFXButton btnAddInCart;
+    @FXML
     private AnchorPane paneOrderDetail;
     @FXML
     private ImageView imgProdOderDetail;
@@ -320,7 +328,22 @@ public class PageHomeController implements Initializable {
 
     @FXML
     private Pane payByBank;
-    //----------------------------------------
+    //----------------------------------------GIỎ HÀNG---------------------------------
+    @FXML
+    private AnchorPane paneShoppingCart;
+    @FXML
+    private GridPane gridItemCart;
+
+    @FXML
+    private Label numbersItemCart_lb;
+
+    @FXML
+    private Label sumMoney_itemCartLb;
+
+    @FXML
+    private JFXButton btnMuaItemCart;
+
+    //-----------------------------------------
 
 
     private final int maxProductsOfPage = 10; //1 trang tối đa 10 sản phẩm
@@ -343,6 +366,7 @@ public class PageHomeController implements Initializable {
 
     private Bank_Dao bank_dao = Bank_Dao.getInstance(connectionPool);
 
+    private itemCartDao itemCart_dao = itemCartDao.getInstance(connectionPool);
 
     //---------------------- KIỂM TRA RỖNG ----------------------------------
     public boolean checkStringIsempty(String str) {
@@ -514,6 +538,7 @@ public class PageHomeController implements Initializable {
     }
 
 
+
     //Kiểm tra ảnh nằm trong project hay nằm ngoài project
     public void displayInformationProduct() {
         try {
@@ -587,6 +612,11 @@ public class PageHomeController implements Initializable {
                 }
             }
         }
+    }
+
+    //Thêm vào gior hàng
+    public void addInCart(ActionEvent e) throws SQLException {
+        addItemCart();
     }
 
     //---------------------------------- THÔNG TIN CHI TIẾT HÓA ĐƠN - MUA HÀNG -----------------------------------
@@ -715,8 +745,7 @@ public class PageHomeController implements Initializable {
     public void showOderDetail() {
         numbersBuyProduct = Integer.parseInt(txtNumber.getText());
         //Lấy thông tin người dungf
-        if(Temp.user==null)
-            Temp.user = userDao.SelectByID(new User(Temp.account.getID()));
+        Temp.user = userDao.SelectByID(new User(Temp.account.getID()));
         nameUserOder_lb.setText(Temp.user.getFullName());
         phoneUserOder_lb.setText(Temp.user.getNumberPhone());
         AdressOrder_txt.setText(Temp.user.getAddress());
@@ -841,7 +870,104 @@ public class PageHomeController implements Initializable {
         loadData(e);
 
     }
-    //---------------------------------------
+    //--------------------------------------- GIỎ HÀNG -----------------------------------------------
+    int rowItemCart = 1;
+    private List<itemCart> itemCartList = new ArrayList<>();
+
+    private MyListener<itemCart> myListenerItemCart;
+
+    public long sumNumbers = 0;
+
+    public BigDecimal sumMoneyItem ;
+
+    public  List<itemCart> listChooseItemCart = new ArrayList<>();
+    /*
+    -Khi người dùng tích chọn product, nếu lần đầu tích thì sẽ đc thêm vào list và tính tiền
+    -Khi hủy thì sẽ bị xóa khoit list và cập nhật lại tiền
+    -Nếu có hành động tăng giảm số lượng thì duyệt vòng lặp để kiểm tra và cập nhật lại sô lượng + tính toán tiền
+    -Tông số lượng trước đó = tổng số lượng trước đó + (số lượng mới tăng - số luwognj trc đó trong list) nếu hành động tăng
+    -Tổng tiền =
+     */
+    public void chooseItemCart()
+    {
+        myListenerItemCart = new MyListener<itemCart>() {
+            @Override
+            public void onClickListener(itemCart item) {
+
+                if(item.isChoose()){
+                    listChooseItemCart.add(item);
+                    sumNumbers+= item.getQuantity();
+                    sumMoneyItem = new BigDecimal(String.valueOf(item.getProduct().getPrice().multiply(BigDecimal.valueOf(sumNumbers))));
+                    calculateSumItem();
+
+                }else if(!item.isChoose()) {
+                    listChooseItemCart.remove(item);
+                    sumNumbers -= item.getQuantity();
+                    sumMoneyItem = sumMoneyItem.subtract(item.getProduct().getPrice());
+                    numbersItemCart_lb.setText(sumNumbers+"");
+                    sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
+                }
+//                numbersItemCart_lb.setText(sumNumbers+"");
+//                sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
+            }
+        };
+    }
+
+    public void calculateSumItem()
+    {
+//        sumNumbers+= item.getQuantity();
+//        sumMoneyItem = new BigDecimal(String.valueOf(item.getProduct().getPrice().multiply(BigDecimal.valueOf(sumNumbers))));
+        numbersItemCart_lb.setText(sumNumbers+"");
+        sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
+
+    }
+    public void loadDataItemCart() throws SQLException {
+        itemCartList.clear();
+        paneShoppingCart.setVisible(true);
+        itemCartList.addAll(itemCart_dao.getDataByUser(Temp.account.getID()));
+        for(itemCart it : itemCartList){
+            setDataBasket(it);
+        }
+
+    }
+    public void setDataBasket(itemCart it)
+    {
+        chooseItemCart();
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/itemCartForm.fxml"));
+            AnchorPane anchorPane = fxmlLoader.load();
+
+            ItemCartController itemCategory = fxmlLoader.getController();
+            itemCategory.setData(myListenerItemCart,it);
+
+            gridItemCart.add(anchorPane, 0, ++rowItemCart); // (child,column,row)
+            // set grid width
+            gridItemCart.setMinWidth(Region.USE_COMPUTED_SIZE);
+            gridItemCart.setPrefWidth(Region.USE_COMPUTED_SIZE);
+            gridItemCart.setMaxWidth(Region.USE_PREF_SIZE);
+
+            // set grid height
+            gridItemCart.setMinHeight(Region.USE_COMPUTED_SIZE);
+            gridItemCart.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            gridItemCart.setMaxHeight(Region.USE_PREF_SIZE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //Thêm vào giỏ hàng
+    public void addItemCart() throws SQLException {
+       if(Temp.account!=null){
+           itemCart itemCart = new itemCart(0,SelectedProduct,Temp.account.getID(),keyCategory,Integer.parseInt(txtNumber.getText()));
+           if(itemCart_dao.Insert(itemCart)){
+               AlertNotification.showAlertSucces("","Kiểm tra giỏ hàng để xem nhé bạn!");
+           }else{
+               AlertNotification.showAlertError("","Có lỗi xảy ra");
+           }
+       }else {
+           AlertNotification.showAlertWarning("Bạn chưa đăng nhập","Đăng nhập trước khi thao tác");
+       }
+    }
 
     //Khi hover vào các nav-item
     @FXML
@@ -1003,6 +1129,8 @@ public class PageHomeController implements Initializable {
     }
 
     private void showImage() {
+        img_Messenger.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-tin-nhan.png")));
+        img_shopping_cart.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-gio-hang.png")));
         img_iconSearch.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconSearch.png")));
         imgAvatar.setImage((new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon_User.png"))));
         imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
@@ -1025,7 +1153,7 @@ public class PageHomeController implements Initializable {
         }
     }
 
-    public void click(MouseEvent e) throws IOException {
+    public void click(MouseEvent e) throws IOException, SQLException {
         if (e.getSource() == imgAvatar) {
             freeResources();
            if(Temp.account.getPhanQuyen().equals("ADMIN")){
@@ -1033,6 +1161,8 @@ public class PageHomeController implements Initializable {
            }else {
                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/ProfileUser.fxml","Hồ sơ");
            }
+        }else if(e.getSource() == img_shopping_cart){
+            loadDataItemCart();
         }
 
     }

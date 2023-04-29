@@ -75,7 +75,7 @@ public class CreateSQL {
     public void autoCreate() throws SQLException, ClassNotFoundException {
         if (createDatabase()) {
             if (creatTable())
-               // if (createTigger())
+                if (createTigger())
                     if (createIndex())
                         if (createProcedure())
                             if (insertData())
@@ -175,12 +175,12 @@ public class CreateSQL {
                 stm.executeUpdate(TriggerTwo);
                 stm.executeUpdate(TriggerThree);
                 connection.commit();
-               // System.out.println("Tạo trigger thành công");
+                System.out.println("Tạo trigger thành công");
             } catch (SQLException e) {
                 if (connection != null) {
                     connection.rollback();
                 }
-              //  System.out.println("Không thể tạo trigger: ");
+                System.out.println("Không thể tạo trigger: ");
                 e.printStackTrace();
                 return false;
             } catch (ClassNotFoundException e) {
@@ -487,7 +487,7 @@ public class CreateSQL {
             " PRIMARY KEY(Account_ID)," +
             " FOREIGN KEY(Account_ID) REFERENCES Account(ID)," +
             " FullName NVARCHAR(40)," +
-            " Gender NVARCHAR(6)," +
+            " Gender NVARCHAR(6) DEFAULT N'Khác'," +
             " DateOfBirth DATE, " +
             " HomeTown NVARCHAR(300), " +
             " CCCD VARCHAR(20), " +
@@ -498,10 +498,10 @@ public class CreateSQL {
     private final String TblBank = "CREATE TABLE Bank " +
             "( " +
             " SoTaiKhoan VARCHAR(20) PRIMARY KEY, " +
-            " TenNH NVARCHAR(20), " +
+            " TenNH NVARCHAR(200), " +
             " TenChiNhanh NVARCHAR(100), " +
             " SoCCCD VARCHAR(25),"+
-            " ChuSoHuu NVARCHAR(50), " +
+            " ChuSoHuu NVARCHAR(100), " +
             " Users_ID INT," +
             " FOREIGN KEY (Users_ID) REFERENCES Users(Account_ID) " +
             ");";
@@ -589,6 +589,15 @@ public class CreateSQL {
             " FOREIGN KEY(Account_ID) REFERENCES Account(ID)" +
             ");";
 
+    private final String TblItemCart = "CREATE TABLE itemCart " +
+            "( " +
+            " id_Cart INT PRIMARY KEY IDENTITY, " +
+            " Product_ID INT, " +
+            " Quantity INT, " +
+            " Category_ID INT FOREIGN KEY REFERENCES Category(Category_ID), " +
+            " Users_ID INT FOREIGN KEY REFERENCES Users(Account_ID) " +
+            ")";
+
     //------------- TẠO CHỈ MỤC - TĂNG TỐC TRUY VẤN
     String indexProduct ="CREATE INDEX idx_MaSP ON Product(MaSP); " +
                         "CREATE INDEX idx_Category_ID ON Product(Category_ID); " +
@@ -606,6 +615,12 @@ public class CreateSQL {
 
     String indexProductSeller = "CREATE INDEX idx_Users_ID ON ProductSeller(Users_ID) " +
             "CREATE INDEX idx_Product_ID ON ProductSeller(Product_ID)";
+
+    private final String indexItemCart = "CREATE INDEX idx_id_Cart ON itemCart(id_Cart) " +
+            "CREATE INDEX idx_product_ID ON itemCart(Product_ID) " +
+            "CREATE INDEX idx_User_ID ON itemCart(Users_ID)";
+
+    //---------------------------- TRIGGER ---------------------------------------
     private final String TriggerOne = "CREATE TRIGGER TRIG_Update_MoneySeller ON OrderDetails" +
             " FOR INSERT " +
             " AS" +

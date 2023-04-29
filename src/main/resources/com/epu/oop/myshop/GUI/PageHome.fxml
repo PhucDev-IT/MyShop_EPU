@@ -50,7 +50,9 @@
                   <ImageView fx:id="img_iconSearch" fitHeight="25.0" fitWidth="25.0" layoutX="460.0" layoutY="25.0" pickOnBounds="true" />
                   <Pane fx:id="paneUser" layoutX="1020.0" layoutY="1.0" prefHeight="70.0" prefWidth="279.0" visible="false">
                      <children>
-                        <ImageView fx:id="imgAvatar" fitHeight="56.0" fitWidth="63.0" layoutX="133.0" layoutY="7.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="imgAvatar" fitHeight="40.0" fitWidth="45.0" layoutX="199.0" layoutY="15.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="img_shopping_cart" fitHeight="38.0" fitWidth="38.0" layoutX="21.0" layoutY="19.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="img_Messenger" fitHeight="32.0" fitWidth="35.0" layoutX="115.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </Pane>
                   <Text id="myshop" fx:id="myShop_logo" fill="WHITESMOKE" layoutX="43.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="MyShop" />
@@ -366,18 +368,19 @@
                         </Label>
                         <Separator layoutX="10.0" layoutY="279.0" prefHeight="3.0" prefWidth="372.0" />
                         <JFXTextArea fx:id="contentProInfor_txa" editable="false" focusColor="#ebebeb" layoutX="3.0" layoutY="285.0" prefHeight="199.0" prefWidth="384.0" />
-                        <JFXButton fx:id="BtndownNumber" buttonType="RAISED" layoutX="78.0" layoutY="522.0" onAction="#upDownNumber" prefHeight="26.0" prefWidth="28.0" style="-fx-background-color: white;" text="-">
+                        <JFXButton fx:id="BtndownNumber" buttonType="RAISED" layoutX="21.0" layoutY="522.0" onAction="#upDownNumber" prefHeight="26.0" prefWidth="28.0" style="-fx-background-color: white;" text="-">
                            <font>
                               <Font name="Arial Bold" size="14.0" />
                            </font>
                         </JFXButton>
-                        <JFXButton fx:id="BtnUpNumber" buttonType="RAISED" layoutX="218.0" layoutY="523.0" onAction="#upDownNumber" style="-fx-background-color: white;" text="+">
+                        <JFXButton fx:id="BtnUpNumber" buttonType="RAISED" layoutX="161.0" layoutY="523.0" onAction="#upDownNumber" style="-fx-background-color: white;" text="+">
                            <font>
                               <Font name="Arial Bold" size="14.0" />
                            </font>
                         </JFXButton>
-                        <JFXTextField fx:id="txtNumber" alignment="CENTER" layoutX="118.0" layoutY="520.0" onKeyPressed="#removeCharInput" prefHeight="31.0" prefWidth="94.0" text="1" />
-                        <JFXButton fx:id="btnBuyProduct" layoutX="285.0" layoutY="520.0" onAction="#BuyProduct" style="-fx-background-color: #fff;" text="Mua" />
+                        <JFXTextField fx:id="txtNumber" alignment="CENTER" layoutX="61.0" layoutY="520.0" onKeyPressed="#removeCharInput" prefHeight="31.0" prefWidth="94.0" text="1" />
+                        <JFXButton fx:id="btnBuyProduct" layoutX="212.0" layoutY="520.0" onAction="#BuyProduct" style="-fx-background-color: #fff;" text="Mua" />
+                        <JFXButton fx:id="btnAddInCart" layoutX="273.0" layoutY="520.0" onAction="#addInCart" style="-fx-background-color: white;" text="Thêm vào giỏ" />
                      </children>
                   </Pane>
                   <AnchorPane fx:id="paneOrderDetail" layoutX="15.0" layoutY="82.0" onMouseMoved="#hiddenListItemOfMenu" prefHeight="566.0" prefWidth="1296.0" style="-fx-background-color: #FAFAFA; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: green;" visible="false">
@@ -568,5 +571,50 @@
             <Font size="28.0" />
          </font>
       </Label>
+      <AnchorPane fx:id="paneShoppingCart" prefHeight="629.0" prefWidth="1326.0" style="-fx-background-color: #dfdcf5;" visible="false" AnchorPane.topAnchor="100.0">
+         <children>
+            <ScrollPane hbarPolicy="NEVER" layoutX="327.0" layoutY="14.0" prefHeight="508.0" prefWidth="657.0">
+               <content>
+                  <GridPane fx:id="gridItemCart" vgap="5.0">
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <padding>
+                        <Insets top="-10.0" />
+                     </padding>
+                  </GridPane>
+               </content>
+            </ScrollPane>
+            <Pane layoutX="328.0" layoutY="522.0" prefHeight="101.0" prefWidth="657.0" style="-fx-background-color: white;">
+               <children>
+                  <Label layoutX="14.0" layoutY="68.0" text="Tổng thanh toán:">
+                     <font>
+                        <Font name="Calibri" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="sumMoney_itemCartLb" layoutX="133.0" layoutY="65.0" prefHeight="21.0" prefWidth="321.0" text="0đ" textFill="#f20f0f">
+                     <font>
+                        <Font name="Calibri Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="36.0" text="Số lượng:">
+                     <font>
+                        <Font name="Calibri" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="numbersItemCart_lb" layoutX="82.0" layoutY="34.0" prefHeight="21.0" prefWidth="135.0" textFill="#0de438">
+                     <font>
+                        <Font name="Calibri Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <JFXButton fx:id="btnMuaItemCart" layoutX="506.0" layoutY="41.0" prefHeight="34.0" prefWidth="69.0" style="-fx-background-color: #d792fc;" text="Mua" textFill="#f5eded">
+                     <font>
+                        <Font name="Calibri Bold" size="20.0" />
+                     </font>
+                  </JFXButton>
+               </children>
+            </Pane>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

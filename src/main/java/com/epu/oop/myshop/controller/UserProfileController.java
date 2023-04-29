@@ -69,6 +69,8 @@ public class UserProfileController implements Initializable {
 
     // ------------------------------------- DASBROAD ---------------------------------------------------
     @FXML
+    private Pane changePass_pane_btn;
+    @FXML
     private Pane paneLienKetBank_btn;
     @FXML
     private Pane showVoucher_pane_btn;
@@ -324,13 +326,7 @@ public class UserProfileController implements Initializable {
     private JFXTextField Jtxt_SDT;
 
     @FXML
-    private JFXTextField Jtxt_SoTaiKhoan;
-
-    @FXML
-    private JFXTextField Jtxt_TenNganHang;
-
-    @FXML
-    private JFXTextField Jtxt_ChuSoHuu;
+    private JFXButton btnChane_password;
 
     @FXML
     private DatePicker ngaySinh_datepicker;
@@ -1144,6 +1140,108 @@ public class UserProfileController implements Initializable {
 
         }
     }
+    //--------------------------------------- SỬA THÔNG TIN CÁ NHÂN --------------------------------------------
+    public void hiddenInformation(boolean result){
+        Jtxt_Pass.setText("******");
+        Jtxt_HoTen.setEditable(result);
+        JRadion_Nu.setDisable(!result);
+        JRadion_Khac.setDisable(!result);
+        JRadion_Nam.setDisable(!result);
+        ngaySinh_datepicker.setDisable(!result);
+        Jcombox_diaChi.setDisable(!result);
+        Jtxt_CCCD.setEditable(result);
+        Jtxt_SDT.setEditable(result);
+        Jtxt_Pass.setEditable(!result);
+        btnChane_password.setVisible(!result);
+        btn_updateProfile.setVisible(result);
+    }
+
+    public void showInformationUser()
+    {
+        Jtxt_HoTen.setText(user.getFullName());
+        if(user.getGender().equals("Nam"))
+        {
+            JRadion_Nam.setSelected(true);
+        }else if(user.getGender().equals("Nữ"))
+        {
+            JRadion_Nu.setSelected(true);
+        }else{
+            JRadion_Khac.setSelected(true);
+        }
+
+        if(user.getDateOfBirth()!=null){
+            ngaySinh_datepicker.setValue(user.getDateOfBirth().toLocalDate());
+        }
+        Jcombox_diaChi.setValue(user.getAddress());
+        Jtxt_CCCD.setText(user.getCanCuocCongDan());
+        Jtxt_SDT.setText(user.getNumberPhone());
+        email_label.setText(user.getEmail());
+        userName_label.setText(user.getEmail());
+    }
+    public void updateProfile(ActionEvent e)
+    {
+        String hoTen = Jtxt_HoTen.getText();
+
+        if(isStringEmpty(hoTen)){
+            AlertNotification.showAlertWarning("","Họ tên không được phép trống");
+            return;
+        }
+
+        String gioiTinh = Khac;
+        Date ngaySinh = null;
+
+        if (JRadion_Nu.isSelected()) {
+            gioiTinh = Nu;
+        } else if (JRadion_Nam.isSelected()) {
+            gioiTinh = Nam;
+        }
+
+        // Chuyển đổi datepicker thành Date của SQL
+        if (ngaySinh_datepicker.getValue() != null) {
+            LocalDate mydate = ngaySinh_datepicker.getValue();
+            ngaySinh = Date.valueOf(mydate);
+        }
+        String diaChi = Jcombox_diaChi.getValue();
+        String CCCD = Jtxt_CCCD.getText();
+        String SDT = Jtxt_SDT.getText();
+
+        User us = new User(Temp.account.getID(), hoTen, gioiTinh, ngaySinh, diaChi, CCCD, user.getEmail(), SDT,
+                UrlAvatar);
+        if(userDao.Update(us)>0){
+            AlertNotification.showAlertSucces("","Cập nhật thành công");
+            user = us;
+        }else {
+            AlertNotification.showAlertError("","Có lỗi xảy ra");
+        }
+
+    }
+    //---------------------------------- ĐỔI MẬT KHẨU -----------------------------------------
+    public void showChangePassForm()
+    {
+        hiddenInformation(false);
+        showInformationUser();
+        editProfile_Form.setVisible(true);
+    }
+
+    public void ChangePassword(ActionEvent e)
+    {
+        if(!isStringEmpty(Jtxt_Pass.getText())){
+                String pass = AlertNotification.textInputDialog("Đổi mật khẩu","Nhập mật khẩu hiện tại","");
+                if(Temp.account.getPassword().equals(pass)){
+                    String oldPass = Temp.account.getPassword();
+                    Temp.account.setPassword(Jtxt_Pass.getText());
+                    if(account_dao.Update(Temp.account)>0){
+                        AlertNotification.showAlertSucces("","Đổi mật khẩu thành công");
+                    }else {
+                        AlertNotification.showAlertError("","Có lỗi xảy ra!");
+                        Temp.account.setPassword(oldPass);
+                    }
+                }else {
+                    AlertNotification.showAlertError("","Mật khẩu không chính xác");
+                }
+
+        }
+    }
     //--------------------------------LỊCH SỬ MUA HÀNG---------------------------------------------
 
     /*Giai thích:
@@ -1335,11 +1433,13 @@ public class UserProfileController implements Initializable {
                 if(account_dao.Update(Temp.account)>0){
                     Anch_ThamGiaBanHang.setVisible(false);
                     AlertNotification.showAlertSucces("Chúc mừng bạn đã trở thành người bán hàng.","Cảm ơn bạn đã đồng hành cùng chúng tôi");
-
+                    dashboard_form.setVisible(true);
                 }else{
                     AlertNotification.showAlertError("","Có lỗi xảy ra");
                     Temp.account.setPhanQuyen("Member");
                 }
+            }else{
+                AlertNotification.showAlertWarning("","Bạn chưa đủ 18+");
             }
         }
     }
@@ -1357,7 +1457,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    //--------------------------- SỬA THÔNG TIN  CÁ NHÂN-----------------------------------------------
+
 
     private Object[] objects;
     public void calculateMoneyMain() throws SQLException {
@@ -1475,13 +1575,15 @@ public class UserProfileController implements Initializable {
 
         }else if(event.getSource() == editProfile_btn){
             editProfile_Form.setVisible(true);
-
+            hiddenInformation(true);
+            showInformationUser();
         }else if(event.getSource() == sell_btn){
             if(Temp.account.getPhanQuyen().equals("Seller")){
                 setValueCategory();
                 banHang_Form.setVisible(true);
                 refreshDataInSell(event);
             }else{
+                dashboard_form.setVisible(true);
                 AlertNotification.showAlertWarning("","Đăng ký tở thành người bán cùng chúng tôi");
             }
 
@@ -1507,6 +1609,8 @@ public class UserProfileController implements Initializable {
                 Anch_ThamGiaBanHang.setVisible(true);
                 loadingDataJoinSell();
             }
+        }else if(event.getSource() == changePass_pane_btn){
+            showChangePassForm();
         }
     }
 
@@ -1583,6 +1687,7 @@ public class UserProfileController implements Initializable {
 
         DateTime_label.setText(App.timeDay);
         loadImage();
+        defaultAddress();
 
         Platform.runLater(() -> getObjectUser());
         if(Temp.account.getPhanQuyen().equals("Seller")) {
@@ -1597,7 +1702,19 @@ public class UserProfileController implements Initializable {
 
     }
 
+    public void defaultAddress() {
+        ObservableList<String> address = FXCollections.observableArrayList("An Giang", "Bà Rịa – Vũng Tàu", "Bạc Liêu",
+                "Bắc Giang", "Bắc Kạn", "Bắc Ninh", "Bến Tre", "Bình Dương", "Bình Định", "Bình Phước", "Bình Thuận",
+                "Cà Mau", "Cao Bằng", "Cần Thơ", "Đà Nẵng", "Đắk Lắk", "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+                "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội", "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang", "Hòa Bình",
+                "Thành phố Hồ Chí Minh", "Hưng Yên", "Khánh Hòa", "Kiên Giang", "Kon Tum", "Lai Châu", "Lạng Sơn",
+                "Lào Cai", "Lâm Đồng", "Long An", "Nam Định", "Nghệ An", "Ninh Bình", "Ninh Thuận", "Phú Thọ",
+                "Phú Yên", "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh", "Quảng Trị", "Sóc Trăng", "Sơn La",
+                "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế", "Tiền Giang", "Trà Vinh",
+                "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái");
 
+        Jcombox_diaChi.setItems(address);
+    }
     public void clearScene(){
         listPaymentHistory.clear();
         listProducts.clear();

@@ -323,7 +323,17 @@ public class AdminController implements Initializable {
 
     //Khi nhấn vào 1 voucher bâất kì thì hiển thị thông tin
     public void showInformationVoucher(){
-        imgVoucher.setImage(new Image(voucher.getImgVoucher()));
+
+        try{
+            if(voucher.getImgVoucher().equals(":")){
+                imgVoucher.setImage(new Image(voucher.getImgVoucher()));
+            }else{
+                imgVoucher.setImage(new Image(getClass().getResourceAsStream(voucher.getImgVoucher())));
+            }
+        }catch (Exception e){
+            imgVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+            System.out.println("Không load được ảnh: "+e.getMessage());
+        }
         maVoucher_txt.setText(voucher.getMaVoucher());
         tileGiamGia_txt.setText(voucher.getTiLeGiamGia()+"");
         if(voucher.getSoTienGiam()!=null)
@@ -611,6 +621,13 @@ public class AdminController implements Initializable {
             QLAccount_Form.setVisible(false);
             QLSanPham_Form.setVisible(false);
             QLVoucher_form.setVisible(true);
+        }else if(e.getSource() == logout_btn)
+        {
+            try{
+                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/LoginForm.fxml","Đăng nhập");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
     }

@@ -13,5 +13,5 @@ public interface Dao_Interface<T> {
 
     public int Update(T t) throws SQLException;
 
-    public int Delete(T t);
+    public int Delete(T t) throws SQLException;
 }

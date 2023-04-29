@@ -49,9 +49,9 @@ public class Bank_Dao implements Dao_Interface<Bank> {
         }catch (SQLException e) {
             if(connection!=null) {
                 connection.rollback();
-                System.out.println("roll back: "+e.getMessage());
+                //System.out.println("roll back: "+e.getMessage());
             }
-
+e.printStackTrace();
         }finally {
             connection.setAutoCommit(true);
             connection.close();

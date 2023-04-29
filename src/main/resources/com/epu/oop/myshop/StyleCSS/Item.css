@@ -88,4 +88,14 @@
     -fx-stroke-width: 1px;
 }
 
+.item-cart{
+    -fx-background-color: white;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-color: red;
+}
+.item-cart:hover{
+    -fx-background-color: #fcf9cf;
+    -fx-border-color: #3a26d4;
+}
 
