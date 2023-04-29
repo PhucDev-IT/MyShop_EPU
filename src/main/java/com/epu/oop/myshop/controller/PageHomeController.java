@@ -368,7 +368,7 @@ public class PageHomeController implements Initializable {
         totalProducts = product_Dao.getNumbersPages(keyCategory);
 
         totalPages = (int) Math.ceil((double) totalProducts / maxProductsOfPage);
-
+        listProduct.clear();
         if (totalProducts <= 0) {
             lbNoData.setVisible(true);
         } else {
@@ -376,7 +376,6 @@ public class PageHomeController implements Initializable {
 
             pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1
 
-            listProduct.clear();
             listProduct.addAll(product_Dao.getProductsByPage(keyCategory, pageSelected, maxProductsOfPage));
         }
         paneProductMarket.setVisible(true);
@@ -643,6 +642,7 @@ public class PageHomeController implements Initializable {
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
+                        resetDisplayDataVoucher();
                     });
                 }
 
@@ -653,6 +653,11 @@ public class PageHomeController implements Initializable {
 
     }
 
+    public void resetDisplayDataVoucher()
+    {
+        btnAddVoucher.setText("+");
+        VcSaleOrder_lb.setText("");
+    }
     public boolean PayProductAtHome(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
         if (checkAddOrder = order_dao.OrderDetailsPayAtHome(hoaDon, ctHoaDon)) {
             return true;
@@ -672,6 +677,7 @@ public class PageHomeController implements Initializable {
                         new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconThanhToan.jpg", Temp.user, null);
                 Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
                 if (checkAddOrder = order_dao.OrderDetailsPayByBank(hoaDon, ctHoaDon, paymentBank)) {
+                    listvoucher.remove(voucherSelected);
                     return true;
                 }else{
                     Platform.runLater(() -> AlertNotification.showAlertError("", "Có lỗi xảy ra"));
@@ -760,8 +766,9 @@ public class PageHomeController implements Initializable {
     }
 
     public void setDataVoucher() {
-        if (listvoucher == null) {
+        if (listvoucher.size()==0) {
             listvoucher = voucherDao.getVoucherConTime(Temp.user.getID());
+            System.out.println(listvoucher);
         }
         gridVoucher.getChildren().clear();
         clickVoucher();

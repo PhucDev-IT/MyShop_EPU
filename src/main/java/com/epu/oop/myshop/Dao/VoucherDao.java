@@ -25,7 +25,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
     @Override
     public boolean Insert(VoucherModel voucherModel) {
         int results = 0;
-        String sql = "INSERT INTO Voucher(MaVoucher,TiLeGiamGia,SoLuong,NoiDung,NgayThem,NgayKetThuc,ImgVoucher,SotienGiamGia)" +
+        String sql = "INSERT INTO Voucher(MaVoucher,TiLeGiamGia,SoLuong,NoiDung,NgayBatDau,NgayKetThuc,ImgVoucher,SotienGiamGia)" +
                 " VALUES (?,?,?,?,?,?,?,?)";
 
         try(Connection connection = jdbcUtil.getConnection();
@@ -64,7 +64,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
                 BigDecimal SotienGiamGia = rs.getBigDecimal("SotienGiamGia");
                 String NoiDung = rs.getString("NoiDung");
                 String ImgVoucher = rs.getString("ImgVoucher");
-                Date NgayThem = rs.getDate("NgayThem");
+                Date NgayThem = rs.getDate("NgayBatDau");
                 Date NgayKetThuc = rs.getDate("NgayKetThuc");
 
                 list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc));
@@ -96,12 +96,14 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
     public List<VoucherModel> getVoucherConTime(int IDUser) {
         List<VoucherModel> list = new ArrayList<>();
 
-        String sql = "select * from voucher " +
-                "where NgayKetThuc >= GETDATE() " +
-                "AND NgayThem <=GETDATE() " +
-                "AND MaVoucher  NOT IN (SELECT MaVoucher FROM orders WHERE Users_ID = ?) " +
-                "AND MaVoucher NOT IN (SELECT MaVoucher FROM VoucherUser)" +
-                "OR MaVoucher IN (SELECT Mavoucher FROM VoucherUser WHERE ID_User = ?)";
+        String sql = "SELECT * FROM voucher " +
+                "WHERE NgayKetThuc >= GETDATE() " +
+                "AND NgayBatDau <= GETDATE() " +
+                "AND ( MaVoucher NOT IN (SELECT MaVoucher FROM orders " +
+                "                       WHERE Users_ID = ?" +
+                "                       AND MaVoucher IS NOT NULL) " +
+                " AND MaVoucher NOT IN (SELECT MaVoucher FROM VoucherUser)" +
+                " OR MaVoucher IN (SELECT Mavoucher FROM VoucherUser WHERE ID_User = ?))";
 
         try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -115,7 +117,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
                 BigDecimal SotienGiamGia = rs.getBigDecimal("SotienGiamGia");
                 String NoiDung = rs.getString("NoiDung");
                 String ImgVoucher = rs.getString("ImgVoucher");
-                Date NgayThem = rs.getDate("NgayThem");
+                Date NgayThem = rs.getDate("NgayBatDau");
                 Date NgayKetThuc = rs.getDate("NgayKetThuc");
 
                 list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc));
@@ -129,24 +131,51 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
     }
 
     //Tặng voucher cho ngươời dùng
-    public int GiftVoucher(VoucherModel voucherModel,String email) {
-        int results = 0;
-        String sql = "INSERT INTO VoucherUser(MaVoucher,ID_User)"+
+    public int GiftVoucher(VoucherModel voucherModel,String email) throws SQLException {
+
+        String sqluser = "INSERT INTO VoucherUser(MaVoucher,ID_User)"+
                 " VALUES (?,(SELECT Account_ID FROM Users WHERE Email = ?))";
 
-        try(Connection connection = jdbcUtil.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
+        String sql = "INSERT INTO Voucher(MaVoucher,TiLeGiamGia,SoLuong,NoiDung,NgayBatDau,NgayKetThuc,ImgVoucher,SotienGiamGia)" +
+                " VALUES (?,?,?,?,?,?,?,?)";
 
+        Connection connection = null;
+        try{
+            connection = jdbcUtil.getConnection();
+            connection.setAutoCommit(false);
+
+            PreparedStatement statement1 = connection.prepareStatement(sql);
+            statement1.setString(1,voucherModel.getMaVoucher());
+            statement1.setFloat(2,voucherModel.getTiLeGiamGia());
+            statement1.setInt(3,voucherModel.getSoLuong());
+            statement1.setString(4,voucherModel.getNoiDung());
+            statement1.setDate(5,voucherModel.getNgayBatDau());
+            statement1.setDate(6,voucherModel.getNgayKetThuc());
+            statement1.setString(7,voucherModel.getImgVoucher());
+            statement1.setBigDecimal(8,voucherModel.getSoTienGiam());
+             statement1.executeUpdate();
+
+            PreparedStatement statement = connection.prepareStatement(sqluser);
             statement.setString(1,voucherModel.getMaVoucher());
             statement.setString(2,email);
 
-            //Bước 3:Thực thi câu lệnh
-            results =  statement.executeUpdate();
+            statement.executeUpdate();
+            connection.commit();
+            statement.close();
+            statement1.close();
 
         }catch (SQLException e) {
-           e.printStackTrace();
+            if(connection!=null)
+            {
+                connection.rollback();
+                System.out.println("Roll back: "+e.getMessage());
+            }
+            return 0;
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
         }
-        return results;
+        return 1;
     }
 
     //Kiểm tra mã voucher đã tồn tại hay chưa

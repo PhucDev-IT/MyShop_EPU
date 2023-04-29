@@ -543,7 +543,7 @@ public class CreateSQL {
             " SoLuong INT," +
             " NoiDung NVARCHAR(300)," +
             " ImgVoucher VARCHAR(300)," +
-            " NgayThem DATE," +
+            " NgayBatDau DATE," +
             " NgayKetThuc DATE" +
             ");";
     private final String TblVoucherUser = "CREATE TABLE VoucherUser " +

@@ -40,6 +40,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -393,7 +394,7 @@ public class AdminController implements Initializable {
         ngayKTDate.setValue(null);
         imgVoucher.setImage(null);
     }
-    public void AddVoucher(ActionEvent e) {
+    public void AddVoucher(ActionEvent e) throws SQLException {
         if (ngayKTDate.getValue().compareTo(ngayBatDau_date.getValue()) >= 0) {
 
             float tilegiamgia = 0;
@@ -414,20 +415,22 @@ public class AdminController implements Initializable {
             VoucherModel voucher = new VoucherModel(maVoucher_txt.getText(), tilegiamgia, SoTienGiamGia,
                     (Integer.parseInt(soLuong_txt.getText())), noiDung_txa.getText(), imgVoucherTemp,
                     Date.valueOf(ngayBatDau_date.getValue()), Date.valueOf(ngayKTDate.getValue()));
-
-
-            if (voucherDao.Insert(voucher)) {
-                AlertNotification.showAlertSucces("", "Thêm thành công");
-                if (!isStringEmpty(EmailUserVoucher_txt.getText())) {
-                    if (voucherDao.GiftVoucher(voucher, EmailUserVoucher_txt.getText()) <= 0) {
-                        AlertNotification.showAlertError("", "Người dùng không tồn tại");
-                    }
+            if (!isStringEmpty(EmailUserVoucher_txt.getText())) {
+                if (voucherDao.GiftVoucher(voucher, EmailUserVoucher_txt.getText()) <= 0) {
+                    AlertNotification.showAlertError("", "Người dùng không tồn tại");
+                }else{
+                    AlertNotification.showAlertSucces("", "Thêm thành công");
+                    setEmptyElement();
                 }
-                setEmptyElement();
-            } else {
-                AlertNotification.showAlertError("", "Có lỗi xảy ra");
-
+            }else{
+                if (voucherDao.Insert(voucher)) {
+                    AlertNotification.showAlertSucces("", "Thêm thành công");
+                    setEmptyElement();
+                }else {
+                    AlertNotification.showAlertError("", "Có lỗi xảy ra");
+                }
             }
+
         }else{
             AlertNotification.showAlertWarning("", "Ngày kết thúc voucher phải lớn hơn ngày bắt đầu.");
         }

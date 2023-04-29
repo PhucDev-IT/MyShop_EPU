@@ -1178,7 +1178,6 @@ public class UserProfileController implements Initializable {
         Thread thread = new Thread(task);
         thread.start();
         task.setOnSucceeded(event -> {
-            task.cancel();
             thread.interrupt();
         });
     }
@@ -1389,15 +1388,20 @@ public class UserProfileController implements Initializable {
             SumDoanhThu_lb.setText("0");
         }
     }
+    private volatile boolean isStopped = false; // Cờ hiệu để kiểm tra trạng thái của Task/Thread
+    public void stopTask()
+    {
+        isStopped = true;
+    }
     public void loadTotalOrder() throws InterruptedException {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                if (isCancelled()) {
-                    return null;
+
+                if (!isCancelled() || !isStopped) {
+                    objects = product_dao.sumTotalOrder(new User(Temp.account.getID()));
                 }
                 //Thread.sleep(1000);
-                objects = product_dao.sumTotalOrder(new User(Temp.account.getID()));
                 Platform.runLater(() -> {
                     try {
                         calculateMoneyMain();
@@ -1485,6 +1489,7 @@ public class UserProfileController implements Initializable {
             soDuTK_Form.setVisible(true);
             refreshPayment(event);
         }else if (event.getSource() == MyShop_txt) {
+            stopTask();
             clearScene();
             ConverForm.showForm((Stage) ((Node) event.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
         }else if(event.getSource() == paneLienKetBank_btn){
@@ -1513,6 +1518,7 @@ public class UserProfileController implements Initializable {
         }else if(e.getSource() == logout_btn){
             if (AlertNotification.showAlertConfirmation("", "Bạn muốn đăng xuất?")) {
                 Temp.account = null;
+                stopTask();
                 clearScene();
                 ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
             }

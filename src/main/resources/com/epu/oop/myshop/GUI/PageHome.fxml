@@ -437,7 +437,7 @@
                               </Label>
                               <ImageView fx:id="imgPhoneOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="81.0" pickOnBounds="true" />
                               <Label layoutX="69.0" layoutY="84.0" text="+84" />
-                              <Label fx:id="phoneUserOder_lb" layoutX="98.0" layoutY="82.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
+                              <Label fx:id="phoneUserOder_lb" layoutX="98.0" layoutY="81.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
                               <ImageView fx:id="imgAddressOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="111.0" pickOnBounds="true" />
                               <Label layoutX="68.0" layoutY="114.0" text="Địa chỉ nhận hàng:">
                                  <font>

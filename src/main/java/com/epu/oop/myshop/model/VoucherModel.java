@@ -3,6 +3,7 @@ package com.epu.oop.myshop.model;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.Objects;
 
 public class VoucherModel {
     private String MaVoucher;
@@ -138,5 +139,18 @@ public class VoucherModel {
                 ", ngayKetThuc=" + ngayKetThuc +
                 ", user=" + user +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VoucherModel that = (VoucherModel) o;
+        return Objects.equals(MaVoucher, that.MaVoucher);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(MaVoucher);
     }
 }
