@@ -98,4 +98,7 @@
     -fx-background-color: #fcf9cf;
     -fx-border-color: #3a26d4;
 }
+.item-cart-btndelete:hover{
+    -fx-text-fill: green;
+}
 

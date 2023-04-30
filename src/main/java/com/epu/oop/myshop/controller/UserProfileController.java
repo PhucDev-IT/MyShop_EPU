@@ -902,6 +902,7 @@ public class UserProfileController implements Initializable {
                 "Đồng ý, việc mua bán có thể bị gián đoạn")){
             if(bank_Dao.Delete(bank)>0){
                 AlertNotification.showAlertSucces("Xóa thành công","");
+                bank=null;
                 clearDataBank();
             }else{
                 AlertNotification.showAlertError("Có lỗi xảy ra, thử lại sau!","");
@@ -951,7 +952,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    public void withdrawMoney(ActionEvent e) {
+    public void withdrawMoney(ActionEvent e) throws SQLException {
 
         if (isStringEmpty(txtSoTienRut_RTForm.getText())) {
             AlertNotification.showAlertWarning("", "Nhập số tiền muốn rút!");
@@ -971,7 +972,7 @@ public class UserProfileController implements Initializable {
                                 new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", Temp.user, null);
                         Temp.account.setMoney(Temp.account.getMoney().subtract(soTienRut));
 
-                        if (account_dao.Update(Temp.account) > 0) {
+                        if (account_dao.transferMoney(Temp.account,paymentBank)) {
                             labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
                             AlertNotification.showAlertSucces("Rút tiền thành công", "");
                             refreshPayment(e);
@@ -1029,7 +1030,7 @@ public class UserProfileController implements Initializable {
             Temp.account.setMoney(Temp.account.getMoney().add(soTienNap));
             PaymentHistory pm = new PaymentHistory("Nạp tiền","Từ STK: "+bank.getSoTaiKhoan(),soTienNap,new Date(System.currentTimeMillis()),
                     "/com/epu/oop/myshop/image/profile/iconNapTien.png",user,null);
-            if(account_dao.Update(Temp.account)>0 && paymentHistory_dao.PaymentMyShop(pm)>0){
+            if(account_dao.transferMoney(Temp.account,pm)){
                 AlertNotification.showAlertSucces("Nạp tiền thành công","Cảm ơn bạn đã đồng hành với chúng tôi");
                 refreshPayment(e);
             }else{
@@ -1589,6 +1590,7 @@ public class UserProfileController implements Initializable {
 
         }else if(event.getSource() == soDuTK_btn){
             soDuTK_Form.setVisible(true);
+            showDataSoDuTaiKhoan();
             refreshPayment(event);
         }else if (event.getSource() == MyShop_txt) {
             stopTask();

@@ -16,9 +16,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -26,6 +29,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -876,9 +881,11 @@ public class PageHomeController implements Initializable {
 
     private MyListener<itemCart> myListenerItemCart;
 
+    private MyListener<MouseEvent> myListenerHandle;
+
     public long sumNumbers = 0;
 
-    public BigDecimal sumMoneyItem ;
+    public BigDecimal sumMoneyItem = new BigDecimal(0);
 
     public  List<itemCart> listChooseItemCart = new ArrayList<>();
     /*
@@ -897,31 +904,46 @@ public class PageHomeController implements Initializable {
                 if(item.isChoose()){
                     listChooseItemCart.add(item);
                     sumNumbers+= item.getQuantity();
-                    sumMoneyItem = new BigDecimal(String.valueOf(item.getProduct().getPrice().multiply(BigDecimal.valueOf(sumNumbers))));
-                    calculateSumItem();
-
+                    sumMoneyItem = sumMoneyItem.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
                 }else if(!item.isChoose()) {
                     listChooseItemCart.remove(item);
                     sumNumbers -= item.getQuantity();
                     sumMoneyItem = sumMoneyItem.subtract(item.getProduct().getPrice());
-                    numbersItemCart_lb.setText(sumNumbers+"");
-                    sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
                 }
-//                numbersItemCart_lb.setText(sumNumbers+"");
-//                sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
+                 setSumItemCarrt();
             }
         };
     }
 
-    public void calculateSumItem()
+    public void setSumItemCarrt()
     {
-//        sumNumbers+= item.getQuantity();
-//        sumMoneyItem = new BigDecimal(String.valueOf(item.getProduct().getPrice().multiply(BigDecimal.valueOf(sumNumbers))));
         numbersItemCart_lb.setText(sumNumbers+"");
         sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
 
     }
+    public void eventItemCart()
+    {
+        myListenerHandle = new MyListener<MouseEvent>() {
+            @Override
+            public void onClickListener(MouseEvent event) {
+                if (((Button)event.getSource()).getId().equals("btnUp")) {
+                    sumNumbers+=1;
+                }else if(((Button)event.getSource()).getId().equals("btnDown")){
+                    sumNumbers-=1;
+                }
+                else {
+                    try {
+                        loadDataItemCart();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+    }
     public void loadDataItemCart() throws SQLException {
+        gridItemCart.getChildren().clear();
+        rowItemCart = 1;
         itemCartList.clear();
         paneShoppingCart.setVisible(true);
         itemCartList.addAll(itemCart_dao.getDataByUser(Temp.account.getID()));
@@ -932,6 +954,7 @@ public class PageHomeController implements Initializable {
     }
     public void setDataBasket(itemCart it)
     {
+        eventItemCart();
         chooseItemCart();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
@@ -939,7 +962,7 @@ public class PageHomeController implements Initializable {
             AnchorPane anchorPane = fxmlLoader.load();
 
             ItemCartController itemCategory = fxmlLoader.getController();
-            itemCategory.setData(myListenerItemCart,it);
+            itemCategory.setData(myListenerItemCart,it,myListenerHandle);
 
             gridItemCart.add(anchorPane, 0, ++rowItemCart); // (child,column,row)
             // set grid width

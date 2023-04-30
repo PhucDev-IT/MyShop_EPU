@@ -295,6 +295,7 @@ public class Account_Dao implements Dao_Interface<Account> {
             stmPayment.setString(5,paymentHistory.getImgSrcIcon());
             stmPayment.setInt(6,paymentHistory.getUser().getID());
             stmPayment.setInt(7,paymentHistory.getAccount().getID());
+            statement.executeUpdate();
 
             connection.commit();
             statement.close();
@@ -313,6 +314,48 @@ public class Account_Dao implements Dao_Interface<Account> {
         return false;
     }
 
+    //Rút tiền - nạp tiền
+    public boolean transferMoney(Account account,PaymentHistory paymentHistory) throws SQLException {
+        String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
+                " VALUES (?,?,?,?,?,?)";
+
+        String sql = "UPDATE Account SET " +
+                " Currency=? " +
+                " WHERE UserName=?";
+        Connection connection = null;
+        try {
+            connection = jdbcUtil.getConnection();
+            connection.setAutoCommit(false);
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement stmPayment = connection.prepareStatement(sqlPayment);
+
+            statement.setBigDecimal(1,account.getMoney());
+            statement.setString(2,account.getUserName());
+            statement.executeUpdate();
+
+            stmPayment.setString(1,paymentHistory.getTenGiaoDich());
+            stmPayment.setString(2,paymentHistory.getNoiDung());
+            stmPayment.setBigDecimal(3,paymentHistory.getSoTien());
+            stmPayment.setDate(4,paymentHistory.getNgayGiaoDich());
+            stmPayment.setString(5,paymentHistory.getImgSrcIcon());
+            stmPayment.setInt(6,paymentHistory.getUser().getID());
+            statement.executeUpdate();
+            connection.commit();
+            statement.close();
+            stmPayment.close();
+        }catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+                System.out.println("Roll back: "+e.getMessage());
+            }
+            return false;
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return true;
+    }
     //----------------- KHÓA TÀI KHOẢN ĐĂNG NHẬP ---------------------------------
     public boolean lockAccount(String userName)
     {

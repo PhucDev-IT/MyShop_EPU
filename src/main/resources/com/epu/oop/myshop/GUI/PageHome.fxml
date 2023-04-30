@@ -142,7 +142,7 @@
                         </AnchorPane>
                      </children>
                   </AnchorPane>
-                  <Pane fx:id="main" layoutX="406.0" layoutY="236.0" prefHeight="288.0" prefWidth="519.0" style="-fx-background-color: #cbd6d4;" visible="false">
+                  <Pane fx:id="main" layoutX="406.0" layoutY="236.0" prefHeight="288.0" prefWidth="519.0" style="-fx-background-color: #cbd6d4;">
                      <children>
                         <ImageView fx:id="img_slider" fitHeight="287.0" fitWidth="520.0" layoutY="1.0" pickOnBounds="true" />
                      </children></Pane>
@@ -447,7 +447,7 @@
                                     <Font name="Times New Roman Italic" size="16.0" />
                                  </font>
                               </Label>
-                              <JFXTextField fx:id="AdressOrder_txt" layoutX="20.0" layoutY="155.0" prefHeight="31.0" prefWidth="502.0" />
+                              <JFXTextField fx:id="AdressOrder_txt" layoutX="47.0" layoutY="155.0" prefHeight="31.0" prefWidth="475.0" />
                            </children>
                         </Pane>
                         <Pane layoutX="729.0" layoutY="169.0" prefHeight="200.0" prefWidth="540.0" style="-fx-background-color: white; -fx-border-color: red;">

@@ -659,6 +659,11 @@ public class CreateSQL {
             "    WHERE Account.ID = (SELECT Users_ID FROM inserted) " +
             "END";
 
+    private final String TriggerUpdateVoucher = "CREATE TRIGGER Trig_UpdateVoucher ON Oders" +
+            " FOR INSERT" +
+            " AS" +
+            " BEGIN" +
+            " UPDATE Voucher";
     private final String proc_getProductOfPages = "CREATE PROC proc_getProductOfPages " +
             " @Category_ID INT," +
             " @Offset int, " +

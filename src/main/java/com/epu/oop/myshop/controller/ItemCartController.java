@@ -1,5 +1,7 @@
 package com.epu.oop.myshop.controller;
 
+import com.epu.oop.myshop.Dao.itemCartDao;
+import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.MyListener;
 import com.epu.oop.myshop.model.Product;
@@ -15,6 +17,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class ItemCartController {
 
@@ -43,10 +48,14 @@ public class ItemCartController {
 
     private MyListener<itemCart> myListener;
 
+    private ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private itemCartDao itemDao = itemCartDao.getInstance(connectionPool);
+
     private int number;
 
-    public void setData(MyListener<itemCart> myListener,itemCart it) {
+    public void setData(MyListener<itemCart> myListener,itemCart it,MyListener<MouseEvent> myListenerHandle) {
         this.myListener = myListener;
+        this.myListenerHandle  = myListenerHandle;
         item = it;
         try {
             if(!it.getProduct().getSrcImg().contains(":")){
@@ -64,8 +73,7 @@ public class ItemCartController {
         number+=it.getQuantity();
     }
     private PageHomeController page = new PageHomeController();
-    public void chooseProduct(MouseEvent e)
-    {
+    public void chooseProduct(MouseEvent e) throws SQLException {
 
         if(checkbox.isSelected()){
             item.setChoose(true);
@@ -75,7 +83,7 @@ public class ItemCartController {
         myListener.onClickListener(item);
     }
     @FXML
-    public void upDownNumber(ActionEvent event) {
+    public void upDownNumber(MouseEvent event) {
         if (event.getSource() == btnUp) {
             number++;
         } else if (event.getSource() == btnDown) {
@@ -85,23 +93,17 @@ public class ItemCartController {
         }
         txtNumbers.setText(number + "");
         item.setQuantity(number);
-
-
-        //myListener.onClickListener(item);
+        myListenerHandle.onClickListener(event);
     }
 
-    //Kiểm tra người dùng nhập số lượng có chữ cái và xoóa
-    public void removeCharInput(KeyEvent e) {
-        txtNumbers.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.matches(".*[^0-9].*")) {
-                txtNumbers.setText(oldValue);
-            }
-        });
-        if (txtNumbers.getText().length()==0) {
-            if (txtNumbers.getText().charAt(0) == '0') {
-                txtNumbers.setText(txtNumbers.getText().replace("0", ""));
-            }
-            number = Integer.parseInt(txtNumbers.getText());
+    private MyListener<MouseEvent> myListenerHandle ;
+    //Xóa sản phẩm
+    public void deleteProduct(MouseEvent e) throws SQLException {
+
+        if(itemDao.Delete(item)<0){
+            AlertNotification.showAlertError("","Có lỗi xảy ra");
+        }else {
+            myListenerHandle.onClickListener(e);
         }
     }
 

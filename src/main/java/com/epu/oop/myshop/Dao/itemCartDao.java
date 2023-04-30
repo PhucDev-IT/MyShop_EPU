@@ -95,7 +95,7 @@ public class itemCartDao implements Dao_Interface<itemCart>{
 
     @Override
     public int Delete(itemCart itemCart) throws SQLException {
-        String sql = "DELETE FROM itemCart WHERE idCart = ? ";
+        String sql = "DELETE FROM itemCart WHERE id_Cart = ? ";
 
         try{
             openConnection();

@@ -23,18 +23,18 @@
             <Font name="Calibri Bold" size="16.0" />
          </font>
       </Label>
-      <JFXButton fx:id="btnDown" layoutX="324.0" layoutY="60.0" onAction="#upDownNumber" style="-fx-background-color: #ebab15;" text="-" textFill="WHITE">
+      <JFXButton fx:id="btnDown" layoutX="324.0" layoutY="60.0" onMouseClicked="#upDownNumber" style="-fx-background-color: #ebab15;" text="-" textFill="WHITE">
          <font>
             <Font name="Calibri Bold" size="16.0" />
          </font>
       </JFXButton>
       <JFXTextField fx:id="txtNumbers" alignment="CENTER" layoutX="359.0" layoutY="60.0" prefHeight="31.0" prefWidth="63.0" text="1" />
-      <JFXButton fx:id="btnUp" layoutX="429.0" layoutY="61.0" onAction="#upDownNumber" style="-fx-background-color: #ebab15;" text="+" textFill="WHITE">
+      <JFXButton fx:id="btnUp" layoutX="429.0" layoutY="61.0" onMouseClicked="#upDownNumber" style="-fx-background-color: #ebab15;" text="+" textFill="WHITE">
          <font>
             <Font name="Calibri Bold" size="16.0" />
          </font>
       </JFXButton>
-      <Label layoutX="585.0" layoutY="8.0" text="Xóa" textFill="#ff0707">
+      <Label layoutX="585.0" layoutY="8.0" onMouseClicked="#deleteProduct" styleClass="item-cart-btndelete" stylesheets="@../StyleCSS/Item.css" text="Xóa" textFill="#ff0707">
          <font>
             <Font name="Calibri Bold" size="17.0" />
          </font>
