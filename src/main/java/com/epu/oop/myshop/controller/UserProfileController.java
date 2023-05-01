@@ -969,7 +969,7 @@ public class UserProfileController implements Initializable {
                     String pass = AlertNotification.textInputDialog("Rút tiền", "Nhập mật khẩu", "");
                     if (Temp.account.getPassword().equals(pass)) {
                         PaymentHistory paymentBank = new PaymentHistory("Rút tiền", "Rút về ngân hàng", soTienRut,
-                                new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", Temp.user, null);
+                                new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", user, null);
                         Temp.account.setMoney(Temp.account.getMoney().subtract(soTienRut));
 
                         if (account_dao.transferMoney(Temp.account,paymentBank)) {

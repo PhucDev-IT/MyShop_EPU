@@ -335,6 +335,8 @@ public class PageHomeController implements Initializable {
     private Pane payByBank;
     //----------------------------------------GIỎ HÀNG---------------------------------
     @FXML
+    private Text txt_CloseCart;
+    @FXML
     private AnchorPane paneShoppingCart;
     @FXML
     private GridPane gridItemCart;
@@ -442,6 +444,7 @@ public class PageHomeController implements Initializable {
         numbersBuyProduct = 1;
         txtNumber.setText(numbersBuyProduct+"");
         paneOrderDetail.setVisible(false);
+        paneShoppingCart.setVisible(false);
         row = 1;
         col = 0;
 
@@ -648,7 +651,7 @@ public class PageHomeController implements Initializable {
                             if(e.getSource() == payAtHome){
                                 checkAddOrder=PayProductAtHome(hoaDon, ctHoaDon);
                             }else if(e.getSource() == payByBank){
-                                checkAddOrder=payProductByBank(hoaDon, ctHoaDon);
+                                checkAddOrder=payProductByMyVi(hoaDon, ctHoaDon);
                             }
                         }catch (SQLException e){
                             throw new RuntimeException(e);
@@ -702,7 +705,7 @@ public class PageHomeController implements Initializable {
         return false;
     }
 
-    public boolean payProductByBank(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
+    public boolean payProductByMyVi(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
         Temp.bank = bank_dao.SelectByID(new Bank(Temp.user));
         if (Temp.bank != null) {
             if (Temp.account.getMoney().compareTo(thanhTien) <= 0) {
@@ -881,7 +884,6 @@ public class PageHomeController implements Initializable {
 
     private MyListener<itemCart> myListenerItemCart;
 
-    private MyListener<MouseEvent> myListenerHandle;
 
     public long sumNumbers = 0;
 
@@ -921,26 +923,7 @@ public class PageHomeController implements Initializable {
         sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
 
     }
-    public void eventItemCart()
-    {
-        myListenerHandle = new MyListener<MouseEvent>() {
-            @Override
-            public void onClickListener(MouseEvent event) {
-                if (((Button)event.getSource()).getId().equals("btnUp")) {
-                    sumNumbers+=1;
-                }else if(((Button)event.getSource()).getId().equals("btnDown")){
-                    sumNumbers-=1;
-                }
-                else {
-                    try {
-                        loadDataItemCart();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-    }
+
     public void loadDataItemCart() throws SQLException {
         gridItemCart.getChildren().clear();
         rowItemCart = 1;
@@ -952,9 +935,8 @@ public class PageHomeController implements Initializable {
         }
 
     }
-    public void setDataBasket(itemCart it)
-    {
-        eventItemCart();
+    public void setDataBasket(itemCart it) throws SQLException {
+
         chooseItemCart();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
@@ -962,7 +944,7 @@ public class PageHomeController implements Initializable {
             AnchorPane anchorPane = fxmlLoader.load();
 
             ItemCartController itemCategory = fxmlLoader.getController();
-            itemCategory.setData(myListenerItemCart,it,myListenerHandle);
+            itemCategory.setData(myListenerItemCart,it);
 
             gridItemCart.add(anchorPane, 0, ++rowItemCart); // (child,column,row)
             // set grid width
@@ -1186,6 +1168,9 @@ public class PageHomeController implements Initializable {
            }
         }else if(e.getSource() == img_shopping_cart){
             loadDataItemCart();
+        }else if(e.getSource() == txt_CloseCart)
+        {
+            paneShoppingCart.setVisible(false);
         }
 
     }

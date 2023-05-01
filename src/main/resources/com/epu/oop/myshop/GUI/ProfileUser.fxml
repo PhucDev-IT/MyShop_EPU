@@ -711,7 +711,7 @@
                         <Font size="14.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton fx:id="soDuTK_btn" layoutX="10.0" layoutY="351.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="    Số dư TK       " textOverrun="LEADING_ELLIPSIS">
+                  <JFXButton fx:id="soDuTK_btn" layoutX="10.0" layoutY="351.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="    Ví MyVi       " textOverrun="LEADING_ELLIPSIS">
                      <graphic>
                         <ImageView fx:id="img_SoDuTK" fitHeight="30.0" fitWidth="35.0" layoutX="14.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>

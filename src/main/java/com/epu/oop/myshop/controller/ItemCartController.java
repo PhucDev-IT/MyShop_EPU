@@ -53,9 +53,9 @@ public class ItemCartController {
 
     private int number;
 
-    public void setData(MyListener<itemCart> myListener,itemCart it,MyListener<MouseEvent> myListenerHandle) {
+    public void setData(MyListener<itemCart> myListener,itemCart it) {
         this.myListener = myListener;
-        this.myListenerHandle  = myListenerHandle;
+       // this.myListenerHandle  = myListener;
         item = it;
         try {
             if(!it.getProduct().getSrcImg().contains(":")){
@@ -72,7 +72,7 @@ public class ItemCartController {
         txtNumbers.setText(it.getQuantity()+"");
         number+=it.getQuantity();
     }
-    private PageHomeController page = new PageHomeController();
+
     public void chooseProduct(MouseEvent e) throws SQLException {
 
         if(checkbox.isSelected()){
@@ -93,17 +93,17 @@ public class ItemCartController {
         }
         txtNumbers.setText(number + "");
         item.setQuantity(number);
-        myListenerHandle.onClickListener(event);
+       // myListenerHandle.onClickListener(item);
     }
 
-    private MyListener<MouseEvent> myListenerHandle ;
+
     //Xóa sản phẩm
     public void deleteProduct(MouseEvent e) throws SQLException {
 
         if(itemDao.Delete(item)<0){
             AlertNotification.showAlertError("","Có lỗi xảy ra");
         }else {
-            myListenerHandle.onClickListener(e);
+           // myListenerHandle.onClickListener(item);
         }
     }
 

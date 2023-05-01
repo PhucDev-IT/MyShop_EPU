@@ -142,7 +142,231 @@
                         </AnchorPane>
                      </children>
                   </AnchorPane>
-                  <Pane fx:id="main" layoutX="406.0" layoutY="236.0" prefHeight="288.0" prefWidth="519.0" style="-fx-background-color: #cbd6d4;">
+                  <AnchorPane fx:id="paneOrderDetail" layoutX="15.0" layoutY="82.0" onMouseMoved="#hiddenListItemOfMenu" prefHeight="566.0" prefWidth="1296.0" style="-fx-background-color: #FAFAFA; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: green;" visible="false">
+                     <children>
+                        <Pane layoutX="102.0" layoutY="14.0" prefHeight="144.0" prefWidth="582.0">
+                           <children>
+                              <ImageView fx:id="imgProdOderDetail" fitHeight="112.0" fitWidth="125.0" layoutX="14.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true" />
+                              <Text fx:id="nameProdOrder_txt" layoutX="155.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="382.7646484375">
+                                 <font>
+                                    <Font name="Times New Roman Bold" size="22.0" />
+                                 </font>
+                              </Text>
+                              <Label fx:id="priceProOder_lb" layoutX="155.0" layoutY="103.0" text="120.000đ" textFill="#ee0000">
+                                 <font>
+                                    <Font name="Times New Roman" size="18.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="754.0" layoutY="29.0" prefHeight="115.0" prefWidth="471.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-radius: 15;">
+                           <children>
+                              <ImageView fx:id="imgVoucherOrder" fitHeight="33.0" fitWidth="33.0" layoutX="25.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label layoutX="68.0" layoutY="47.0" text="Voucher:">
+                                 <font>
+                                    <Font name="Times New Roman Bold" size="19.0" />
+                                 </font>
+                              </Label>
+                              <JFXButton fx:id="btnAddVoucher" layoutX="420.0" layoutY="42.0" onAction="#addVoucher" style="-fx-background-color: red;" text="+" textFill="#f8f8f8">
+                                 <font>
+                                    <Font name="Calibri Bold" size="16.0" />
+                                 </font>
+                              </JFXButton>
+                              <Label layoutX="156.0" layoutY="47.0" prefHeight="21.0" prefWidth="48.0" text="Giảm " textFill="#00ff09">
+                                 <font>
+                                    <Font name="Times New Roman" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="VcSaleOrder_lb" layoutX="199.0" layoutY="47.0" prefHeight="21.0" prefWidth="202.0" textFill="#00ff09">
+                                 <font>
+                                    <Font name="Times New Roman" size="18.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="49.0" layoutY="169.0" prefHeight="200.0" prefWidth="540.0" style="-fx-background-color: white; -fx-border-color: red;">
+                           <children>
+                              <Label layoutX="147.0" layoutY="14.0" prefHeight="21.0" prefWidth="233.0" text="Thông tin nhận hàng của bạn">
+                                 <font>
+                                    <Font name="Times New Roman Bold Italic" size="18.0" />
+                                 </font>
+                              </Label>
+                              <ImageView fx:id="imgUserOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="nameUserOder_lb" layoutX="69.0" layoutY="54.0" prefHeight="19.0" prefWidth="273.0" text="Nguyễn Văn Phúc">
+                                 <font>
+                                    <Font name="Times New Roman Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <ImageView fx:id="imgPhoneOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="81.0" pickOnBounds="true" />
+                              <Label layoutX="69.0" layoutY="84.0" text="+84" />
+                              <Label fx:id="phoneUserOder_lb" layoutX="98.0" layoutY="81.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
+                              <ImageView fx:id="imgAddressOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="111.0" pickOnBounds="true" />
+                              <Label layoutX="68.0" layoutY="114.0" text="Địa chỉ nhận hàng:">
+                                 <font>
+                                    <Font name="Times New Roman Italic" size="16.0" />
+                                 </font>
+                              </Label>
+                              <JFXTextField fx:id="AdressOrder_txt" layoutX="47.0" layoutY="155.0" prefHeight="31.0" prefWidth="475.0" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="729.0" layoutY="169.0" prefHeight="200.0" prefWidth="540.0" style="-fx-background-color: white; -fx-border-color: red;">
+                           <children>
+                              <Label layoutX="200.0" layoutY="14.0" text="Chi tiết hóa đơn">
+                                 <font>
+                                    <Font name="Times New Roman Bold Italic" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="14.0" layoutY="49.0" text="Số sản phẩm:">
+                                 <font>
+                                    <Font name="Times New Roman" size="17.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="14.0" layoutY="86.0" text="Tổng tiền hàng:">
+                                 <font>
+                                    <Font name="Times New Roman" size="17.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="17.0" layoutY="124.0" text="Voucher giảm:">
+                                 <font>
+                                    <Font name="Times New Roman" size="17.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="17.0" layoutY="163.0" text="Tổng thanh toán:">
+                                 <font>
+                                    <Font name="Times New Roman Bold" size="17.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="numbersProduct" layoutX="403.0" layoutY="49.0" prefHeight="26.0" prefWidth="134.0" text="1">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="totalMoneyProd_lb" layoutX="403.0" layoutY="86.0" prefHeight="26.0" prefWidth="130.0">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="VcShelfOrder_lb" layoutX="403.0" layoutY="124.0" prefHeight="21.0" prefWidth="143.0" textFill="#00ff0d">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="totalOrder_lb" layoutX="403.0" layoutY="163.0" prefHeight="21.0" prefWidth="143.0">
+                                 <font>
+                                    <Font name="System Bold" size="17.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane fx:id="payAtHome" layoutX="328.0" layoutY="411.0" onMouseClicked="#PayProduct" prefHeight="80.0" prefWidth="230.0" style="-fx-background-color: white; -fx-border-color: green; -fx-border-radius: 15;">
+                           <children>
+                              <ImageView fx:id="imgPayAtHome" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="22.0" pickOnBounds="true" />
+                              <Text layoutX="77.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thanh toán sau khi nhận hàng" textAlignment="CENTER" wrappingWidth="140.67090225219727">
+                                 <font>
+                                    <Font name="Times New Roman" size="15.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </Pane>
+                        <Pane fx:id="payByBank" layoutX="722.0" layoutY="411.0" onMouseClicked="#PayProduct" prefHeight="80.0" prefWidth="230.0" style="-fx-background-color: white; -fx-border-color: green; -fx-border-radius: 15;">
+                           <children>
+                              <ImageView fx:id="imgPayBank" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" />
+                              <Text layoutX="77.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thanh toán bằng ví MyVi" textAlignment="CENTER" wrappingWidth="140.67090225219727">
+                                 <font>
+                                    <Font name="Times New Roman" size="15.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </Pane>
+                        <Label layoutX="32.0" layoutY="542.0" text="Lưu ý:" textFill="#f50000">
+                           <font>
+                              <Font name="Times New Roman Bold" size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="85.0" layoutY="544.0" text="Cung cấp thông tin chính xác để được nhận hàng và hỗ trợ nhanh chóng!">
+                           <font>
+                              <Font name="Times New Roman" size="16.0" />
+                           </font>
+                        </Label>
+                        <Pane fx:id="paneVoucher" layoutX="398.0" layoutY="14.0" prefHeight="526.0" prefWidth="662.0" style="-fx-background-color: white;" visible="false">
+                           <children>
+                              <ScrollPane layoutY="22.0" prefHeight="504.0" prefWidth="662.0" style="-fx-background-color: white;">
+                                 <content>
+                                    <GridPane fx:id="gridVoucher" prefHeight="0.0" prefWidth="3.0" vgap="5.0">
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <padding>
+                                          <Insets top="-30.0" />
+                                       </padding>
+                                    </GridPane>
+                                 </content>
+                              </ScrollPane>
+                              <Text fill="#ff0505" layoutX="643.0" layoutY="17.0" onMouseClicked="#hiddenFormVoucher" strokeType="OUTSIDE" strokeWidth="0.0" text="x">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </Pane>
+                        <Label fx:id="closeOrderDetail" layoutX="1275.0" layoutY="2.0" onMouseClicked="#closeForm" text="x" textFill="#ff0808">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="paneShoppingCart" layoutY="96.0" prefHeight="629.0" prefWidth="1326.0" style="-fx-background-color: #dfdcf5;" visible="false" AnchorPane.topAnchor="50.0">
+                     <children>
+                        <ScrollPane hbarPolicy="NEVER" layoutX="327.0" layoutY="14.0" prefHeight="508.0" prefWidth="657.0">
+                           <content>
+                              <GridPane fx:id="gridItemCart" vgap="5.0">
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <padding>
+                                    <Insets top="-10.0" />
+                                 </padding>
+                              </GridPane>
+                           </content>
+                        </ScrollPane>
+                        <Pane layoutX="328.0" layoutY="522.0" prefHeight="101.0" prefWidth="657.0" style="-fx-background-color: white;">
+                           <children>
+                              <Label layoutX="14.0" layoutY="68.0" text="Tổng thanh toán:">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="sumMoney_itemCartLb" layoutX="133.0" layoutY="65.0" prefHeight="21.0" prefWidth="321.0" text="0đ" textFill="#f20f0f">
+                                 <font>
+                                    <Font name="Calibri Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="14.0" layoutY="36.0" text="Số lượng:">
+                                 <font>
+                                    <Font name="Calibri" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="numbersItemCart_lb" layoutX="82.0" layoutY="34.0" prefHeight="21.0" prefWidth="135.0" textFill="#0de438">
+                                 <font>
+                                    <Font name="Calibri Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <JFXButton fx:id="btnMuaItemCart" layoutX="506.0" layoutY="41.0" prefHeight="34.0" prefWidth="69.0" style="-fx-background-color: #d792fc;" text="Mua" textFill="#f5eded">
+                                 <font>
+                                    <Font name="Calibri Bold" size="20.0" />
+                                 </font>
+                              </JFXButton>
+                           </children>
+                        </Pane>
+                        <Text fx:id="txt_CloseCart" fill="RED" layoutX="1299.0" layoutY="34.0" onMouseClicked="#click" strokeType="OUTSIDE" strokeWidth="0.0" text="x">
+                           <font>
+                              <Font name="Calibri Bold" size="27.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </AnchorPane>
+                  <Pane fx:id="main" layoutX="406.0" layoutY="236.0" prefHeight="288.0" prefWidth="519.0" style="-fx-background-color: #cbd6d4;" visible="false">
                      <children>
                         <ImageView fx:id="img_slider" fitHeight="287.0" fitWidth="520.0" layoutY="1.0" pickOnBounds="true" />
                      </children></Pane>
@@ -379,184 +603,16 @@
                            </font>
                         </JFXButton>
                         <JFXTextField fx:id="txtNumber" alignment="CENTER" layoutX="61.0" layoutY="520.0" onKeyPressed="#removeCharInput" prefHeight="31.0" prefWidth="94.0" text="1" />
-                        <JFXButton fx:id="btnBuyProduct" layoutX="212.0" layoutY="520.0" onAction="#BuyProduct" style="-fx-background-color: #fff;" text="Mua" />
-                        <JFXButton fx:id="btnAddInCart" layoutX="273.0" layoutY="520.0" onAction="#addInCart" style="-fx-background-color: white;" text="Thêm vào giỏ" />
+                        <JFXButton fx:id="btnBuyProduct" layoutX="211.0" layoutY="520.0" onAction="#BuyProduct" prefHeight="30.0" prefWidth="53.0" style="-fx-background-color: #d0f7a1;" text="Mua">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font></JFXButton>
+                        <JFXButton fx:id="btnAddInCart" layoutX="274.0" layoutY="520.0" onAction="#addInCart" prefHeight="30.0" prefWidth="112.0" style="-fx-background-color: #d0f7a1;" text="Thêm vào giỏ">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font></JFXButton>
                      </children>
                   </Pane>
-                  <AnchorPane fx:id="paneOrderDetail" layoutX="15.0" layoutY="82.0" onMouseMoved="#hiddenListItemOfMenu" prefHeight="566.0" prefWidth="1296.0" style="-fx-background-color: #FAFAFA; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: green;" visible="false">
-                     <children>
-                        <Pane layoutX="102.0" layoutY="14.0" prefHeight="144.0" prefWidth="582.0">
-                           <children>
-                              <ImageView fx:id="imgProdOderDetail" fitHeight="112.0" fitWidth="125.0" layoutX="14.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true" />
-                              <Text fx:id="nameProdOrder_txt" layoutX="155.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="382.7646484375">
-                                 <font>
-                                    <Font name="Times New Roman Bold" size="22.0" />
-                                 </font>
-                              </Text>
-                              <Label fx:id="priceProOder_lb" layoutX="155.0" layoutY="103.0" text="120.000đ" textFill="#ee0000">
-                                 <font>
-                                    <Font name="Times New Roman" size="18.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </Pane>
-                        <Pane layoutX="754.0" layoutY="29.0" prefHeight="115.0" prefWidth="471.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-radius: 15;">
-                           <children>
-                              <ImageView fx:id="imgVoucherOrder" fitHeight="33.0" fitWidth="33.0" layoutX="25.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label layoutX="68.0" layoutY="47.0" text="Voucher:">
-                                 <font>
-                                    <Font name="Times New Roman Bold" size="19.0" />
-                                 </font>
-                              </Label>
-                              <JFXButton fx:id="btnAddVoucher" layoutX="420.0" layoutY="42.0" onAction="#addVoucher" style="-fx-background-color: red;" text="+" textFill="#f8f8f8">
-                                 <font>
-                                    <Font name="Calibri Bold" size="16.0" />
-                                 </font>
-                              </JFXButton>
-                              <Label layoutX="156.0" layoutY="47.0" prefHeight="21.0" prefWidth="48.0" text="Giảm " textFill="#00ff09">
-                                 <font>
-                                    <Font name="Times New Roman" size="18.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="VcSaleOrder_lb" layoutX="199.0" layoutY="47.0" prefHeight="21.0" prefWidth="202.0" textFill="#00ff09">
-                                 <font>
-                                    <Font name="Times New Roman" size="18.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </Pane>
-                        <Pane layoutX="49.0" layoutY="169.0" prefHeight="200.0" prefWidth="540.0" style="-fx-background-color: white; -fx-border-color: red;">
-                           <children>
-                              <Label layoutX="147.0" layoutY="14.0" prefHeight="21.0" prefWidth="233.0" text="Thông tin nhận hàng của bạn">
-                                 <font>
-                                    <Font name="Times New Roman Bold Italic" size="18.0" />
-                                 </font>
-                              </Label>
-                              <ImageView fx:id="imgUserOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label fx:id="nameUserOder_lb" layoutX="69.0" layoutY="54.0" prefHeight="19.0" prefWidth="273.0" text="Nguyễn Văn Phúc">
-                                 <font>
-                                    <Font name="Times New Roman Bold" size="16.0" />
-                                 </font>
-                              </Label>
-                              <ImageView fx:id="imgPhoneOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="81.0" pickOnBounds="true" />
-                              <Label layoutX="69.0" layoutY="84.0" text="+84" />
-                              <Label fx:id="phoneUserOder_lb" layoutX="98.0" layoutY="81.0" prefHeight="21.0" prefWidth="135.0" text="374164756" />
-                              <ImageView fx:id="imgAddressOrder" fitHeight="20.0" fitWidth="20.0" layoutX="38.0" layoutY="111.0" pickOnBounds="true" />
-                              <Label layoutX="68.0" layoutY="114.0" text="Địa chỉ nhận hàng:">
-                                 <font>
-                                    <Font name="Times New Roman Italic" size="16.0" />
-                                 </font>
-                              </Label>
-                              <JFXTextField fx:id="AdressOrder_txt" layoutX="47.0" layoutY="155.0" prefHeight="31.0" prefWidth="475.0" />
-                           </children>
-                        </Pane>
-                        <Pane layoutX="729.0" layoutY="169.0" prefHeight="200.0" prefWidth="540.0" style="-fx-background-color: white; -fx-border-color: red;">
-                           <children>
-                              <Label layoutX="200.0" layoutY="14.0" text="Chi tiết hóa đơn">
-                                 <font>
-                                    <Font name="Times New Roman Bold Italic" size="18.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="14.0" layoutY="49.0" text="Số sản phẩm:">
-                                 <font>
-                                    <Font name="Times New Roman" size="17.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="14.0" layoutY="86.0" text="Tổng tiền hàng:">
-                                 <font>
-                                    <Font name="Times New Roman" size="17.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="17.0" layoutY="124.0" text="Voucher giảm:">
-                                 <font>
-                                    <Font name="Times New Roman" size="17.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="17.0" layoutY="163.0" text="Tổng thanh toán:">
-                                 <font>
-                                    <Font name="Times New Roman Bold" size="17.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="numbersProduct" layoutX="403.0" layoutY="49.0" prefHeight="26.0" prefWidth="134.0" text="1">
-                                 <font>
-                                    <Font size="17.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="totalMoneyProd_lb" layoutX="403.0" layoutY="86.0" prefHeight="26.0" prefWidth="130.0">
-                                 <font>
-                                    <Font size="17.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="VcShelfOrder_lb" layoutX="403.0" layoutY="124.0" prefHeight="21.0" prefWidth="143.0" textFill="#00ff0d">
-                                 <font>
-                                    <Font size="17.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="totalOrder_lb" layoutX="403.0" layoutY="163.0" prefHeight="21.0" prefWidth="143.0">
-                                 <font>
-                                    <Font name="System Bold" size="17.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </Pane>
-                        <Pane fx:id="payAtHome" layoutX="328.0" layoutY="411.0" onMouseClicked="#PayProduct" prefHeight="80.0" prefWidth="230.0" style="-fx-background-color: white; -fx-border-color: green; -fx-border-radius: 15;">
-                           <children>
-                              <ImageView fx:id="imgPayAtHome" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="22.0" pickOnBounds="true" />
-                              <Text layoutX="77.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thanh toán sau khi nhận hàng" textAlignment="CENTER" wrappingWidth="140.67090225219727">
-                                 <font>
-                                    <Font name="Times New Roman" size="15.0" />
-                                 </font>
-                              </Text>
-                           </children>
-                        </Pane>
-                        <Pane fx:id="payByBank" layoutX="722.0" layoutY="411.0" onMouseClicked="#PayProduct" prefHeight="80.0" prefWidth="230.0" style="-fx-background-color: white; -fx-border-color: green; -fx-border-radius: 15;">
-                           <children>
-                              <ImageView fx:id="imgPayBank" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" />
-                              <Text layoutX="77.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thanh toán bằng tài khoản ngân hàng" textAlignment="CENTER" wrappingWidth="140.67090225219727">
-                                 <font>
-                                    <Font name="Times New Roman" size="15.0" />
-                                 </font>
-                              </Text>
-                           </children>
-                        </Pane>
-                        <Label layoutX="32.0" layoutY="542.0" text="Lưu ý:" textFill="#f50000">
-                           <font>
-                              <Font name="Times New Roman Bold" size="17.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="85.0" layoutY="544.0" text="Cung cấp thông tin chính xác để được nhận hàng và hỗ trợ nhanh chóng!">
-                           <font>
-                              <Font name="Times New Roman" size="16.0" />
-                           </font>
-                        </Label>
-                        <Pane fx:id="paneVoucher" layoutX="398.0" layoutY="14.0" prefHeight="526.0" prefWidth="662.0" style="-fx-background-color: white;" visible="false">
-                           <children>
-                              <ScrollPane layoutY="22.0" prefHeight="504.0" prefWidth="662.0" style="-fx-background-color: white;">
-                                 <content>
-                                    <GridPane fx:id="gridVoucher" prefHeight="0.0" prefWidth="3.0" vgap="5.0">
-                                      <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                      </rowConstraints>
-                                       <padding>
-                                          <Insets top="-30.0" />
-                                       </padding>
-                                    </GridPane>
-                                 </content>
-                              </ScrollPane>
-                              <Text fill="#ff0505" layoutX="643.0" layoutY="17.0" onMouseClicked="#hiddenFormVoucher" strokeType="OUTSIDE" strokeWidth="0.0" text="x">
-                                 <font>
-                                    <Font name="System Bold" size="18.0" />
-                                 </font>
-                              </Text>
-                           </children>
-                        </Pane>
-                        <Label fx:id="closeOrderDetail" layoutX="1275.0" layoutY="2.0" onMouseClicked="#closeForm" text="x" textFill="#ff0808">
-                           <font>
-                              <Font name="System Bold" size="20.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
                   <AnchorPane fx:id="paneLoading" layoutX="41.0" layoutY="-63.0" prefHeight="723.0" prefWidth="1326.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-63.0">
                      <children>
                         <ImageView fx:id="imgLoading" fitHeight="76.0" fitWidth="94.0" layoutX="581.0" layoutY="311.0" pickOnBounds="true" preserveRatio="true" />
@@ -571,50 +627,5 @@
             <Font size="28.0" />
          </font>
       </Label>
-      <AnchorPane fx:id="paneShoppingCart" prefHeight="629.0" prefWidth="1326.0" style="-fx-background-color: #dfdcf5;" visible="false" AnchorPane.topAnchor="100.0">
-         <children>
-            <ScrollPane hbarPolicy="NEVER" layoutX="327.0" layoutY="14.0" prefHeight="508.0" prefWidth="657.0">
-               <content>
-                  <GridPane fx:id="gridItemCart" vgap="5.0">
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <padding>
-                        <Insets top="-10.0" />
-                     </padding>
-                  </GridPane>
-               </content>
-            </ScrollPane>
-            <Pane layoutX="328.0" layoutY="522.0" prefHeight="101.0" prefWidth="657.0" style="-fx-background-color: white;">
-               <children>
-                  <Label layoutX="14.0" layoutY="68.0" text="Tổng thanh toán:">
-                     <font>
-                        <Font name="Calibri" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="sumMoney_itemCartLb" layoutX="133.0" layoutY="65.0" prefHeight="21.0" prefWidth="321.0" text="0đ" textFill="#f20f0f">
-                     <font>
-                        <Font name="Calibri Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="14.0" layoutY="36.0" text="Số lượng:">
-                     <font>
-                        <Font name="Calibri" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="numbersItemCart_lb" layoutX="82.0" layoutY="34.0" prefHeight="21.0" prefWidth="135.0" textFill="#0de438">
-                     <font>
-                        <Font name="Calibri Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <JFXButton fx:id="btnMuaItemCart" layoutX="506.0" layoutY="41.0" prefHeight="34.0" prefWidth="69.0" style="-fx-background-color: #d792fc;" text="Mua" textFill="#f5eded">
-                     <font>
-                        <Font name="Calibri Bold" size="20.0" />
-                     </font>
-                  </JFXButton>
-               </children>
-            </Pane>
-         </children>
-      </AnchorPane>
    </children>
 </AnchorPane>

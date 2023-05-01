@@ -295,23 +295,23 @@ public class Account_Dao implements Dao_Interface<Account> {
             stmPayment.setString(5,paymentHistory.getImgSrcIcon());
             stmPayment.setInt(6,paymentHistory.getUser().getID());
             stmPayment.setInt(7,paymentHistory.getAccount().getID());
-            statement.executeUpdate();
+            stmPayment.executeUpdate();
 
             connection.commit();
             statement.close();
             stmReceiver.close();
             stmPayment.close();
-            return true;
         }catch (SQLException e) {
             if(connection!=null){
                 connection.rollback();
                 System.out.println("Roll back: "+e.getMessage());
             }
+            return false;
         }finally {
             connection.setAutoCommit(true);
             connection.close();
         }
-        return false;
+        return true;
     }
 
     //Rút tiền - nạp tiền
@@ -340,7 +340,8 @@ public class Account_Dao implements Dao_Interface<Account> {
             stmPayment.setDate(4,paymentHistory.getNgayGiaoDich());
             stmPayment.setString(5,paymentHistory.getImgSrcIcon());
             stmPayment.setInt(6,paymentHistory.getUser().getID());
-            statement.executeUpdate();
+            stmPayment.executeUpdate();
+
             connection.commit();
             statement.close();
             stmPayment.close();

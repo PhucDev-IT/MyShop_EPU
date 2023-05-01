@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -41,6 +42,8 @@ public class App extends Application {
         Scene scene = new Scene(root);
         stage.centerOnScreen();
         stage.setResizable(false);
+        stage.setTitle("Trang chủ");
+        stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/com/epu/oop/myshop/image/logo-app.png")));
         stage.setScene(scene);
         stage.show();
     }

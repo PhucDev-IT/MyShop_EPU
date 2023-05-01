@@ -139,7 +139,8 @@ public class CreateSQL {
             stm.executeUpdate(Tblorder);
             stm.executeUpdate(TblOrderDtails);
             stm.executeUpdate(TblPaymentHistory);
-
+            stm.executeUpdate(TblItemCart);
+            stm.executeUpdate(tblMessenger);
             connection.commit();
 
             System.out.println("Tạo table thành công");
@@ -210,6 +211,8 @@ public class CreateSQL {
             stm.executeUpdate(indexPayment);
             stm.executeUpdate(indexProduct);
             stm.executeUpdate(indexProductSeller);
+            stm.executeUpdate(indexItemCart);
+            stm.executeUpdate(indexMessenger);
             connection.commit();
             System.out.println("Tạo index thành công");
         } catch (SQLException e) {
@@ -598,6 +601,15 @@ public class CreateSQL {
             " Users_ID INT FOREIGN KEY REFERENCES Users(Account_ID) " +
             ")";
 
+    private final String tblMessenger = "CREATE TABLE Messenger " +
+            "( " +
+            " ID INT PRIMARY KEY IDENTITY, " +
+            " Title NVARCHAR(100), " +
+            " Content NVARCHAR(1000), " +
+            " Statuss NVARCHAR(10), " +
+            " Account_ID INT FOREIGN KEY REFERENCES Account(ID) " +
+            " )";
+
     //------------- TẠO CHỈ MỤC - TĂNG TỐC TRUY VẤN
     String indexProduct ="CREATE INDEX idx_MaSP ON Product(MaSP); " +
                         "CREATE INDEX idx_Category_ID ON Product(Category_ID); " +
@@ -620,6 +632,8 @@ public class CreateSQL {
             "CREATE INDEX idx_product_ID ON itemCart(Product_ID) " +
             "CREATE INDEX idx_User_ID ON itemCart(Users_ID)";
 
+    private final String indexMessenger = "CREATE INDEX idx_Status ON Messenger(Statuss) " +
+            "CREATE INDEX idx_Account_ID ON Messenger(Account_ID)";
     //---------------------------- TRIGGER ---------------------------------------
     private final String TriggerOne = "CREATE TRIGGER TRIG_Update_MoneySeller ON OrderDetails" +
             " FOR INSERT " +

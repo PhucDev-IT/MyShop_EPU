@@ -72,22 +72,22 @@
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <AnchorPane fx:id="QLAccount_Form" layoutX="93.0" layoutY="111.0" prefHeight="621.0" prefWidth="1022.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane fx:id="QLAccount_Form" layoutX="93.0" layoutY="111.0" prefHeight="621.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TableView id="my-table" fx:id="tbleViewAccount" layoutY="47.0" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#showInformationUser" prefHeight="412.0" prefWidth="785.0" stylesheets="@../StyleCSS/Admin.css">
+                        <TableView id="my-table" fx:id="tbleViewAccount" layoutX="14.0" layoutY="47.0" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#showInformationUser" prefHeight="412.0" prefWidth="774.0" stylesheets="@../StyleCSS/Admin.css">
                           <columns>
                             <TableColumn fx:id="userName_Col" prefWidth="300.0" text="Tên Tài Khoản" />
                             <TableColumn fx:id="Password_Col" prefWidth="203.0" text="Mật Khẩu" />
                               <TableColumn fx:id="Status_Col" prefWidth="116.0" text="Trạng Thái" />
-                              <TableColumn fx:id="PhanQuyen_Col" prefWidth="164.0" text="Phân Quyền" />
+                              <TableColumn fx:id="PhanQuyen_Col" prefWidth="165.0" text="Phân Quyền" />
                           </columns>
                         </TableView>
-                        <JFXButton layoutX="829.0" layoutY="263.0" onAction="#removeAccount" prefHeight="36.0" prefWidth="133.0" style="-fx-background-color: #ffb3ec;" text="Xóa Tài Khoản">
+                        <JFXButton layoutX="829.0" layoutY="263.0" onAction="#removeAccount" prefHeight="36.0" prefWidth="133.0" style="-fx-background-color: #d8ff9e;" text="Xóa Tài Khoản">
                            <font>
                               <Font name="Arial Bold" size="15.0" />
                            </font>
                         </JFXButton>
-                        <JFXButton layoutX="813.0" layoutY="324.0" onAction="#OnLockAccount" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #ffb3ec;" text="Khóa/Mở Tài Khoản">
+                        <JFXButton layoutX="813.0" layoutY="324.0" onAction="#OnLockAccount" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #d8ff9e;" text="Khóa/Mở Tài Khoản">
                            <font>
                               <Font name="Arial Bold" size="15.0" />
                            </font>
@@ -136,10 +136,10 @@
                                  </font></Label>
                            </children>
                         </AnchorPane>
-                        <ComboBox fx:id="PhanQuyen_AccountFrm" layoutX="821.0" layoutY="385.0" prefWidth="150.0" promptText="Phân Quyền" style="-fx-background-color: #ffb3ec;" />
+                        <ComboBox fx:id="PhanQuyen_AccountFrm" layoutX="821.0" layoutY="385.0" prefWidth="150.0" promptText="Phân Quyền" style="-fx-background-color: #d8ff9e;" />
                      </children>
                   </AnchorPane>
-                  <AnchorPane fx:id="QLSanPham_Form" prefHeight="621.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane fx:id="QLSanPham_Form" prefHeight="621.0" prefWidth="1022.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <ScrollPane layoutX="6.0" layoutY="21.0" prefHeight="600.0" prefWidth="800.0">
                            <content>

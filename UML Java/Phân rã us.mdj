@@ -469,7 +469,7 @@
 									"font": "Arial;13;0",
 									"left": 452.5,
 									"top": 36.5,
-									"width": 98.8544921875,
+									"width": 98,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGHy4WCkNyQI54="
@@ -1992,7 +1992,7 @@
 									"font": "Arial;13;0",
 									"left": 666.5,
 									"top": 324.5,
-									"width": 127.57763671875,
+									"width": 127,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGHy4fxwuLaGmY="
@@ -4196,7 +4196,7 @@
 									"font": "Arial;13;0",
 									"left": 250.5,
 									"top": 12.5,
-									"width": 88.025390625,
+									"width": 87,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGH0mno9/UhdpY="
@@ -4487,7 +4487,7 @@
 									"font": "Arial;13;0",
 									"left": 27,
 									"top": 28.5,
-									"width": 129.21533203125,
+									"width": 128,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGH0mpLbvjlbz8="
@@ -5251,7 +5251,7 @@
 									"font": "Arial;13;0",
 									"left": 434,
 									"top": 436.5,
-									"width": 124.10546875,
+									"width": 123,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGH0n0i/ZJBc1M="
@@ -12458,7 +12458,7 @@
 											"top": 1035.5,
 											"width": 173,
 											"height": 13,
-											"text": "Thanh toán bằng ngân hàng"
+											"text": "Thanh toán bằng ví MyVi"
 										},
 										{
 											"_type": "LabelView",
@@ -12491,7 +12491,7 @@
 									"font": "Arial;13;0",
 									"left": 550.5,
 									"top": 1028.5,
-									"width": 184.0400390625,
+									"width": 183,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGHzHOxUj9X6e0="
@@ -19219,7 +19219,7 @@
 									"font": "Arial;13;0",
 									"left": 369,
 									"top": 316.5,
-									"width": 119.0654296875,
+									"width": 118,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGHzDua7/hY2NE="
@@ -19418,7 +19418,7 @@
 									"font": "Arial;13;0",
 									"left": 720,
 									"top": 316.5,
-									"width": 77.16455078125,
+									"width": 77,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGHzDvRGPiHSpQ="
@@ -19982,7 +19982,7 @@
 									"font": "Arial;13;0",
 									"left": 327,
 									"top": 172.5,
-									"width": 108.96630859375,
+									"width": 108,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGHzDwovvsFqgg="
@@ -22586,7 +22586,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Thanh toán bằng ngân hàng",
+					"name": "Thanh toán bằng ví MyVi",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",

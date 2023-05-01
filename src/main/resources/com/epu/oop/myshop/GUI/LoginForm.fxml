@@ -37,7 +37,7 @@
             </Button>
          </children>
       </AnchorPane>
-      <Label fx:id="register_label" layoutX="109.0" layoutY="337.0" onMouseClicked="#click" styleClass="register" stylesheets="@../StyleCSS/Login_register.css" text="Đăng ký tại đây" textFill="#2f2f2f" underline="true">
+      <Label fx:id="register_label" layoutX="111.0" layoutY="337.0" onMouseClicked="#click" styleClass="register" stylesheets="@../StyleCSS/Login_register.css" text="Đăng ký tại đây" textFill="#1a4ef8">
          <font>
             <Font name="Arial" size="17.0" />
          </font></Label>
