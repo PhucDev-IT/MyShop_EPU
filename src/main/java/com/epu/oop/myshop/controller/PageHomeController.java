@@ -16,12 +16,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -29,8 +26,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -262,17 +257,13 @@ public class PageHomeController implements Initializable {
 
     //------------------------------ CHI TIẾT MUA HÀNG ---------------------------------------------------
     @FXML
+    private ScrollPane scrollListProductDetail;
+    @FXML
+    private GridPane gridProdcut_OrderDetails;
+    @FXML
     private JFXButton btnAddInCart;
     @FXML
     private AnchorPane paneOrderDetail;
-    @FXML
-    private ImageView imgProdOderDetail;
-
-    @FXML
-    private Text nameProdOrder_txt;
-
-    @FXML
-    private Label priceProOder_lb;
 
     @FXML
     private ImageView imgVoucherOrder;
@@ -358,6 +349,7 @@ public class PageHomeController implements Initializable {
     List<Product> listProduct = new ArrayList<>();
     int pageSelected;
 
+    private User user;
     private Product SelectedProduct;    //Lưu giá trị product vừa được click
 
     private VoucherModel voucherSelected = null;
@@ -597,10 +589,16 @@ public class PageHomeController implements Initializable {
         if (event.getSource() == closeInfromation) {
             paneInformationProduct.setVisible(false);
         } else if (event.getSource() == closeOrderDetail) {
+            gridProdcut_OrderDetails.getChildren().clear();
             paneOrderDetail.setVisible(false);
         }
     }
 
+    /*
+    Khi người dùng nhấn mua sản phẩm thì sẽ xóa các dữlieujeu ở listChoose item để thêm sản phẩm vừa chọn + số lương vào
+    Mục đích tái sử dụng hàm và dùng đồng thời mua nhiều sản phẩm cùng lúc
+    Mỗi CTHD bắt buộc phải có số lượng và đơn giá, nên mượn itemCart để dùng nó truyền vào OrderDao
+     */
     public void BuyProduct(ActionEvent e) throws IOException {
         if (e.getSource() == btnBuyProduct) {
             if (Temp.account != null) {
@@ -611,7 +609,11 @@ public class PageHomeController implements Initializable {
                     AlertNotification.showAlertWarning("", "Số lượng hàng không đủ");
                 } else {
                     paneInformationProduct.setVisible(false);
-                    paneOrderDetail.setVisible(true);
+                    listChooseItemCartModel.clear();
+                    listChooseItemCartModel.add(new itemCartModel(SelectedProduct,numbersBuyProduct));
+                    numbersBuyProduct = Integer.parseInt(txtNumber.getText());
+                    tongTien = SelectedProduct.getPrice().multiply(BigDecimal.valueOf(Long.parseLong(txtNumber.getText())));
+                    displayListProductOrderDetails(SelectedProduct,numbersBuyProduct);
                     showOderDetail();
                 }
             } else {
@@ -629,7 +631,7 @@ public class PageHomeController implements Initializable {
 
     //---------------------------------- THÔNG TIN CHI TIẾT HÓA ĐƠN - MUA HÀNG -----------------------------------
 
-    private BigDecimal tongTien;   //Sau khi nhấn mua hàng thì sẽ tính tiền vì khi đó mới có dữ liệu của product
+    private BigDecimal tongTien = new BigDecimal(0);   //Sau khi nhấn mua hàng thì sẽ tính tiền vì khi đó mới có dữ liệu của product
     private BigDecimal thanhTien;
     public boolean checkAddOrder;
 
@@ -640,8 +642,8 @@ public class PageHomeController implements Initializable {
         if (checkStringIsempty(phoneUserOder_lb.getText()) || checkStringIsempty(AdressOrder_txt.getText())) {
             AlertNotification.showAlertWarning("Thiếu thông tin!", "Nhập đầy đủ thông tin nhận hàng hoặc cập nhật lại hồ sơ");
         } else {
-            Order hoaDon = new Order(new Date(System.currentTimeMillis()), tongTien, voucherSelected, thanhTien, Temp.user);
-            OrderDetails ctHoaDon = new OrderDetails(SelectedProduct, numbersBuyProduct, SelectedProduct.getPrice());
+            Order hoaDon = new Order(new Date(System.currentTimeMillis()), tongTien, voucherSelected, thanhTien,user);
+
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
@@ -649,9 +651,9 @@ public class PageHomeController implements Initializable {
                     Thread.sleep(200);
                         try{
                             if(e.getSource() == payAtHome){
-                                checkAddOrder=PayProductAtHome(hoaDon, ctHoaDon);
+                                checkAddOrder=PayProductAtHome(hoaDon, listChooseItemCartModel);
                             }else if(e.getSource() == payByBank){
-                                checkAddOrder=payProductByMyVi(hoaDon, ctHoaDon);
+                                checkAddOrder=payProductByMyVi(hoaDon, listChooseItemCartModel);
                             }
                         }catch (SQLException e){
                             throw new RuntimeException(e);
@@ -666,6 +668,7 @@ public class PageHomeController implements Initializable {
             task.setOnSucceeded(event -> {
 
                 if (checkAddOrder) {
+                    resetDisplayDataVoucher();
                     for (Product pro : listProduct) {
                         if (pro.getID() == SelectedProduct.getID()) {
                             pro.setQuantity(pro.getQuantity() - numbersBuyProduct);
@@ -680,8 +683,16 @@ public class PageHomeController implements Initializable {
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
-                        resetDisplayDataVoucher();
                     });
+
+                    //Nếu mua hàng từ giỏ hàng thì xóa các san phẩm trong giỏ hàng sau khi mua
+                    if(listChooseItemCartModel.size()>0){
+                        try {
+                            removeAllItemCart();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
                 }
 
                 Platform.runLater(() -> paneLoading.setVisible(false));
@@ -691,13 +702,18 @@ public class PageHomeController implements Initializable {
 
     }
 
+
     public void resetDisplayDataVoucher()
     {
+
         btnAddVoucher.setText("+");
         VcSaleOrder_lb.setText("");
+        VcShelfOrder_lb.setText("");
+        listvoucher.remove(voucherSelected);
+        voucherSelected = null;
     }
-    public boolean PayProductAtHome(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
-        if (checkAddOrder = order_dao.OrderDetailsPayAtHome(hoaDon, ctHoaDon)) {
+    public boolean PayProductAtHome(Order hoaDon, List<itemCartModel> list) throws SQLException {
+        if (checkAddOrder = order_dao.OrderDetailsPayAtHome(hoaDon, list)) {
             return true;
         }else{
             Platform.runLater(() -> AlertNotification.showAlertError("", "Có lỗi xảy ra"));
@@ -705,16 +721,16 @@ public class PageHomeController implements Initializable {
         return false;
     }
 
-    public boolean payProductByMyVi(Order hoaDon, OrderDetails ctHoaDon) throws SQLException {
-        Temp.bank = bank_dao.SelectByID(new Bank(Temp.user));
+    public boolean payProductByMyVi(Order hoaDon, List<itemCartModel> list) throws SQLException {
+        Temp.bank = bank_dao.SelectByID(new Bank(user));
         if (Temp.bank != null) {
             if (Temp.account.getMoney().compareTo(thanhTien) <= 0) {
                 Platform.runLater(() -> AlertNotification.showAlertWarning("Số dư không đủ!", "Vui lòng nạp thêm tiền..."));
             } else {
                 PaymentHistory paymentBank = new PaymentHistory("Mua Hàng", "Thanh toán cho MyShop", thanhTien,
-                        new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconThanhToan.jpg", Temp.user, null);
+                        new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconThanhToan.jpg", user, null);
                 Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
-                if (checkAddOrder = order_dao.OrderDetailsPayByBank(hoaDon, ctHoaDon, paymentBank)) {
+                if (checkAddOrder = order_dao.OrderDetailsPayByBank(hoaDon, list, paymentBank)) {
                     listvoucher.remove(voucherSelected);
                     return true;
                 }else{
@@ -728,7 +744,6 @@ public class PageHomeController implements Initializable {
     }
 
     public void caculateOrderDetail() {
-        tongTien = SelectedProduct.getPrice().multiply(BigDecimal.valueOf(Long.parseLong(txtNumber.getText())));
 
         if (voucherSelected != null) {
             if (voucherSelected.getTiLeGiamGia() > 0.0) {
@@ -750,27 +765,38 @@ public class PageHomeController implements Initializable {
         totalMoneyProd_lb.setText(App.numf.format(tongTien) + "đ");
     }
 
-    public void showOderDetail() {
-        numbersBuyProduct = Integer.parseInt(txtNumber.getText());
-        //Lấy thông tin người dungf
-        Temp.user = userDao.SelectByID(new User(Temp.account.getID()));
-        nameUserOder_lb.setText(Temp.user.getFullName());
-        phoneUserOder_lb.setText(Temp.user.getNumberPhone());
-        AdressOrder_txt.setText(Temp.user.getAddress());
-
+    public void displayListProductOrderDetails(Product prod,int number)
+    {
         try {
-            if(!SelectedProduct.getSrcImg().contains(":")){
-                imgProdOderDetail.setImage(new Image(getClass().getResourceAsStream(SelectedProduct.getSrcImg())));
-            }else
-                imgProdOderDetail.setImage(new Image(SelectedProduct.getSrcImg()));
-        }catch (Exception e){
-            imgProdOderDetail.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/ProductOrdersDetails.fxml"));
+            AnchorPane anchorPane = fxmlLoader.load();
+
+            ProductOrderDetails productDetails = fxmlLoader.getController();
+            productDetails.setData(prod,number);
+
+            gridProdcut_OrderDetails.add(anchorPane, col, ++row); // (child,column,row)
+            // set grid width
+            gridProdcut_OrderDetails.setMinWidth(Region.USE_COMPUTED_SIZE);
+            gridProdcut_OrderDetails.setPrefWidth(Region.USE_COMPUTED_SIZE);
+            gridProdcut_OrderDetails.setMaxWidth(Region.USE_PREF_SIZE);
+
+            // set grid height
+            gridProdcut_OrderDetails.setMinHeight(Region.USE_COMPUTED_SIZE);
+            gridProdcut_OrderDetails.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            gridProdcut_OrderDetails.setMaxHeight(Region.USE_PREF_SIZE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        nameProdOrder_txt.setText(SelectedProduct.getTenSP());
-        priceProOder_lb.setText(App.numf.format(SelectedProduct.getPrice()) + "đ");
-        numbersProduct.setText(txtNumber.getText());
-
+    }
+    public void showOderDetail() {
+        paneOrderDetail.setVisible(true);
+        //Lấy thông tin người dungf
+        user = userDao.SelectByID(new User(Temp.account.getID()));
+        nameUserOder_lb.setText(user.getFullName());
+        phoneUserOder_lb.setText(user.getNumberPhone());
+        AdressOrder_txt.setText(user.getAddress());
+        numbersProduct.setText(numbersBuyProduct+"");
         //Tổng tiền hàng
         caculateOrderDetail();
 
@@ -795,6 +821,7 @@ public class PageHomeController implements Initializable {
             @Override
             public void onClickListener(VoucherModel voucherModel) {
                 voucherSelected = voucherModel;
+
                 paneVoucher.setVisible(false);
                 caculateOrderDetail();
                 btnAddVoucher.setText("-");
@@ -804,8 +831,7 @@ public class PageHomeController implements Initializable {
 
     public void setDataVoucher() {
         if (listvoucher.size()==0) {
-            listvoucher = voucherDao.getVoucherConTime(Temp.user.getID());
-            System.out.println(listvoucher);
+            listvoucher = voucherDao.getVoucherConTime(user.getID());
         }
         gridVoucher.getChildren().clear();
         clickVoucher();
@@ -880,63 +906,134 @@ public class PageHomeController implements Initializable {
     }
     //--------------------------------------- GIỎ HÀNG -----------------------------------------------
     int rowItemCart = 1;
-    private List<itemCart> itemCartList = new ArrayList<>();
+    private List<itemCartModel> itemCartModelList = new ArrayList<>();
 
-    private MyListener<itemCart> myListenerItemCart;
+    private MyListener<itemCartModel> myListenerItemCart;
+
+    private ListenerItemCart<Event, itemCartModel> eventMyListener;
 
 
-    public long sumNumbers = 0;
 
-    public BigDecimal sumMoneyItem = new BigDecimal(0);
-
-    public  List<itemCart> listChooseItemCart = new ArrayList<>();
+    public  List<itemCartModel> listChooseItemCartModel = new ArrayList<>();
     /*
     -Khi người dùng tích chọn product, nếu lần đầu tích thì sẽ đc thêm vào list và tính tiền
     -Khi hủy thì sẽ bị xóa khoit list và cập nhật lại tiền
     -Nếu có hành động tăng giảm số lượng thì duyệt vòng lặp để kiểm tra và cập nhật lại sô lượng + tính toán tiền
     -Tông số lượng trước đó = tổng số lượng trước đó + (số lượng mới tăng - số luwognj trc đó trong list) nếu hành động tăng
     -Tổng tiền =
+    -setSumItemCarrt(); ở mỗi if vì khi người dùng chưa chọn sp mà nhấn tăng hoặc giảm sẽ xảy ra exceptiom
      */
     public void chooseItemCart()
     {
-        myListenerItemCart = new MyListener<itemCart>() {
+        myListenerItemCart = new MyListener<itemCartModel>() {
             @Override
-            public void onClickListener(itemCart item) {
+            public void onClickListener(itemCartModel item) {
 
                 if(item.isChoose()){
-                    listChooseItemCart.add(item);
-                    sumNumbers+= item.getQuantity();
-                    sumMoneyItem = sumMoneyItem.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+                    listChooseItemCartModel.add(item);
+                    numbersBuyProduct+= item.getQuantity();
+                    tongTien = tongTien.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+                    setSumItemCarrt();
                 }else if(!item.isChoose()) {
-                    listChooseItemCart.remove(item);
-                    sumNumbers -= item.getQuantity();
-                    sumMoneyItem = sumMoneyItem.subtract(item.getProduct().getPrice());
+                    listChooseItemCartModel.remove(item);
+                    numbersBuyProduct -= item.getQuantity();
+                    tongTien = tongTien.subtract(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+                    setSumItemCarrt();
                 }
-                 setSumItemCarrt();
+
             }
         };
     }
 
+    public void upDownItemCart() {
+        eventMyListener = new ListenerItemCart<Event, itemCartModel>() {
+            @Override
+            public void onClickListener(Event event, itemCartModel itm) {
+                if(((JFXButton)event.getSource()).getId().equals("btn_removeItem") )
+                {
+                    if(itm.isChoose()){
+                        numbersBuyProduct -= itm.getQuantity();
+                        tongTien = tongTien.subtract(itm.getSumMoney());
+                        listChooseItemCartModel.remove(itm);
+                    }
+                    System.out.println(listChooseItemCartModel);
+                    updateGridItemcart(itm);
+                }else {
+
+                    numbersBuyProduct = 0;
+                    tongTien = new BigDecimal("0");
+                    System.out.println(listChooseItemCartModel.size());
+                    for (itemCartModel it : listChooseItemCartModel) {
+                        System.out.println(it);
+                        numbersBuyProduct += it.getQuantity();
+                        tongTien = tongTien.add(it.getSumMoney());
+                    }
+                }
+                setSumItemCarrt();
+
+            }
+        };
+    }
+
+    public void updateGridItemcart(itemCartModel itm)
+    {
+        // Tìm nút chứa sản phẩm cần xóa
+        int indexToRemove = -1;
+        for (int i = 0; i < gridItemCart.getChildren().size(); i++) {
+            AnchorPane anchorPane = (AnchorPane) gridItemCart.getChildren().get(i);
+            itemCartModel it = (itemCartModel) anchorPane.getUserData();
+            if (it.getIdCart() == itm.getIdCart()) {
+                indexToRemove = i;
+                break;
+            }
+        }
+
+        // Xóa nút chứa sản phẩm cần xóa và cập nhật lại vị trí của các nút còn lại
+        if (indexToRemove != -1) {
+            gridItemCart.getChildren().remove(indexToRemove);
+            for (int i = indexToRemove; i < gridItemCart.getChildren().size(); i++) {
+                AnchorPane anchorPane = (AnchorPane) gridItemCart.getChildren().get(i);
+                updateRowAndColumn(anchorPane, i+1, gridItemCart);
+            }
+        }
+    }
+    private void updateRowAndColumn(AnchorPane anchorPane, int index, GridPane gridPane) {
+
+        gridPane.setColumnIndex(anchorPane, 0);
+        gridPane.setRowIndex(anchorPane, index);
+        // set grid width
+        gridPane.setMinWidth(Region.USE_COMPUTED_SIZE);
+        gridPane.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        gridPane.setMaxWidth(Region.USE_PREF_SIZE);
+
+        // set grid height
+        gridPane.setMinHeight(Region.USE_COMPUTED_SIZE);
+        gridPane.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        gridPane.setMaxHeight(Region.USE_PREF_SIZE);
+    }
     public void setSumItemCarrt()
     {
-        numbersItemCart_lb.setText(sumNumbers+"");
-        sumMoney_itemCartLb.setText(App.numf.format(sumMoneyItem)+"đ");
-
+        numbersItemCart_lb.setText(numbersBuyProduct+"");
+        sumMoney_itemCartLb.setText(App.numf.format(tongTien)+"đ");
     }
 
     public void loadDataItemCart() throws SQLException {
-        gridItemCart.getChildren().clear();
         rowItemCart = 1;
-        itemCartList.clear();
+        numbersBuyProduct = 0;
+        tongTien = new BigDecimal(0);
+        listChooseItemCartModel.clear();
+        itemCartModelList.clear();
+        hideForm();
         paneShoppingCart.setVisible(true);
-        itemCartList.addAll(itemCart_dao.getDataByUser(Temp.account.getID()));
-        for(itemCart it : itemCartList){
+        itemCartModelList.addAll(itemCart_dao.getDataByUser(Temp.account.getID()));
+        for(itemCartModel it : itemCartModelList){
             setDataBasket(it);
         }
 
     }
-    public void setDataBasket(itemCart it) throws SQLException {
+    public void setDataBasket(itemCartModel it){
 
+        upDownItemCart();
         chooseItemCart();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
@@ -944,8 +1041,9 @@ public class PageHomeController implements Initializable {
             AnchorPane anchorPane = fxmlLoader.load();
 
             ItemCartController itemCategory = fxmlLoader.getController();
-            itemCategory.setData(myListenerItemCart,it);
+            itemCategory.setData(myListenerItemCart,it,eventMyListener);
 
+            anchorPane.setUserData(it); //Lưu trữ các đối tượng tùy ý , và có thể truy cập lấy đối tượng đó ra xem
             gridItemCart.add(anchorPane, 0, ++rowItemCart); // (child,column,row)
             // set grid width
             gridItemCart.setMinWidth(Region.USE_COMPUTED_SIZE);
@@ -963,8 +1061,8 @@ public class PageHomeController implements Initializable {
     //Thêm vào giỏ hàng
     public void addItemCart() throws SQLException {
        if(Temp.account!=null){
-           itemCart itemCart = new itemCart(0,SelectedProduct,Temp.account.getID(),keyCategory,Integer.parseInt(txtNumber.getText()));
-           if(itemCart_dao.Insert(itemCart)){
+           itemCartModel itemCartModel = new itemCartModel(0,SelectedProduct,Temp.account.getID(),keyCategory,Integer.parseInt(txtNumber.getText()));
+           if(itemCart_dao.Insert(itemCartModel)){
                AlertNotification.showAlertSucces("","Kiểm tra giỏ hàng để xem nhé bạn!");
            }else{
                AlertNotification.showAlertError("","Có lỗi xảy ra");
@@ -973,6 +1071,28 @@ public class PageHomeController implements Initializable {
            AlertNotification.showAlertWarning("Bạn chưa đăng nhập","Đăng nhập trước khi thao tác");
        }
     }
+
+    public void BuyProductInCart(ActionEvent e)
+    {
+        if(listChooseItemCartModel.size()>=2)
+        {
+            scrollListProductDetail.setStyle("-fx-border-color: #53cfb4");
+        }
+        paneShoppingCart.setVisible(false);
+        showOderDetail();
+        for (itemCartModel it : listChooseItemCartModel){
+            displayListProductOrderDetails(it.getProduct(),it.getQuantity());
+        }
+    }
+
+    //---- Xóa all product trong giỏ hàng sau khi đã mua xong
+    public void removeAllItemCart() throws SQLException {
+        for(itemCartModel it : listChooseItemCartModel){
+            itemCart_dao.Delete(it);
+        }
+    }
+
+    //------------------------------------
 
     //Khi hover vào các nav-item
     @FXML
@@ -1059,6 +1179,12 @@ public class PageHomeController implements Initializable {
         paneProductMarket.setVisible(false);
         paneOrderDetail.setVisible(false);
         paneInformationProduct.setVisible(false);
+        paneShoppingCart.setVisible(false);
+        lbNoData.setVisible(false);
+        gridItemCart.getChildren().clear();
+        gridProductSearch.getChildren().clear();
+        gridVoucher.getChildren().clear();
+        grid_Products.getChildren().clear();
     }
 
     private Category category = new Category();

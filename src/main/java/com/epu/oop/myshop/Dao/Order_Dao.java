@@ -45,7 +45,7 @@ public class Order_Dao implements Dao_Interface<Order> {
 
 
     //Thanh toán hóa đơn băng ngân hàng
-    public  boolean OrderDetailsPayByBank(Order hoaDon, OrderDetails cthd, PaymentHistory paymentHistory) throws SQLException {
+    public  boolean OrderDetailsPayByBank(Order hoaDon, List<itemCartModel> list, PaymentHistory paymentHistory) throws SQLException {
         PreparedStatement preOrder = null;
         PreparedStatement preDetails = null;
         PreparedStatement prePaymentHistory = null;
@@ -91,12 +91,16 @@ public class Order_Dao implements Dao_Interface<Order> {
                 }
             }
             preDetails = connection.prepareStatement(sqlOrderDtails);
-            preDetails.setInt(1, cthd.getProduct().getID());
-            preDetails.setInt(2, hoaDonId);
-            preDetails.setFloat(3, cthd.getQuantity());
-            preDetails.setBigDecimal(4, new BigDecimal(cthd.getPrice() + ""));
+            for(itemCartModel it:list)
+            {
+                preDetails.setInt(1,it.getProduct().getID());
+                preDetails.setInt(2,hoaDonId);
+                preDetails.setFloat(3,it.getQuantity());
+                preDetails.setBigDecimal(4,new BigDecimal(it.getProduct().getPrice()+""));
+                preDetails.executeUpdate();
+            }
 
-            preDetails.executeUpdate();
+
 
             prePaymentHistory = connection.prepareStatement(sqlPayment);
             prePaymentHistory.setString(1, paymentHistory.getTenGiaoDich());
@@ -115,7 +119,8 @@ public class Order_Dao implements Dao_Interface<Order> {
                         connection.rollback();
                         System.out.println("Rolled back.");
                 }
-            System.out.println("Lỗi: "+ ex.getMessage());
+           // System.out.println("Lỗi: "+ ex.getMessage());
+            ex.printStackTrace();
             return false;
             } finally{
 
@@ -136,7 +141,7 @@ public class Order_Dao implements Dao_Interface<Order> {
     }
 
         //Hóa đơn có tại nhà
-    public boolean OrderDetailsPayAtHome(Order hoaDon, OrderDetails cthd) throws SQLException {
+    public boolean OrderDetailsPayAtHome(Order hoaDon,List<itemCartModel> list) throws SQLException {
         PreparedStatement orderDetails = null;
         PreparedStatement order = null;
 
@@ -167,7 +172,7 @@ public class Order_Dao implements Dao_Interface<Order> {
             order.setBigDecimal(3,hoaDon.getThanhTien());
             order.setInt(4,hoaDon.getUser().getID());
 
-            checkOrder = order.executeUpdate();
+            order.executeUpdate();
 
             int hoaDonId;
             //phương thức getGeneratedKeys() để lấy giá trị ID của bản ghi vừa được chèn vào.
@@ -179,13 +184,16 @@ public class Order_Dao implements Dao_Interface<Order> {
                     throw new SQLException("Creating order failed, no ID obtained.");
                 }
             }
-            orderDetails = connection.prepareStatement(sqlOrderDtails);
-            orderDetails.setInt(1,cthd.getProduct().getID());
-            orderDetails.setInt(2,hoaDonId);
-            orderDetails.setFloat(3,cthd.getQuantity());
-            orderDetails.setBigDecimal(4,new BigDecimal(cthd.getPrice()+""));
+            for(itemCartModel it:list)
+            {
+                orderDetails = connection.prepareStatement(sqlOrderDtails);
+                orderDetails.setInt(1,it.getProduct().getID());
+                orderDetails.setInt(2,hoaDonId);
+                orderDetails.setFloat(3,it.getQuantity());
+                orderDetails.setBigDecimal(4,new BigDecimal(it.getProduct().getPrice()+""));
+                orderDetails.executeUpdate();
+            }
 
-            checkDetails = orderDetails.executeUpdate();
             connection.commit();
             System.out.println("Thành công");
         } catch (SQLException ex) {
@@ -194,6 +202,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 System.out.println("Rolled back.");
             }
             System.out.println("Lỗi: "+ ex.getMessage());
+            return false;
         } finally {
                 if (order != null) {
                     order.close();
@@ -206,7 +215,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 connection.setAutoCommit(true);
                 closeConnection();
         }
-        return checkOrder>0 && checkDetails>0;
+        return true;
     }
 
     @Override

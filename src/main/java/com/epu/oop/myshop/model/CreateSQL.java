@@ -1,10 +1,13 @@
 package com.epu.oop.myshop.model;
 
 import com.epu.oop.myshop.Dao.Product_Dao;
+import com.epu.oop.myshop.Dao.VoucherDao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.sql.*;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -79,8 +82,10 @@ public class CreateSQL {
                     if (createIndex())
                         if (createProcedure())
                             if (insertData())
-                                if (insertDataChild())
+                                if (insertDataChild()) {
                                     setDataOnDatabase();
+                                    insertVoucher();
+                                }
         } else {
             //Xóa database
         }
@@ -175,6 +180,8 @@ public class CreateSQL {
                 stm.executeUpdate(TriggerOne);
                 stm.executeUpdate(TriggerTwo);
                 stm.executeUpdate(TriggerThree);
+                stm.executeUpdate(TriggerUpdateVoucher);
+
                 connection.commit();
                 System.out.println("Tạo trigger thành công");
             } catch (SQLException e) {
@@ -475,6 +482,30 @@ public class CreateSQL {
         return check>0;
     }
 
+    private static final SecureRandom random = new SecureRandom();
+    public void insertVoucher()
+    {
+        String result;
+        ConnectionPool connectionPool = ConnectionPool.getInstance();
+        VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
+        VoucherModel vc;
+        for(int i=1;i<=12;i++)
+        {
+            byte[] bytes = new byte[6];
+            random.nextBytes(bytes);
+            result = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes).substring(0, 6).toUpperCase();
+            result = result.replace("_", ""); // loại bỏ ký tự '_'
+
+            if(i%2==0){
+                 vc = new VoucherModel(result,i*3,null,i*2,"Tặng bạn mã voucher nhé","/com/epu/oop/myshop/image/voucher.png",
+                        new Date(System.currentTimeMillis()),new Date(2023,9,12));
+            }else {
+                 vc = new VoucherModel(result,0,new BigDecimal(i*10000),i*3,"Tặng bạn mã voucher nhé","/com/epu/oop/myshop/image/voucher.png",
+                        new Date(System.currentTimeMillis()),new Date(2023,9,12));
+            }
+            voucherDao.Insert(vc);
+        }
+    }
 
     private final String TblAccount = "CREATE TABLE Account ("+
             " ID INT PRIMARY KEY IDENTITY," +
@@ -673,11 +704,17 @@ public class CreateSQL {
             "    WHERE Account.ID = (SELECT Users_ID FROM inserted) " +
             "END";
 
-    private final String TriggerUpdateVoucher = "CREATE TRIGGER Trig_UpdateVoucher ON Oders" +
-            " FOR INSERT" +
-            " AS" +
-            " BEGIN" +
-            " UPDATE Voucher";
+    private final String TriggerUpdateVoucher = "CREATE TRIGGER Trig_UpdateVoucher ON Orders " +
+            "FOR INSERT " +
+            "AS " +
+            "BEGIN " +
+            " IF exists (SELECT MaVoucher FROM inserted) " +
+            " BEGIN " +
+            " UPDATE Voucher " +
+            "            SET SoLuong = SoLuong-1 " +
+            "             WHERE Voucher.MaVoucher = (SELECT MaVoucher From inserted) " +
+            " END " +
+            "END";
     private final String proc_getProductOfPages = "CREATE PROC proc_getProductOfPages " +
             " @Category_ID INT," +
             " @Offset int, " +

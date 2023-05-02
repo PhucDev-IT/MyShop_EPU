@@ -1535,12 +1535,7 @@ public class UserProfileController implements Initializable {
         });
     }
     public void getObjectUser(){
-        if(Temp.user!=null){
-            user = Temp.user;
-
-        }else{
             user = userDao.SelectByID(new User(Temp.account.getID()));
-        }
         try {
             bank = bank_Dao.SelectByID(new Bank(user));
         } catch (SQLException e) {

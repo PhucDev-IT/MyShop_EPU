@@ -3,22 +3,22 @@ package com.epu.oop.myshop.controller;
 import com.epu.oop.myshop.Dao.itemCartDao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
+import com.epu.oop.myshop.model.ListenerItemCart;
 import com.epu.oop.myshop.model.MyListener;
-import com.epu.oop.myshop.model.Product;
-import com.epu.oop.myshop.model.itemCart;
+import com.epu.oop.myshop.model.itemCartModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
-import java.sql.Connection;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class ItemCartController {
@@ -44,18 +44,23 @@ public class ItemCartController {
     @FXML
     private JFXButton btnUp;
 
-    private itemCart item;
+    @FXML
+    private JFXButton btn_removeItem;
+    private itemCartModel item;
 
-    private MyListener<itemCart> myListener;
+    private MyListener<itemCartModel> myListener;
+
+    private ListenerItemCart<Event, itemCartModel> listenerEvent;
 
     private ConnectionPool connectionPool = ConnectionPool.getInstance();
     private itemCartDao itemDao = itemCartDao.getInstance(connectionPool);
 
     private int number;
 
-    public void setData(MyListener<itemCart> myListener,itemCart it) {
+    public void setData(MyListener<itemCartModel> myListener, itemCartModel it, ListenerItemCart<Event, itemCartModel> event) {
         this.myListener = myListener;
-       // this.myListenerHandle  = myListener;
+        this.listenerEvent  = event;
+
         item = it;
         try {
             if(!it.getProduct().getSrcImg().contains(":")){
@@ -80,10 +85,12 @@ public class ItemCartController {
         }else{
             item.setChoose(false);
         }
+        item.setSumMoney(item.getProduct().getPrice().multiply(BigDecimal.valueOf(number)));
         myListener.onClickListener(item);
     }
+
     @FXML
-    public void upDownNumber(MouseEvent event) {
+    public void handle(ActionEvent event) throws SQLException {
         if (event.getSource() == btnUp) {
             number++;
         } else if (event.getSource() == btnDown) {
@@ -91,20 +98,20 @@ public class ItemCartController {
                 number--;
             }
         }
+        item.setSumMoney(item.getProduct().getPrice().multiply(BigDecimal.valueOf(number)));
         txtNumbers.setText(number + "");
         item.setQuantity(number);
-       // myListenerHandle.onClickListener(item);
+        listenerEvent.onClickListener(event,item);
     }
 
-
-    //Xóa sản phẩm
-    public void deleteProduct(MouseEvent e) throws SQLException {
-
-        if(itemDao.Delete(item)<0){
-            AlertNotification.showAlertError("","Có lỗi xảy ra");
-        }else {
-           // myListenerHandle.onClickListener(item);
-        }
+    public void removeItem(ActionEvent e) throws SQLException {
+        itemCartModel it = item;
+            if(itemDao.Delete(item)<0){
+                AlertNotification.showAlertError("","Có lỗi xảy ra");
+            }else {
+                listenerEvent.onClickListener(e,it);
+            }
     }
+
 
 }

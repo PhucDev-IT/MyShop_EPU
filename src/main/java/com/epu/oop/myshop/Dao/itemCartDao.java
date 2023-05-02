@@ -2,7 +2,7 @@ package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.model.Product;
-import com.epu.oop.myshop.model.itemCart;
+import com.epu.oop.myshop.model.itemCartModel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class itemCartDao implements Dao_Interface<itemCart>{
+public class itemCartDao implements Dao_Interface<itemCartModel>{
 
     private static itemCartDao instance;
     private final ConnectionPool connectionPool;
@@ -44,7 +44,7 @@ public class itemCartDao implements Dao_Interface<itemCart>{
 
 
     @Override
-    public boolean Insert(itemCart itemCart) throws SQLException {
+    public boolean Insert(itemCartModel itemCartModel) throws SQLException {
         String sql = "INSERT INTO itemCart(Product_ID, Quantity,Category_ID, Users_ID)" +
                 " VALUES (?,?,?,?) ";
 
@@ -53,10 +53,10 @@ public class itemCartDao implements Dao_Interface<itemCart>{
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
 
-            statement.setInt(1,itemCart.getProduct().getID());
-            statement.setInt(2,itemCart.getQuantity());
-            statement.setInt(3,itemCart.getCategory_ID());
-            statement.setInt(4,itemCart.getUser_ID());
+            statement.setInt(1, itemCartModel.getProduct().getID());
+            statement.setInt(2, itemCartModel.getQuantity());
+            statement.setInt(3, itemCartModel.getCategory_ID());
+            statement.setInt(4, itemCartModel.getUser_ID());
 
             statement.executeUpdate();
 
@@ -78,30 +78,30 @@ public class itemCartDao implements Dao_Interface<itemCart>{
     }
 
     @Override
-    public List<itemCart> SelectAll() throws SQLException {
+    public List<itemCartModel> SelectAll() throws SQLException {
         return null;
     }
 
 
     @Override
-    public itemCart SelectByID(itemCart itemCart) throws SQLException {
+    public itemCartModel SelectByID(itemCartModel itemCartModel) throws SQLException {
         return null;
     }
 
     @Override
-    public int Update(itemCart itemCart) throws SQLException {
+    public int Update(itemCartModel itemCartModel) throws SQLException {
         return 0;
     }
 
     @Override
-    public int Delete(itemCart itemCart) throws SQLException {
+    public int Delete(itemCartModel itemCartModel) throws SQLException {
         String sql = "DELETE FROM itemCart WHERE id_Cart = ? ";
 
         try{
             openConnection();
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1,itemCart.getIdCart());
+            statement.setInt(1, itemCartModel.getIdCart());
 
             statement.executeUpdate();
 
@@ -123,9 +123,9 @@ public class itemCartDao implements Dao_Interface<itemCart>{
     }
 
     //Lấy tất cả sản phẩm trong giỏ hàng của user...
-    public List<itemCart> getDataByUser(int idUser) throws SQLException {
-        List<itemCart> list = new ArrayList<>();
-        String sql = "SELECT it.*,p.SrcImg,p.TenSP,p.Quantity as soLuongTon,p.Price FROM itemCart it JOIN Product p " +
+    public List<itemCartModel> getDataByUser(int idUser) throws SQLException {
+        List<itemCartModel> list = new ArrayList<>();
+        String sql = "SELECT it.*,p.MaSP,p.SrcImg,p.TenSP,p.Quantity as soLuongTon,p.Price FROM itemCart it JOIN Product p " +
                 "ON it.Product_ID = p.MaSP " +
                 "AND Users_ID = ? " +
                 "AND p.Activity = 'ON' ";
@@ -136,13 +136,14 @@ public class itemCartDao implements Dao_Interface<itemCart>{
             ResultSet rs = statement.executeQuery();
             while (rs.next())
             {
-                itemCart it = new itemCart();
+                itemCartModel it = new itemCartModel();
                 it.setIdCart(rs.getInt("id_Cart"));
                 it.setQuantity(rs.getInt("Quantity"));
                 it.setCategory_ID(rs.getInt("Category_ID"));
                 it.setUser_ID(rs.getInt("Users_ID"));
 
                 Product product = new Product();
+                product.setID(rs.getInt("MaSP"));
                 product.setTenSP(rs.getString("TenSP"));
                 product.setSrcImg(rs.getString("SrcImg"));
                 product.setQuantity(rs.getInt("soLuongTon"));
