@@ -635,9 +635,11 @@ public class CreateSQL {
     private final String tblMessenger = "CREATE TABLE Messenger " +
             "( " +
             " ID INT PRIMARY KEY IDENTITY, " +
-            " Title NVARCHAR(100), " +
+            " Sender NVARCHAR(100), " +
             " Content NVARCHAR(1000), " +
-            " Statuss NVARCHAR(10), " +
+            " Statuss BIT, " +
+            " SentDate DATE," +
+            " SrcIcon VARCHAR(500)," +
             " Account_ID INT FOREIGN KEY REFERENCES Account(ID) " +
             " )";
 
@@ -663,7 +665,8 @@ public class CreateSQL {
             "CREATE INDEX idx_product_ID ON itemCart(Product_ID) " +
             "CREATE INDEX idx_User_ID ON itemCart(Users_ID)";
 
-    private final String indexMessenger = "CREATE INDEX idx_Status ON Messenger(Statuss) " +
+    private final String indexMessenger = "CREATE INDEX idx_Status ON Messenger(Statuss)" +
+            " CREATE INDEX idx_sentDate ON Messenger(SentDate) " +
             "CREATE INDEX idx_Account_ID ON Messenger(Account_ID)";
     //---------------------------- TRIGGER ---------------------------------------
     private final String TriggerOne = "CREATE TRIGGER TRIG_Update_MoneySeller ON OrderDetails" +

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="63.0" prefWidth="600.0" style="-fx-border-color: green;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.MessengerController">
+   <children>
+      <ImageView fx:id="imgMess" fitHeight="49.0" fitWidth="61.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="Sender" layoutX="90.0" layoutY="9.0" prefHeight="21.0" prefWidth="190.0" text="Nguyễn Văn Phúc">
+         <font>
+            <Font name="Calibri Bold" size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="content" layoutX="90.0" layoutY="37.0" prefHeight="21.0" prefWidth="444.0" text="Cảm ơn bạn đã mua hàng" />
+      <Label fx:id="dateSend" layoutX="508.0" layoutY="10.0" text="01-05-2023" textFill="#8d8989" />
+      <Label fx:id="status" layoutX="565.0" layoutY="39.0" prefHeight="0.0" prefWidth="19.0" style="-fx-background-color: red; -fx-border-radius: 50; -fx-background-radius: 50;" text="   " textFill="#e40b0b" visible="false">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

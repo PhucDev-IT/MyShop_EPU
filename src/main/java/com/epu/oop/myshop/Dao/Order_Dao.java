@@ -49,7 +49,7 @@ public class Order_Dao implements Dao_Interface<Order> {
         PreparedStatement preOrder = null;
         PreparedStatement preDetails = null;
         PreparedStatement prePaymentHistory = null;
-
+        PreparedStatement preMessenge = null;
         try {
             openConnection();
             connection.setAutoCommit(false); // Bắt đầu transaction
@@ -72,7 +72,8 @@ public class Order_Dao implements Dao_Interface<Order> {
             String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
                     " VALUES (?,?,?,?,?,?)";
 
-
+            String sqlMess = "INSERT INTO Messenger(Sender,Content,Statuss,SentDate,SrcIcon,Account_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
 
             preOrder.setDate(1, hoaDon.getNgayLapHD());
             preOrder.setBigDecimal(2, hoaDon.getTongTien());
@@ -112,6 +113,16 @@ public class Order_Dao implements Dao_Interface<Order> {
 
             prePaymentHistory.executeUpdate();
 
+            preMessenge = connection.prepareStatement(sqlMess);
+            preMessenge.setString(1,"Tin nhắn từ hệ thống");
+            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng. Mã HĐ:"+hoaDonId+" Tổng tiền: "+hoaDon.getThanhTien());
+            preMessenge.setBoolean(3,false);
+            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
+            preMessenge.setString(5,"");
+            preMessenge.setInt(6,hoaDon.getUser().getID());
+
+            preMessenge.executeUpdate();
+
             connection.commit();
             System.out.println("Theem hóa đơn thành công");
         } catch(SQLException ex){
@@ -134,6 +145,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                     if(prePaymentHistory!=null){
                         prePaymentHistory.close();
                     }
+                    if(preMessenge!=null)   preMessenge.close();
                     connection.setAutoCommit(true);
                 closeConnection();
             }
@@ -144,9 +156,8 @@ public class Order_Dao implements Dao_Interface<Order> {
     public boolean OrderDetailsPayAtHome(Order hoaDon,List<itemCartModel> list) throws SQLException {
         PreparedStatement orderDetails = null;
         PreparedStatement order = null;
+        PreparedStatement preMessenge = null;
 
-        int checkOrder = 0;
-        int checkDetails=0;
 
         try {
            openConnection();
@@ -166,7 +177,8 @@ public class Order_Dao implements Dao_Interface<Order> {
 
             String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,Order_ID,Quantity,Price)" +
                     " VALUES (?,?,?,?)";
-
+            String sqlMess = "INSERT INTO Messenger(Sender,Content,Statuss,SentDate,SrcIcon,Account_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
             order.setDate(1,hoaDon.getNgayLapHD());
             order.setBigDecimal(2,hoaDon.getTongTien());
             order.setBigDecimal(3,hoaDon.getThanhTien());
@@ -194,6 +206,15 @@ public class Order_Dao implements Dao_Interface<Order> {
                 orderDetails.executeUpdate();
             }
 
+            preMessenge = connection.prepareStatement(sqlMess);
+            preMessenge.setString(1,"Tin nhắn từ hệ thống");
+            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng! Mã Hóa Đơn của bạn là: 0"+hoaDonId+"   Tổng thanh toán: "+hoaDon.getThanhTien());
+            preMessenge.setBoolean(3,false);
+            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
+            preMessenge.setString(5,"");
+            preMessenge.setInt(6,hoaDon.getUser().getID());
+
+            preMessenge.executeUpdate();
             connection.commit();
             System.out.println("Thành công");
         } catch (SQLException ex) {
@@ -211,6 +232,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 if (orderDetails != null) {
                     orderDetails.close();
                 }
+                if(preMessenge!=null)   preMessenge.close();
 
                 connection.setAutoCommit(true);
                 closeConnection();

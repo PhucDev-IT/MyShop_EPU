@@ -52,7 +52,7 @@
                      <children>
                         <ImageView fx:id="imgAvatar" fitHeight="40.0" fitWidth="45.0" layoutX="199.0" layoutY="15.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
                         <ImageView fx:id="img_shopping_cart" fitHeight="38.0" fitWidth="38.0" layoutX="21.0" layoutY="19.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
-                        <ImageView fx:id="img_Messenger" fitHeight="32.0" fitWidth="35.0" layoutX="115.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="img_Messenger" fitHeight="32.0" fitWidth="35.0" layoutX="115.0" layoutY="23.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </Pane>
                   <Text id="myshop" fx:id="myShop_logo" fill="WHITESMOKE" layoutX="43.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="MyShop" />
@@ -628,5 +628,21 @@
             <Font size="28.0" />
          </font>
       </Label>
+      <Pane fx:id="pane_Messenger" prefHeight="200.0" prefWidth="605.0" style="-fx-background-color: red;" visible="false" AnchorPane.leftAnchor="715.0" AnchorPane.topAnchor="65.0">
+         <children>
+            <ScrollPane prefHeight="200.0" prefWidth="605.0">
+               <content>
+                  <GridPane fx:id="grid_Messenge" vgap="3.0">
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <padding>
+                        <Insets top="-15.0" />
+                     </padding>
+                  </GridPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

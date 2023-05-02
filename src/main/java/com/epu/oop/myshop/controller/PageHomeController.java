@@ -341,7 +341,14 @@ public class PageHomeController implements Initializable {
     @FXML
     private JFXButton btnMuaItemCart;
 
-    //-----------------------------------------
+    //--------------------------------- MESSENGER-----------------------------------------
+    @FXML
+    private Pane pane_Messenger;
+
+    @FXML
+    private GridPane grid_Messenge;
+
+    //------------------------------------------------------------------
 
 
     private final int maxProductsOfPage = 10; //1 trang tối đa 10 sản phẩm
@@ -358,6 +365,8 @@ public class PageHomeController implements Initializable {
 
     private ConnectionPool connectionPool = ConnectionPool.getInstance();
     private Product_Dao product_Dao = Product_Dao.getInstance(connectionPool);
+
+    private MessengeDao messengeDao = MessengeDao.getInstance(connectionPool);
     private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
 
     private Order_Dao order_dao = Order_Dao.getInstance(connectionPool);
@@ -1092,7 +1101,50 @@ public class PageHomeController implements Initializable {
         }
     }
 
-    //------------------------------------
+    //----------------------------------MESSENGER-----------------------------------------------
+    private List<Messenger> listMess = new ArrayList<>();
+
+
+
+    int rowMess = 1;
+
+    public void setDataMessenger() throws SQLException {
+        pane_Messenger.setVisible(true);
+        rowMess = 1;
+      //  listMess.clear();
+        listMess.addAll(messengeDao.getDataMessenge(Temp.account.getID()));
+        for (Messenger mess : listMess)
+        {
+            DisplayMessenge(mess);
+        }
+    }
+    public void DisplayMessenge(Messenger messenger)
+    {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/MessengerForm.fxml"));
+            AnchorPane anchorPane = fxmlLoader.load();
+
+            MessengerController mss = fxmlLoader.getController();
+            mss.setData(messenger);
+
+
+            grid_Messenge.add(anchorPane, 0, ++rowMess); // (child,column,row)
+            // set grid width
+            grid_Messenge.setMinWidth(Region.USE_COMPUTED_SIZE);
+            grid_Messenge.setPrefWidth(Region.USE_COMPUTED_SIZE);
+            grid_Messenge.setMaxWidth(Region.USE_PREF_SIZE);
+
+            // set grid height
+            grid_Messenge.setMinHeight(Region.USE_COMPUTED_SIZE);
+            grid_Messenge.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            grid_Messenge.setMaxHeight(Region.USE_PREF_SIZE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //----------------------------------------------------
 
     //Khi hover vào các nav-item
     @FXML
@@ -1189,12 +1241,7 @@ public class PageHomeController implements Initializable {
 
     private Category category = new Category();
     private int keyCategory = -1;
-    /* OldKey..
-   -Mục đích để kiểm tra nếu truy vấn danh mục khác nếu gặp giá trị rỗng thì k bị loi pointer
-   -Do set lên GUI nên  cachedRow đang ở vị trí dòng bất kỳ, nếu: cachedProducts.beforeFirst(); dẫn đến các trang đều bị set giống nhau
-   -Không có thì khi chọn danh mục khác bị null thì lỗi con trỏ
-    */
-    private int oldKeyCategory = -1;
+
 
 
     public void clickCategory(MouseEvent e) throws SQLException {
@@ -1297,6 +1344,8 @@ public class PageHomeController implements Initializable {
         }else if(e.getSource() == txt_CloseCart)
         {
             paneShoppingCart.setVisible(false);
+        }else if(e.getSource() == img_Messenger){
+            setDataMessenger();
         }
 
     }
