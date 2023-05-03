@@ -460,6 +460,8 @@ public class UserProfileController implements Initializable {
     private Product_Dao product_dao = Product_Dao.getInstance(connectionPool);
     private PaymentHistory_Dao paymentHistory_dao = PaymentHistory_Dao.getInstance(connectionPool);
     private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
+
+    private MessengeDao messengeDao = MessengeDao.getInstance(connectionPool);
     private Bank bank;
     private User user;
 
@@ -881,6 +883,9 @@ public class UserProfileController implements Initializable {
         }
         if(bank_Dao.Insert(bank)){
             AlertNotification.showAlertSucces("Thêm thành công","");
+            btnAddBank.setDisable(true);
+            btnUpdateBank.setDisable(false);
+            btnDeleteBank.setDisable(false);
         }else{
             AlertNotification.showAlertError("Có lỗi xảy ra, thử lại sau!","");
         }
@@ -996,26 +1001,21 @@ public class UserProfileController implements Initializable {
 
                 String pass = AlertNotification.textInputDialog("Chuyển tiền", "Nhập mật khẩu", "");
                 if (Temp.account.getPassword().equals(pass)) {
-
-                    Account a = account_dao.SelectByID(new Account(0, taiKhoanNhan_txt.getText(), ""));
-                    if (a == null) {
-                        AlertNotification.showAlertWarning("Người dùng không tồn tại", "");
+                    Account nguoiNhan = new Account(0, taiKhoanNhan_txt.getText(), "");
+                    PaymentHistory pm = new PaymentHistory("Chuyển tiền", user.getFullName(), soTienChuyen, new Date(System.currentTimeMillis()),
+                            "/com/epu/oop/myshop/image/profile/iconClickChuyenTien.png", user, nguoiNhan);
+                    Temp.account.setMoney(Temp.account.getMoney().subtract(soTienChuyen));
+                    nguoiNhan.setMoney(soTienChuyen);
+                    if (account_dao.UpdatetransferMoney(Temp.account, nguoiNhan, pm)) {
+                        AlertNotification.showAlertSucces("Chuyển tiền thành công", "");
+                        labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
+                        refreshPayment(e);
                     } else {
-                        PaymentHistory pm = new PaymentHistory("Chuyển tiền",user.getFullName(),soTienChuyen,new Date(System.currentTimeMillis()),
-                                "/com/epu/oop/myshop/image/profile/iconClickChuyenTien.png",user,a);
-                        Temp.account.setMoney(Temp.account.getMoney().subtract(soTienChuyen));
-                        a.setMoney(a.getMoney().add(soTienChuyen));
-                        if (account_dao.UpdatetransferMoney(Temp.account, a,pm)) {
-                            AlertNotification.showAlertSucces("Chuyển tiền thành công", "");
-                            labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
-                            refreshPayment(e);
-                        } else {
-                            AlertNotification.showAlertError("Có lỗi xảy ra", "Thử lại sau!");
-                        }
+                        AlertNotification.showAlertError("Có lỗi xảy ra", "Người dùng không tồn tại!");
                     }
-
                 }
-
+            }else {
+                AlertNotification.showAlertWarning("","Số dư không đủ");
             }
 
         }
@@ -1420,7 +1420,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    public void checkProfile(){
+    public void checkProfile() throws SQLException {
         if(bank==null || isStringEmpty(user.getFullName()) || isStringEmpty(user.getAddress()) || user.getDateOfBirth()==null
         || isStringEmpty(user.getCanCuocCongDan()) || isStringEmpty(user.getNumberPhone())){
             AlertNotification.showAlertWarning("","Vui lòng cập nhật đầy đủ thông tin\nVà liên kết ngân hàng để tham gia bán hàng");
@@ -1432,9 +1432,12 @@ public class UserProfileController implements Initializable {
             if(age>=18){
                 Temp.account.setPhanQuyen("Seller");
                 if(account_dao.Update(Temp.account)>0){
+                    Messenger messenger = new Messenger(0,null,"Hệ thống","Chúc mừng bạn đã trở thành người bán hàng của chúng tôi" ,
+                            new Date(System.currentTimeMillis()),false,user.getID());
                     Anch_ThamGiaBanHang.setVisible(false);
                     AlertNotification.showAlertSucces("Chúc mừng bạn đã trở thành người bán hàng.","Cảm ơn bạn đã đồng hành cùng chúng tôi");
                     dashboard_form.setVisible(true);
+                    messengeDao.Insert(messenger);
                 }else{
                     AlertNotification.showAlertError("","Có lỗi xảy ra");
                     Temp.account.setPhanQuyen("Member");
@@ -1445,7 +1448,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    public void btnJoinSell(ActionEvent e){
+    public void btnJoinSell(ActionEvent e) throws SQLException {
         if(e.getSource() == btnRequest){
             if(checkBoxJoinSell.isSelected()){
                 checkProfile();
@@ -1500,7 +1503,7 @@ public class UserProfileController implements Initializable {
             protected Void call() throws Exception {
 
                 if (!isCancelled() || !isStopped) {
-                    objects = product_dao.sumTotalOrder(new User(Temp.account.getID()));
+                    objects = product_dao.sumTotalOrder(new User(Temp.account.getID(),""));
                 }
                 //Thread.sleep(1000);
                 Platform.runLater(() -> {
@@ -1535,7 +1538,7 @@ public class UserProfileController implements Initializable {
         });
     }
     public void getObjectUser(){
-            user = userDao.SelectByID(new User(Temp.account.getID()));
+            user = userDao.SelectByID(new User(Temp.account.getID(),""));
         try {
             bank = bank_Dao.SelectByID(new Bank(user));
         } catch (SQLException e) {

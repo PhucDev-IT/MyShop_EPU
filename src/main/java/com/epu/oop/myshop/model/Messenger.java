@@ -17,6 +17,16 @@ public class Messenger {
 
     private int Account_ID;
 
+    public Messenger(){}
+    public Messenger(int ID, String imgSrc, String nameSender, String content, Date sentDate, boolean status, int account_ID) {
+        this.ID = ID;
+        this.imgSrc = imgSrc;
+        this.nameSender = nameSender;
+        this.content = content;
+        this.sentDate = sentDate;
+        this.status = status;
+        Account_ID = account_ID;
+    }
 
     public int getID() {
         return ID;

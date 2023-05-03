@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.model.User;
 import com.epu.oop.myshop.model.VoucherModel;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -66,8 +67,8 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
                 String ImgVoucher = rs.getString("ImgVoucher");
                 Date NgayThem = rs.getDate("NgayBatDau");
                 Date NgayKetThuc = rs.getDate("NgayKetThuc");
-
-                list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc));
+                String email = rs.getString("Email");
+                list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc,new User(email)));
             }
 
         }catch (SQLException e) {

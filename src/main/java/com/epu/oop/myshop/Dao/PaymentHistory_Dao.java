@@ -138,7 +138,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
                 int Account_ID = rs.getInt("Account_ID");
                 String nguoiNhan = rs.getString("NguoiNhan");
 
-                obj[0] = new PaymentHistory(ID,tenGiaoDich,NoiDung,soTien,ngayGiaoDich,src,new User(User_ID),new Account(Account_ID));
+                obj[0] = new PaymentHistory(ID,tenGiaoDich,NoiDung,soTien,ngayGiaoDich,src,new User(User_ID,""),new Account(Account_ID));
                 obj[1] = nguoiNhan;
                 list.add(obj);
             }

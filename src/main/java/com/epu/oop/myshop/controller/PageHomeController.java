@@ -16,22 +16,29 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.security.PublicKey;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.*;
@@ -188,12 +195,60 @@ public class PageHomeController implements Initializable {
 
     //-------------------------------------- MAIN ------------------------------------------------------------------
     @FXML
+    private ImageView imgTop_ProductOne;
+
+    @FXML
+    private Label nameProductOne_lb;
+
+    @FXML
+    private Label price_ProductOne;
+
+    @FXML
+    private Label SoldProduct_one;
+
+    @FXML
+    private ImageView imgTop_ProductTwo;
+
+    @FXML
+    private Label nameProductTwo_lb;
+
+    @FXML
+    private Label price_ProductTwo;
+
+    @FXML
+    private Label SoldProduct_two;
+
+    @FXML
+    private ImageView imgTop_ProductThree;
+
+    @FXML
+    private Label nameProductThree_lb;
+
+    @FXML
+    private Label price_ProductThree;
+
+    @FXML
+    private Label SoldProduct_three;
+
+
+
+    @FXML
+    private ImageView imgTopSeller_one;
+
+    @FXML
+    private ImageView imgTopSeller_Two;
+
+    @FXML
+    private ImageView imgTopSeller_Three;
+    @FXML
     private ScrollPane scrollProductSearch;
     @FXML
     private AnchorPane paneLoading;
     @FXML
     private ImageView img_slider;
 
+    @FXML
+    private AnchorPane pane_main;
     @FXML
     private GridPane grid_Products;
 
@@ -449,14 +504,41 @@ public class PageHomeController implements Initializable {
         row = 1;
         col = 0;
 
-        grid_Products.getChildren().clear();
         gridProductSearch.getChildren().clear();
+        grid_Products.getChildren().clear();
+        for (Product product : listProduct) {
+            setDataProduct(product, grid_Products);
+        }
 
+    }
+
+    //Quay trở về giao diện ban đầu sau khi mua hàng
+    public void backFormAfterBuy()
+    {
+        numbersBuyProduct = 1;
+        txtNumber.setText(numbersBuyProduct+"");
+        paneOrderDetail.setVisible(false);
+        paneShoppingCart.setVisible(false);
+        gridProdcut_OrderDetails.getChildren().clear();
+        row = 1;
+        col = 0;
+        if(grid_Products.getChildren().size()>0){
+            gridProductSearch.getChildren().clear();
+            grid_Products.getChildren().clear();
             for (Product product : listProduct) {
                 setDataProduct(product, grid_Products);
             }
+        }else if(gridProductSearch.getChildren().size()>0){
+            gridProductSearch.getChildren().clear();
+            grid_Products.getChildren().clear();
+            for (Product product : listProduct) {
+                setDataProduct(product, gridProductSearch);
+            }
+        }else {
+            hideForm();
+            pane_main.setVisible(true);
+        }
     }
-
     int row = 1;
     int col = 0;
 
@@ -687,11 +769,7 @@ public class PageHomeController implements Initializable {
                     }
                     Platform.runLater(() -> {
                         AlertNotification.showAlertSucces("Mua hàng thành công!", "Cảm ơn bạn đã mua hàng");
-                        try {
-                            loadDataProducts();
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        backFormAfterBuy();
                     });
 
                     //Nếu mua hàng từ giỏ hàng thì xóa các san phẩm trong giỏ hàng sau khi mua
@@ -801,7 +879,7 @@ public class PageHomeController implements Initializable {
     public void showOderDetail() {
         paneOrderDetail.setVisible(true);
         //Lấy thông tin người dungf
-        user = userDao.SelectByID(new User(Temp.account.getID()));
+        user = userDao.SelectByID(new User(Temp.account.getID(),""));
         nameUserOder_lb.setText(user.getFullName());
         phoneUserOder_lb.setText(user.getNumberPhone());
         AdressOrder_txt.setText(user.getAddress());
@@ -902,6 +980,7 @@ public class PageHomeController implements Initializable {
             grid_Products.getChildren().clear();
             lastIndex.set(0);   //Vì sau khi nhấn tìm lại thì vị trí bắt đầu đang bị nhảy lên cao r
             listProduct.clear();    //Giai phong bộ nhớ  các node khng dùng đến
+            gridProdcut_OrderDetails.getChildren().clear();
             gridProductSearch.getChildren().clear();
             hideForm();
             loadData(e);
@@ -1002,7 +1081,7 @@ public class PageHomeController implements Initializable {
             gridItemCart.getChildren().remove(indexToRemove);
             for (int i = indexToRemove; i < gridItemCart.getChildren().size(); i++) {
                 AnchorPane anchorPane = (AnchorPane) gridItemCart.getChildren().get(i);
-                updateRowAndColumn(anchorPane, i+1, gridItemCart);
+                updateRowAndColumn(anchorPane, i+2, gridItemCart);
             }
         }
     }
@@ -1104,18 +1183,40 @@ public class PageHomeController implements Initializable {
     //----------------------------------MESSENGER-----------------------------------------------
     private List<Messenger> listMess = new ArrayList<>();
 
-
-
+    private boolean checkEndMess = true;
+    AtomicInteger getNumbersMessenge = new AtomicInteger(0);
     int rowMess = 1;
 
-    public void setDataMessenger() throws SQLException {
+    public void RefreshMessenger() throws SQLException {
         pane_Messenger.setVisible(true);
+        getNumbersMessenge.set(0);
+        checkEndMess = true;
         rowMess = 1;
-      //  listMess.clear();
-        listMess.addAll(messengeDao.getDataMessenge(Temp.account.getID()));
-        for (Messenger mess : listMess)
+        listMess.clear();
+        grid_Messenge.getChildren().clear();
+        setDataMessenge();
+    }
+    //Set dữ liệu
+    public void setDataMessenge() throws SQLException {
+        listMess.addAll(messengeDao.getDataMessenge(Temp.account.getID(),getNumbersMessenge));
+
+        int index = getNumbersMessenge.get();
+        while (index<listMess.size()){
+            DisplayMessenge(listMess.get(index));
+            index++;
+        }
+
+        if((listMess.size()-getNumbersMessenge.get())==0){
+            checkEndMess=false;
+        }
+        getNumbersMessenge.set(getNumbersMessenge.get() + (listMess.size()-getNumbersMessenge.get()));
+
+    }
+    //Cuộn xem tin nhắn
+    public synchronized void ScrollMessenge(ScrollEvent e) throws SQLException {
+        if(!checkEndMess)
         {
-            DisplayMessenge(mess);
+            setDataMessenge();
         }
     }
     public void DisplayMessenge(Messenger messenger)
@@ -1144,8 +1245,50 @@ public class PageHomeController implements Initializable {
         }
     }
 
-    //----------------------------------------------------
+    //Tắt form tin nhắn
+    public void ShowHiddenMessenge(MouseEvent e) throws SQLException {
 
+        if(pane_Messenger.isVisible()) {
+            pane_Messenger.setVisible(false);
+            grid_Messenge.getChildren().clear();
+            listMess.clear();
+        }else {
+            pane_Messenger.setVisible(true);
+            RefreshMessenger();
+        }
+    }
+
+    //--------------------------- SET DATA TOP 3 PRODUCT ----------------------------------------
+    private Vector<Product> listTopProduct = new Vector<>();
+    public void setDataTopProduct() {
+
+        if (listTopProduct.size() == 0) {
+            try {
+                listTopProduct.addAll(product_Dao.selectTopThreeProduct());
+            } catch (SQLException e) {
+                return;
+            }
+        } else {
+            imgTop_ProductOne.setImage(new Image(getClass().getResourceAsStream(listTopProduct.get(0).getSrcImg())));
+            imgTop_ProductTwo.setImage(new Image(getClass().getResourceAsStream(listTopProduct.get(1).getSrcImg())));
+            imgTop_ProductThree.setImage(new Image(getClass().getResourceAsStream(listTopProduct.get(2).getSrcImg())));
+
+            nameProductOne_lb.setText(listTopProduct.get(0).getTenSP());
+            price_ProductOne.setText(App.numf.format(listTopProduct.get(0).getPrice()) + "đ");
+            SoldProduct_one.setText(listTopProduct.get(0).getSold() + "");
+
+            nameProductTwo_lb.setText(listTopProduct.get(1).getTenSP());
+            price_ProductTwo.setText(App.numf.format(listTopProduct.get(1).getPrice()) + "đ");
+            SoldProduct_two.setText(listTopProduct.get(1).getSold() + "");
+
+            nameProductThree_lb.setText(listTopProduct.get(2).getTenSP());
+            price_ProductThree.setText(App.numf.format(listTopProduct.get(2).getPrice()) + "đ");
+            SoldProduct_three.setText(listTopProduct.get(2).getSold() + "");
+        }
+    }
+
+
+    //-------------------------------------
     //Khi hover vào các nav-item
     @FXML
     public void HoverMenuNavbar(MouseEvent e) {
@@ -1232,6 +1375,7 @@ public class PageHomeController implements Initializable {
         paneOrderDetail.setVisible(false);
         paneInformationProduct.setVisible(false);
         paneShoppingCart.setVisible(false);
+        pane_main.setVisible(false);
         lbNoData.setVisible(false);
         gridItemCart.getChildren().clear();
         gridProductSearch.getChildren().clear();
@@ -1298,8 +1442,8 @@ public class PageHomeController implements Initializable {
             keyCategory = category.listCategory.get(menu7_btn.getText());
         }
         if (keyCategory != -1) {
-            // paneProductMarket.setVisible(true);
-            //calculatePage();
+            listChooseItemCartModel.clear();
+            gridProdcut_OrderDetails.getChildren().clear();
             loadData(e);
 
         }
@@ -1307,6 +1451,10 @@ public class PageHomeController implements Initializable {
     }
 
     private void showImage() {
+
+        imgTopSeller_Three.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/gai-xinh.jpg")));
+        imgTopSeller_Two.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/doanh-nhan.png")));
+        imgTopSeller_one.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/top-seller-1.png")));
         img_Messenger.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-tin-nhan.png")));
         img_shopping_cart.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-gio-hang.png")));
         img_iconSearch.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/iconSearch.png")));
@@ -1343,25 +1491,25 @@ public class PageHomeController implements Initializable {
             loadDataItemCart();
         }else if(e.getSource() == txt_CloseCart)
         {
+            listChooseItemCartModel.clear();
             paneShoppingCart.setVisible(false);
-        }else if(e.getSource() == img_Messenger){
-            setDataMessenger();
+            pane_main.setVisible(true);
+        }else if(e.getSource() == myShop_logo)
+        {
+            hideForm();
+            pane_main.setVisible(true);
         }
 
     }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        defaultForm();
-        clickPage();
-        showImage();
-
-//        ThreadImageV threadImageV;
+    public void slider()
+    {
+        ThreadImageV threadImageV;
 //        Rectangle clip = new Rectangle(
 //                img_slider.getFitWidth(), img_slider.getFitHeight()
 //        );
 //        clip.setArcWidth(20);
 //        clip.setArcHeight(20);
+//
 //        img_slider.setClip(clip);
 //
 //        // snapshot the rounded image.
@@ -1377,8 +1525,17 @@ public class PageHomeController implements Initializable {
 //
 //        // store the rounded image in the imageView.
 //        img_slider.setImage(image);
-//        threadImageV = new ThreadImageV(img_slider);
-//        threadImageV.start();
+        threadImageV = new ThreadImageV(img_slider);
+        threadImageV.start();
+    }
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        defaultForm();
+        clickPage();
+        showImage();
+
+        setDataTopProduct();
+        slider();
     }
 
     //Giari phóng tài nguyên scene

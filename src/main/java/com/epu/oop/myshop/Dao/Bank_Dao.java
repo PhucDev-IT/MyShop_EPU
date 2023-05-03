@@ -88,7 +88,7 @@ e.printStackTrace();
                 String tenChiNhanh = rs.getString("TenChiNhanh");
                 String SoCCCD = rs.getString("SoCCCD");
 
-                bank = new Bank(SoTaiKhoan,TenNH,tenChiNhanh,ChuSoHuu,SoCCCD,new User(user_id));
+                bank = new Bank(SoTaiKhoan,TenNH,tenChiNhanh,ChuSoHuu,SoCCCD,new User(user_id,""));
             }
             statement.close();
             rs.close();

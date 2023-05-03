@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateSQL {
-    public static final String databaseName = "MyShop";
+    public static final String databaseName = "MyShop3";
 
     //public static final String url = "jdbc:mysql://localhost:3306/";
    // public static final String driver = "com.mysql.jdbc.Driver";
@@ -363,17 +363,17 @@ public class CreateSQL {
 
             preaccount.setString(1,"myshop@gmail.com");
             preaccount.setString(2,"123456");
-            preaccount.setString(3,"Member");
+            preaccount.setString(3,"Seller");
             preaccount.executeUpdate();
 
             preaccount.setString(1,"hainam@gmail.com");
             preaccount.setString(2,"123456");
-            preaccount.setString(3,"Member");
+            preaccount.setString(3,"Seller");
             preaccount.executeUpdate();
 
             preaccount.setString(1,"xinchao@gmail.com");
             preaccount.setString(2,"123456");
-            preaccount.setString(3,"Member");
+            preaccount.setString(3,"Seller");
             preaccount.executeUpdate();
 
 
@@ -418,7 +418,9 @@ public class CreateSQL {
         Random random = new Random();
         for (int i = 1; i < 10000; i++) {
             Product product = new Product(0,"Sản phẩm " + i, (random.nextInt(9200) + 1), BigDecimal.valueOf(123 * i), "Không nói gì",
-                    "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(24) + 1, new User(random.nextInt(3) + 2));
+                    "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(24) + 1, new User(random.nextInt(3) + 2,""));
+            product.setSold(random.nextInt(3000)+2);
+            product.setTotalRevenue(product.getTotalRevenue().multiply(BigDecimal.valueOf(product.getSold())));
             try {
                 Insert(product,connection);
             } catch (SQLException e) {
@@ -436,8 +438,8 @@ public class CreateSQL {
 
         try {
             connection.setAutoCommit(false);
-            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID)" +
-                    " VALUES (?,?,?,?,?,?)";
+            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID,Sold,TotalRevenue)" +
+                    " VALUES (?,?,?,?,?,?,?,?)";
             String sqlProductSeller = "INSERT INTO ProductSeller(Product_ID,Users_ID) " +
                     "VALUES (?,?)";
             preProduct = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
@@ -448,6 +450,8 @@ public class CreateSQL {
             preProduct.setString(4,t.getMoTa());
             preProduct.setString(5,t.getSrcImg());
             preProduct.setInt(6,t.getCategory());
+            preProduct.setInt(7,t.getSold());
+            preProduct.setBigDecimal(8,t.getTotalRevenue());
             preProduct.executeUpdate();
 
             int index ;
@@ -556,7 +560,7 @@ public class CreateSQL {
             " SrcImg VARCHAR(400)," +
             " Activity VARCHAR(10) DEFAULT 'ON', " +
             " Sold FLOAT, " +
-            " TotalRevenue DECIMAL, " +
+            " TotalRevenue DECIMAL DEFAULT 0, " +
             " Category_ID INT, " +
             " FOREIGN KEY(Category_ID) REFERENCES Category(Category_ID) " +
             ");";
@@ -646,7 +650,8 @@ public class CreateSQL {
     //------------- TẠO CHỈ MỤC - TĂNG TỐC TRUY VẤN
     String indexProduct ="CREATE INDEX idx_MaSP ON Product(MaSP); " +
                         "CREATE INDEX idx_Category_ID ON Product(Category_ID); " +
-                         "CREATE INDEX idx_Activity ON Product(Activity);";
+                         "CREATE INDEX idx_Activity ON Product(Activity);" +
+                        "CREATE INDEX idx_TotalRevenue ON Product(TotalRevenue)";
 
     String indexUser = "CREATE INDEX idx_Account_ID ON Users(Account_ID)";
 
@@ -729,7 +734,7 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE Category_ID = @Category_ID " +
             " AND p.Activity = 'ON'" +
-            " ORDER BY MaSP" +
+            " ORDER BY TotalRevenue" +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -744,7 +749,7 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE p.TenSP LIKE @nameProduct " +
             " AND p.Activity = 'ON' " +
-            " ORDER BY MaSP " +
+            " ORDER BY TotalRevenue " +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -758,7 +763,7 @@ public class CreateSQL {
             " ON Product.MaSP = ProductSeller.Product_ID " +
             " AND ProductSeller.Users_ID = @User_ID " +
             " AND Product.Activity = 'ON' " +
-            " ORDER BY MaSP " +
+            " ORDER BY TotalRevenue " +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 

@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.*;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -115,10 +116,10 @@ public class Order_Dao implements Dao_Interface<Order> {
 
             preMessenge = connection.prepareStatement(sqlMess);
             preMessenge.setString(1,"Tin nhắn từ hệ thống");
-            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng. Mã HĐ:"+hoaDonId+" Tổng tiền: "+hoaDon.getThanhTien());
+            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng! \nMã Hóa Đơn của bạn là: 0"+hoaDonId+" - Tổng thanh toán: "+ App.numf.format(hoaDon.getThanhTien())+" đồng");
             preMessenge.setBoolean(3,false);
             preMessenge.setDate(4,new Date(System.currentTimeMillis()));
-            preMessenge.setString(5,"");
+            preMessenge.setString(5,null);
             preMessenge.setInt(6,hoaDon.getUser().getID());
 
             preMessenge.executeUpdate();
@@ -208,7 +209,7 @@ public class Order_Dao implements Dao_Interface<Order> {
 
             preMessenge = connection.prepareStatement(sqlMess);
             preMessenge.setString(1,"Tin nhắn từ hệ thống");
-            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng! Mã Hóa Đơn của bạn là: 0"+hoaDonId+"   Tổng thanh toán: "+hoaDon.getThanhTien());
+            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng! \nMã Hóa Đơn của bạn là: 0"+hoaDonId+" - Tổng thanh toán: "+ App.numf.format(hoaDon.getThanhTien())+" đồng");
             preMessenge.setBoolean(3,false);
             preMessenge.setDate(4,new Date(System.currentTimeMillis()));
             preMessenge.setString(5,"");
@@ -256,7 +257,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 BigDecimal ThanhTien = rs.getBigDecimal("ThanhTien");
                 int Users_ID = rs.getInt("Users_ID");
 
-                list.add(new Order(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID)));
+                list.add(new Order(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID,"")));
             }
             statement.close();
         }catch (SQLException e){

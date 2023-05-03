@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessengeDao implements Dao_Interface<Messenger> {
 
@@ -92,6 +93,20 @@ public class MessengeDao implements Dao_Interface<Messenger> {
 
     @Override
     public int Update(Messenger messenger) throws SQLException {
+        String sql  = "UPDATE Messenger" +
+                " SET" +
+                " Statuss = 1 " +
+                " WHERE ID = ?";
+
+        openConnection();
+        try (PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1,messenger.getID());
+
+            statement.executeUpdate();
+
+        }finally {
+            closeConnection();
+        }
         return 0;
     }
 
@@ -101,16 +116,18 @@ public class MessengeDao implements Dao_Interface<Messenger> {
     }
 
     //Lấy tất cả tin nhắn của người dùng
-    public List<Messenger> getDataMessenge(int AccountID) throws SQLException {
+    public List<Messenger> getDataMessenge(int AccountID, AtomicInteger lastIndex) throws SQLException {
         List<Messenger> list = new ArrayList<>();
         String sql = "SELECT * FROM Messenger " +
                 "WHERE Account_ID = ? " +
-                "Order by sentDate";
-        System.out.println(AccountID);
+                "Order by sentDate DESC" +
+                " OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY ";
+        System.out.println("hihi");
         try {
         openConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1,AccountID);
+            statement.setInt(2,lastIndex.get());
             ResultSet rs = statement.executeQuery();
 
             while (rs.next())

@@ -19,9 +19,9 @@ public class ThreadImageV {
         imageView = img;
     }
     private Image[] images = {
-            new Image("C:\\Users\\84374\\OneDrive\\Pictures\\free.png"),
-            new Image("C:\\Users\\84374\\OneDrive\\Pictures\\sale.png"),
-            new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"),
+            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher.png")),
+            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-1.jpg")),
+            //new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"),
 
     };
 

@@ -52,26 +52,186 @@
                      <children>
                         <ImageView fx:id="imgAvatar" fitHeight="40.0" fitWidth="45.0" layoutX="199.0" layoutY="15.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
                         <ImageView fx:id="img_shopping_cart" fitHeight="38.0" fitWidth="38.0" layoutX="21.0" layoutY="19.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
-                        <ImageView fx:id="img_Messenger" fitHeight="32.0" fitWidth="35.0" layoutX="115.0" layoutY="23.0" onMouseClicked="#click" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="img_Messenger" fitHeight="32.0" fitWidth="35.0" layoutX="115.0" layoutY="23.0" onMouseClicked="#ShowHiddenMessenge" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </Pane>
-                  <Text id="myshop" fx:id="myShop_logo" fill="WHITESMOKE" layoutX="43.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="MyShop" />
+                  <Text id="myshop" fx:id="myShop_logo" fill="WHITESMOKE" layoutX="43.0" layoutY="46.0" onMouseClicked="#click" strokeType="OUTSIDE" strokeWidth="0.0" text="MyShop" />
                </children>
             </Pane>
          </top>
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
                <children>
-                  <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: white;" visible="false">
+                  <AnchorPane fx:id="pane_main" prefHeight="679.0" prefWidth="1326.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <ScrollPane fx:id="scrollProductSearch" layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <Pane fx:id="main" layoutX="357.0" layoutY="231.0" prefHeight="337.0" prefWidth="613.0" style="-fx-background-color: #cbd6d4; -fx-border-color: green;" styleClass="informationForm" stylesheets="@../StyleCSS/Home.css">
+                           <children>
+                              <ImageView fx:id="img_slider" fitHeight="336.0" fitWidth="615.0" layoutY="1.0" pickOnBounds="true" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="26.0" layoutY="79.0" prefHeight="560.0" prefWidth="195.0" style="-fx-background-color: #f5f4f2; -fx-background-radius: 30; -fx-border-radius: 30;">
+                           <children>
+                              <Label layoutX="49.0" layoutY="20.0" text="TOP SELLER" textFill="#ff0808">
+                                 <font>
+                                    <Font name="Mistral" size="25.0" />
+                                 </font>
+                              </Label>
+                              <Separator layoutY="56.0" prefHeight="3.0" prefWidth="193.0" />
+                              <VBox layoutY="72.0" prefHeight="462.0" prefWidth="196.0">
+                                 <children>
+                                    <Pane prefHeight="139.0" prefWidth="202.0" style="-fx-background-color: #fcfcf7; -fx-border-color: #d0f786;">
+                                       <children>
+                                          <ImageView fx:id="imgTopSeller_one" fitHeight="78.0" fitWidth="68.0" layoutX="63.0" layoutY="14.0" pickOnBounds="true" />
+                                          <Label alignment="CENTER" layoutX="1.0" layoutY="104.0" prefHeight="22.0" prefWidth="189.0" text="Nguyễn Văn Phúc">
+                                             <font>
+                                                <Font name="Calibri Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="10.0" layoutY="10.0" prefHeight="139.0" prefWidth="202.0" style="-fx-background-color: #fcfcf7; -fx-border-color: #d0f786;">
+                                       <children>
+                                          <ImageView fx:id="imgTopSeller_Two" fitHeight="72.0" fitWidth="83.0" layoutX="54.0" layoutY="14.0" pickOnBounds="true" />
+                                          <Label alignment="CENTER" layoutX="-4.0" layoutY="101.0" prefHeight="22.0" prefWidth="195.0" text="Hoàng Hải Nam">
+                                             <font>
+                                                <Font name="Calibri Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
+                                    </Pane>
+                                    <Pane layoutX="10.0" layoutY="149.0" prefHeight="139.0" prefWidth="202.0" style="-fx-background-color: #fcfcf7; -fx-border-color: #d0f786;">
+                                       <children>
+                                          <ImageView fx:id="imgTopSeller_Three" fitHeight="76.0" fitWidth="78.0" layoutX="56.0" layoutY="14.0" pickOnBounds="true" />
+                                          <Label alignment="CENTER" layoutX="1.0" layoutY="103.0" prefHeight="22.0" prefWidth="188.0" text="Trần Thị Ngọc Trinh">
+                                             <font>
+                                                <Font name="Calibri Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
+                                    </Pane>
+                                 </children>
+                                 <padding>
+                                    <Insets left="2.0" right="4.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="1104.0" layoutY="79.0" prefHeight="560.0" prefWidth="195.0" style="-fx-background-color: #f5f4f2; -fx-background-radius: 30; -fx-border-radius: 30;">
+                           <children>
+                              <Label layoutX="41.0" layoutY="20.0" text="TOP PRODUCT" textFill="#ff0808">
+                                 <font>
+                                    <Font name="Mistral" size="25.0" />
+                                 </font>
+                              </Label>
+                              <Separator layoutY="56.0" prefHeight="3.0" prefWidth="193.0" />
+                              <VBox layoutY="72.0" prefHeight="462.0" prefWidth="196.0">
+                                 <children>
+                                    <Pane prefHeight="139.0" prefWidth="202.0" style="-fx-background-color: #fcfcf7; -fx-border-color: #d0f786;">
+                                       <children>
+                                          <ImageView fx:id="imgTop_ProductOne" fitHeight="55.0" fitWidth="68.0" layoutX="63.0" layoutY="5.0" pickOnBounds="true" />
+                                          <Label fx:id="nameProductOne_lb" alignment="CENTER" layoutX="3.0" layoutY="64.0" prefHeight="22.0" prefWidth="189.0" text="Nguyễn Văn Phúc">
+                                             <font>
+                                                <Font name="Calibri Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="price_ProductOne" alignment="CENTER" layoutX="3.0" layoutY="86.0" prefHeight="21.0" prefWidth="188.0" text="500.000đ" textFill="#ff0b0b">
+                                             <font>
+                                                <Font name="Calibri Bold" size="17.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="3.0" layoutY="115.0" text="Đã bán:">
+                                             <font>
+                                                <Font name="Times New Roman" size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="SoldProduct_one" layoutX="53.0" layoutY="113.0" prefHeight="21.0" prefWidth="119.0" text="200" textFill="#24c961">
+                                             <font>
+                                                <Font name="Times New Roman" size="15.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="12.0" layoutY="10.0" prefHeight="139.0" prefWidth="202.0" style="-fx-background-color: #fcfcf7; -fx-border-color: #d0f786;">
+                                       <children>
+                                          <ImageView fx:id="imgTop_ProductTwo" fitHeight="55.0" fitWidth="68.0" layoutX="63.0" layoutY="5.0" pickOnBounds="true" />
+                                          <Label fx:id="nameProductTwo_lb" alignment="CENTER" layoutX="3.0" layoutY="65.0" prefHeight="22.0" prefWidth="189.0" text="Nguyễn Văn Phúc">
+                                             <font>
+                                                <Font name="Calibri Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="price_ProductTwo" alignment="CENTER" layoutX="3.0" layoutY="88.0" prefHeight="21.0" prefWidth="188.0" text="500.000đ" textFill="#ff0b0b">
+                                             <font>
+                                                <Font name="Calibri Bold" size="17.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="3.0" layoutY="115.0" text="Đã bán:">
+                                             <font>
+                                                <Font name="Times New Roman" size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="SoldProduct_two" layoutX="53.0" layoutY="113.0" prefHeight="21.0" prefWidth="119.0" text="200" textFill="#20c30e">
+                                             <font>
+                                                <Font name="Times New Roman" size="15.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
+                                    </Pane>
+                                    <Pane layoutX="12.0" layoutY="149.0" prefHeight="139.0" prefWidth="202.0" style="-fx-background-color: #fcfcf7; -fx-border-color: #d0f786;">
+                                       <children>
+                                          <ImageView fx:id="imgTop_ProductThree" fitHeight="55.0" fitWidth="68.0" layoutX="63.0" layoutY="5.0" pickOnBounds="true" />
+                                          <Label fx:id="nameProductThree_lb" alignment="CENTER" layoutX="3.0" layoutY="65.0" prefHeight="22.0" prefWidth="189.0" text="Nguyễn Văn Phúc">
+                                             <font>
+                                                <Font name="Calibri Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="price_ProductThree" alignment="CENTER" layoutX="3.0" layoutY="88.0" prefHeight="21.0" prefWidth="188.0" text="500.000đ" textFill="#ff0b0b">
+                                             <font>
+                                                <Font name="Calibri Bold" size="17.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="3.0" layoutY="115.0" text="Đã bán:">
+                                             <font>
+                                                <Font name="Times New Roman" size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="SoldProduct_three" layoutX="53.0" layoutY="113.0" prefHeight="21.0" prefWidth="119.0" text="200" textFill="#01d30b">
+                                             <font>
+                                                <Font name="Times New Roman" size="15.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
+                                    </Pane>
+                                 </children>
+                                 <padding>
+                                    <Insets left="2.0" right="4.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </Pane>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="paneListProductSearch" layoutX="-2.0" layoutY="76.0" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: white; -fx-border-color: #ffcab5;" visible="false">
+                     <children>
+                        <ScrollPane fx:id="scrollProductSearch" hbarPolicy="NEVER" layoutX="24.0" layoutY="73.0" onScroll="#checkScroll" prefHeight="583.0" prefWidth="1326.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
                               <GridPane fx:id="gridProductSearch" hgap="10.0" prefHeight="0.0" prefWidth="0.0" vgap="10.0">
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <padding>
-                                    <Insets left="30.0" top="-30.0" />
+                                    <Insets left="20.0" top="-30.0" />
                                  </padding>
                               </GridPane>
                            </content>
@@ -367,10 +527,6 @@
                         </Text>
                      </children>
                   </AnchorPane>
-                  <Pane fx:id="main" layoutX="406.0" layoutY="236.0" prefHeight="288.0" prefWidth="519.0" style="-fx-background-color: #cbd6d4;" visible="false">
-                     <children>
-                        <ImageView fx:id="img_slider" fitHeight="287.0" fitWidth="520.0" layoutY="1.0" pickOnBounds="true" />
-                     </children></Pane>
                   <Pane fx:id="item1_pane" layoutX="121.0" layoutY="34.0" onMouseClicked="#displayBackgroundItemNav" onMouseExited="#hiddenListItemOfMenu" prefHeight="76.0" prefWidth="166.0" style="-fx-background-color: #f2ebeb;" styleClass="nav-container-list-item" stylesheets="@../StyleCSS/pageHome.css" visible="false">
                      <children>
                         <VBox layoutX="4.0" layoutY="-1.0" prefHeight="74.0" prefWidth="163.0">
@@ -630,7 +786,7 @@
       </Label>
       <Pane fx:id="pane_Messenger" prefHeight="200.0" prefWidth="605.0" style="-fx-background-color: red;" visible="false" AnchorPane.leftAnchor="715.0" AnchorPane.topAnchor="65.0">
          <children>
-            <ScrollPane prefHeight="200.0" prefWidth="605.0">
+            <ScrollPane hbarPolicy="NEVER" onScroll="#ScrollMessenge" prefHeight="200.0" prefWidth="605.0">
                <content>
                   <GridPane fx:id="grid_Messenge" vgap="3.0">
                     <rowConstraints>
