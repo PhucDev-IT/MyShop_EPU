@@ -20,8 +20,8 @@ public class ThreadImageV {
     }
     private Image[] images = {
             new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher.png")),
+            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-2.png")),
             new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-1.jpg")),
-            //new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"),
 
     };
 

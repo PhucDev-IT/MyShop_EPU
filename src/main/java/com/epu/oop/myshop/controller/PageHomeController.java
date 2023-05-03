@@ -1266,9 +1266,10 @@ public class PageHomeController implements Initializable {
             try {
                 listTopProduct.addAll(product_Dao.selectTopThreeProduct());
             } catch (SQLException e) {
-                return;
+                e.printStackTrace();
             }
-        } else {
+        }
+
             imgTop_ProductOne.setImage(new Image(getClass().getResourceAsStream(listTopProduct.get(0).getSrcImg())));
             imgTop_ProductTwo.setImage(new Image(getClass().getResourceAsStream(listTopProduct.get(1).getSrcImg())));
             imgTop_ProductThree.setImage(new Image(getClass().getResourceAsStream(listTopProduct.get(2).getSrcImg())));
@@ -1284,7 +1285,7 @@ public class PageHomeController implements Initializable {
             nameProductThree_lb.setText(listTopProduct.get(2).getTenSP());
             price_ProductThree.setText(App.numf.format(listTopProduct.get(2).getPrice()) + "đ");
             SoldProduct_three.setText(listTopProduct.get(2).getSold() + "");
-        }
+
     }
 
 

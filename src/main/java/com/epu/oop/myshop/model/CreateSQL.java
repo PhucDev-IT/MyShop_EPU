@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateSQL {
-    public static final String databaseName = "MyShop3";
+    public static final String databaseName = "MyShop";
 
     //public static final String url = "jdbc:mysql://localhost:3306/";
    // public static final String driver = "com.mysql.jdbc.Driver";
@@ -417,10 +417,12 @@ public class CreateSQL {
 
         Random random = new Random();
         for (int i = 1; i < 10000; i++) {
-            Product product = new Product(0,"Sản phẩm " + i, (random.nextInt(9200) + 1), BigDecimal.valueOf(123 * i), "Không nói gì",
-                    "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(24) + 1, new User(random.nextInt(3) + 2,""));
-            product.setSold(random.nextInt(3000)+2);
-            product.setTotalRevenue(product.getTotalRevenue().multiply(BigDecimal.valueOf(product.getSold())));
+
+            int quantity = random.nextInt(4921)+4;
+            BigDecimal total = new BigDecimal(quantity*i*0.5);
+            Product product = new Product(0,"Sản phẩm "+i,random.nextInt(10000)+12,total,"Người bán không" +
+                    " nói gì","/com/epu/oop/myshop/image/Product/product1.png",quantity,total.multiply(BigDecimal.valueOf(quantity)),random.nextInt(24) + 1, new User(random.nextInt(3) + 2,""));
+
             try {
                 Insert(product,connection);
             } catch (SQLException e) {
@@ -505,7 +507,7 @@ public class CreateSQL {
                         new Date(System.currentTimeMillis()),new Date(2023,9,12));
             }else {
                  vc = new VoucherModel(result,0,new BigDecimal(i*10000),i*3,"Tặng bạn mã voucher nhé","/com/epu/oop/myshop/image/voucher.png",
-                        new Date(System.currentTimeMillis()),new Date(2023,9,12));
+                        new Date(System.currentTimeMillis()),new Date(2026-1900,9,12));
             }
             voucherDao.Insert(vc);
         }
@@ -695,11 +697,11 @@ public class CreateSQL {
             "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    " +
             "    UPDATE Product" +
-            "    SET Sold = (SELECT SUM(Quantity) FROM OrderDetails WHERE Product_ID = Product.MaSP)" +
+            "    SET Sold += (SELECT (Quantity) FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    " +
             "    UPDATE Product" +
-            "    SET TotalRevenue = (SELECT SUM(Quantity*Price) FROM OrderDetails WHERE Product_ID = Product.MaSP)" +
+            "    SET TotalRevenue += (SELECT SUM(Quantity*Price) FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "END";
 

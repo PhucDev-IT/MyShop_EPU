@@ -101,7 +101,13 @@ public class LoginController implements Initializable{
         {
             AlertNotification.showAlertWarning("","Vui lòng nhập thông tin đầy đủ");
             return;
-        }else if(!oldUserName.equals(userName)){
+        }else if(!checkEmail(userName)) {
+            if (!userName.equals("admin")) {
+                AlertNotification.showAlertWarning("", "Email chưa chính xác");
+                return;
+            }
+        }
+        else if(!oldUserName.equals(userName)){
             numbersLogin=0;
         }
 
@@ -121,7 +127,7 @@ public class LoginController implements Initializable{
                 AlertNotification.showAlertWarning("Tài khoản của bạn đang bị khóa","Mọi thắc mắc vui lòng liên hệ với chúng tôi");
             }
         }else {
-            AlertNotification.showAlertError("ERROR!","Tài khoản hoặc mật khẩu không chính xác");
+            AlertNotification.showAlertError("","Tài khoản hoặc mật khẩu không chính xác");
             oldUserName = userName;
             numbersLogin++;
         }

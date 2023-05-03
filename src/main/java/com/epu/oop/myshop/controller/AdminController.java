@@ -304,12 +304,15 @@ public class AdminController implements Initializable {
     private Tab QLVoucher_tab;
 
     @FXML
+    private ImageView imgRefreshVoucher;
+
+    @FXML
     private TabPane tabPane_Voucher;
 
     @FXML
     private TableColumn<VoucherModel, String> ColNoiDung;
 
-    private List<VoucherModel> listAllVouchers;
+    private List<VoucherModel> listAllVouchers = new ArrayList<>();
     //--------------------
     private String imgVoucherTemp;
     private List<VoucherModel> listVouchers = new ArrayList<>();
@@ -324,7 +327,7 @@ public class AdminController implements Initializable {
             @Override
             public void onClickListener(VoucherModel t) {
                 voucher = t;
-                ramdomVoucher_btn.setDisable(true);
+
                 showInformationVoucher();
             }
         };
@@ -332,9 +335,9 @@ public class AdminController implements Initializable {
 
     //Khi nhấn vào 1 voucher bâất kì thì hiển thị thông tin
     public void showInformationVoucher(){
-
+        Platform.runLater(() -> ramdomVoucher_btn.setDisable(true));
         try{
-            if(voucher.getImgVoucher().equals(":")){
+            if(voucher.getImgVoucher().contains(":")){
                 imgVoucher.setImage(new Image(voucher.getImgVoucher()));
             }else{
                 imgVoucher.setImage(new Image(getClass().getResourceAsStream(voucher.getImgVoucher())));
@@ -354,8 +357,9 @@ public class AdminController implements Initializable {
         ngayBatDau_date.setValue(voucher.getNgayBatDau().toLocalDate());
         soLuong_txt.setText(voucher.getSoLuong()+"");
         noiDung_txa.setText(voucher.getNoiDung());
-        EmailUserVoucher_txt.setEditable(false);
+        EmailUserVoucher_txt.setDisable(true);
         EmailUserVoucher_txt.setText(voucher.getUser().getEmail());
+        them_btn.setDisable(true);
     }
     public void addImageVoucher(ActionEvent e){
         imgVoucherTemp = importImageOnForm(QLVoucher_form,imgVoucher);
@@ -366,13 +370,16 @@ public class AdminController implements Initializable {
         listVouchers.clear();
         listVouchers = voucherDao.SelectAll();
         displayVoucherForm();
+        them_btn.setDisable(false);
         ramdomVoucher_btn.setDisable(false);
-        EmailUserVoucher_txt.setEditable(true);
+        EmailUserVoucher_txt.setDisable(false);
+
+        setEmptyElement();
     }
     public void ConverTab(MouseEvent e){
         //Tab đầu tiên = 0;
         int selectedIndex = tabPane_Voucher.getSelectionModel().getSelectedIndex();
-        if (selectedIndex == 0) {
+        if (e.getSource() == imgRefreshVoucher) {
             refreshVoucher();
         } else if (selectedIndex == 1) {
             setEmptyElement();
@@ -447,6 +454,7 @@ public class AdminController implements Initializable {
             VoucherModel voucher = new VoucherModel(maVoucher_txt.getText(), tilegiamgia, SoTienGiamGia,
                     (Integer.parseInt(soLuong_txt.getText())), noiDung_txa.getText(), imgVoucherTemp,
                     Date.valueOf(ngayBatDau_date.getValue()), Date.valueOf(ngayKTDate.getValue()));
+
             if (!isStringEmpty(EmailUserVoucher_txt.getText())) {
                 if (voucherDao.GiftVoucher(voucher, EmailUserVoucher_txt.getText()) <= 0) {
                     AlertNotification.showAlertError("", "Người dùng không tồn tại");
@@ -469,10 +477,33 @@ public class AdminController implements Initializable {
         }
     }
 
-    public void updateVoucher(ActionEvent e)
-    {
+    public void updateVoucher(ActionEvent e) throws SQLException {
         if (ngayKTDate.getValue().compareTo(ngayBatDau_date.getValue()) >= 0) {
+            float tilegiamgia = 0;
+            if (!tileGiamGia_txt.getText().equals("")) {
+                String sale = tileGiamGia_txt.getText();
+                if (sale.contains("%")) {
+                    sale = sale.replace("%", "");
+                }
+                tilegiamgia = (Float.parseFloat(sale));
+            }
+            BigDecimal SoTienGiamGia = null;
+            if (!sotienGiam_txt.getText().equals("")) {
+                String sotien = sotienGiam_txt.getText();
+                removeKiTuDacBiet(sotien);
+                SoTienGiamGia = new BigDecimal(sotien);
+            }
 
+            VoucherModel voucher = new VoucherModel(maVoucher_txt.getText(), tilegiamgia, SoTienGiamGia,
+                    (Integer.parseInt(soLuong_txt.getText())), noiDung_txa.getText(), imgVoucherTemp,
+                    Date.valueOf(ngayBatDau_date.getValue()), Date.valueOf(ngayKTDate.getValue()));
+
+                if (voucherDao.Update(voucher)>0) {
+                    AlertNotification.showAlertSucces("", "Sửa thành công");
+                    setEmptyElement();
+                }else {
+                    AlertNotification.showAlertError("", "Có lỗi xảy ra");
+            }
         }else{
             AlertNotification.showAlertWarning("", "Ngày kết thúc voucher phải lớn hơn ngày bắt đầu.");
         }
@@ -782,6 +813,7 @@ public class AdminController implements Initializable {
             QLAccount_Form.setVisible(false);
             QLSanPham_Form.setVisible(false);
             QLVoucher_form.setVisible(true);
+            refreshVoucher();
         }else if(e.getSource() == logout_btn)
         {
             try{
@@ -859,6 +891,7 @@ public class AdminController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setDefaulValue();
         imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
+        imgRefreshVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-refresh.png")));
     }
 }
 
