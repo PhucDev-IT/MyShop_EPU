@@ -1,10 +1,13 @@
 package com.epu.oop.myshop.model;
 
 import com.epu.oop.myshop.Dao.Product_Dao;
+import com.epu.oop.myshop.Dao.VoucherDao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.sql.*;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,12 +78,14 @@ public class CreateSQL {
     public void autoCreate() throws SQLException, ClassNotFoundException {
         if (createDatabase()) {
             if (creatTable())
-               // if (createTigger())
+                if (createTigger())
                     if (createIndex())
                         if (createProcedure())
                             if (insertData())
-                                if (insertDataChild())
+                                if (insertDataChild()) {
                                     setDataOnDatabase();
+                                    insertVoucher();
+                                }
         } else {
             //Xóa database
         }
@@ -139,7 +144,8 @@ public class CreateSQL {
             stm.executeUpdate(Tblorder);
             stm.executeUpdate(TblOrderDtails);
             stm.executeUpdate(TblPaymentHistory);
-
+            stm.executeUpdate(TblItemCart);
+            stm.executeUpdate(tblMessenger);
             connection.commit();
 
             System.out.println("Tạo table thành công");
@@ -174,13 +180,15 @@ public class CreateSQL {
                 stm.executeUpdate(TriggerOne);
                 stm.executeUpdate(TriggerTwo);
                 stm.executeUpdate(TriggerThree);
+                stm.executeUpdate(TriggerUpdateVoucher);
+
                 connection.commit();
-               // System.out.println("Tạo trigger thành công");
+                System.out.println("Tạo trigger thành công");
             } catch (SQLException e) {
                 if (connection != null) {
                     connection.rollback();
                 }
-              //  System.out.println("Không thể tạo trigger: ");
+                System.out.println("Không thể tạo trigger: ");
                 e.printStackTrace();
                 return false;
             } catch (ClassNotFoundException e) {
@@ -210,6 +218,8 @@ public class CreateSQL {
             stm.executeUpdate(indexPayment);
             stm.executeUpdate(indexProduct);
             stm.executeUpdate(indexProductSeller);
+            stm.executeUpdate(indexItemCart);
+            stm.executeUpdate(indexMessenger);
             connection.commit();
             System.out.println("Tạo index thành công");
         } catch (SQLException e) {
@@ -353,17 +363,17 @@ public class CreateSQL {
 
             preaccount.setString(1,"myshop@gmail.com");
             preaccount.setString(2,"123456");
-            preaccount.setString(3,"Member");
+            preaccount.setString(3,"Seller");
             preaccount.executeUpdate();
 
             preaccount.setString(1,"hainam@gmail.com");
             preaccount.setString(2,"123456");
-            preaccount.setString(3,"Member");
+            preaccount.setString(3,"Seller");
             preaccount.executeUpdate();
 
             preaccount.setString(1,"xinchao@gmail.com");
             preaccount.setString(2,"123456");
-            preaccount.setString(3,"Member");
+            preaccount.setString(3,"Seller");
             preaccount.executeUpdate();
 
 
@@ -407,8 +417,12 @@ public class CreateSQL {
 
         Random random = new Random();
         for (int i = 1; i < 10000; i++) {
-            Product product = new Product(0,"Sản phẩm " + i, (random.nextInt(9200) + 1), BigDecimal.valueOf(123 * i), "Không nói gì",
-                    "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(24) + 1, new User(random.nextInt(3) + 2));
+
+            int quantity = random.nextInt(4921)+4;
+            BigDecimal total = new BigDecimal(quantity*i*0.5);
+            Product product = new Product(0,"Sản phẩm "+i,random.nextInt(10000)+12,total,"Người bán không" +
+                    " nói gì","/com/epu/oop/myshop/image/Product/product1.png",quantity,total.multiply(BigDecimal.valueOf(quantity)),random.nextInt(24) + 1, new User(random.nextInt(3) + 2,""));
+
             try {
                 Insert(product,connection);
             } catch (SQLException e) {
@@ -426,8 +440,8 @@ public class CreateSQL {
 
         try {
             connection.setAutoCommit(false);
-            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID)" +
-                    " VALUES (?,?,?,?,?,?)";
+            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID,Sold,TotalRevenue)" +
+                    " VALUES (?,?,?,?,?,?,?,?)";
             String sqlProductSeller = "INSERT INTO ProductSeller(Product_ID,Users_ID) " +
                     "VALUES (?,?)";
             preProduct = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
@@ -438,6 +452,8 @@ public class CreateSQL {
             preProduct.setString(4,t.getMoTa());
             preProduct.setString(5,t.getSrcImg());
             preProduct.setInt(6,t.getCategory());
+            preProduct.setInt(7,t.getSold());
+            preProduct.setBigDecimal(8,t.getTotalRevenue());
             preProduct.executeUpdate();
 
             int index ;
@@ -472,6 +488,30 @@ public class CreateSQL {
         return check>0;
     }
 
+    private static final SecureRandom random = new SecureRandom();
+    public void insertVoucher()
+    {
+        String result;
+        ConnectionPool connectionPool = ConnectionPool.getInstance();
+        VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
+        VoucherModel vc;
+        for(int i=1;i<=12;i++)
+        {
+            byte[] bytes = new byte[6];
+            random.nextBytes(bytes);
+            result = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes).substring(0, 6).toUpperCase();
+            result = result.replace("_", ""); // loại bỏ ký tự '_'
+
+            if(i%2==0){
+                 vc = new VoucherModel(result,i*3,null,i*2,"Tặng bạn mã voucher nhé","/com/epu/oop/myshop/image/voucher.png",
+                        new Date(System.currentTimeMillis()),new Date(2023,9,12));
+            }else {
+                 vc = new VoucherModel(result,0,new BigDecimal(i*10000),i*3,"Tặng bạn mã voucher nhé","/com/epu/oop/myshop/image/voucher.png",
+                        new Date(System.currentTimeMillis()),new Date(2026-1900,9,12));
+            }
+            voucherDao.Insert(vc);
+        }
+    }
 
     private final String TblAccount = "CREATE TABLE Account ("+
             " ID INT PRIMARY KEY IDENTITY," +
@@ -487,7 +527,7 @@ public class CreateSQL {
             " PRIMARY KEY(Account_ID)," +
             " FOREIGN KEY(Account_ID) REFERENCES Account(ID)," +
             " FullName NVARCHAR(40)," +
-            " Gender NVARCHAR(6)," +
+            " Gender NVARCHAR(6) DEFAULT N'Khác'," +
             " DateOfBirth DATE, " +
             " HomeTown NVARCHAR(300), " +
             " CCCD VARCHAR(20), " +
@@ -498,10 +538,10 @@ public class CreateSQL {
     private final String TblBank = "CREATE TABLE Bank " +
             "( " +
             " SoTaiKhoan VARCHAR(20) PRIMARY KEY, " +
-            " TenNH NVARCHAR(20), " +
+            " TenNH NVARCHAR(200), " +
             " TenChiNhanh NVARCHAR(100), " +
             " SoCCCD VARCHAR(25),"+
-            " ChuSoHuu NVARCHAR(50), " +
+            " ChuSoHuu NVARCHAR(100), " +
             " Users_ID INT," +
             " FOREIGN KEY (Users_ID) REFERENCES Users(Account_ID) " +
             ");";
@@ -522,7 +562,7 @@ public class CreateSQL {
             " SrcImg VARCHAR(400)," +
             " Activity VARCHAR(10) DEFAULT 'ON', " +
             " Sold FLOAT, " +
-            " TotalRevenue DECIMAL, " +
+            " TotalRevenue DECIMAL DEFAULT 0, " +
             " Category_ID INT, " +
             " FOREIGN KEY(Category_ID) REFERENCES Category(Category_ID) " +
             ");";
@@ -589,10 +629,31 @@ public class CreateSQL {
             " FOREIGN KEY(Account_ID) REFERENCES Account(ID)" +
             ");";
 
+    private final String TblItemCart = "CREATE TABLE itemCart " +
+            "( " +
+            " id_Cart INT PRIMARY KEY IDENTITY, " +
+            " Product_ID INT, " +
+            " Quantity INT, " +
+            " Category_ID INT FOREIGN KEY REFERENCES Category(Category_ID), " +
+            " Users_ID INT FOREIGN KEY REFERENCES Users(Account_ID) " +
+            ")";
+
+    private final String tblMessenger = "CREATE TABLE Messenger " +
+            "( " +
+            " ID INT PRIMARY KEY IDENTITY, " +
+            " Sender NVARCHAR(100), " +
+            " Content NVARCHAR(1000), " +
+            " Statuss BIT, " +
+            " SentDate DATE," +
+            " SrcIcon VARCHAR(500)," +
+            " Account_ID INT FOREIGN KEY REFERENCES Account(ID) " +
+            " )";
+
     //------------- TẠO CHỈ MỤC - TĂNG TỐC TRUY VẤN
     String indexProduct ="CREATE INDEX idx_MaSP ON Product(MaSP); " +
                         "CREATE INDEX idx_Category_ID ON Product(Category_ID); " +
-                         "CREATE INDEX idx_Activity ON Product(Activity);";
+                         "CREATE INDEX idx_Activity ON Product(Activity);" +
+                        "CREATE INDEX idx_TotalRevenue ON Product(TotalRevenue)";
 
     String indexUser = "CREATE INDEX idx_Account_ID ON Users(Account_ID)";
 
@@ -606,6 +667,15 @@ public class CreateSQL {
 
     String indexProductSeller = "CREATE INDEX idx_Users_ID ON ProductSeller(Users_ID) " +
             "CREATE INDEX idx_Product_ID ON ProductSeller(Product_ID)";
+
+    private final String indexItemCart = "CREATE INDEX idx_id_Cart ON itemCart(id_Cart) " +
+            "CREATE INDEX idx_product_ID ON itemCart(Product_ID) " +
+            "CREATE INDEX idx_User_ID ON itemCart(Users_ID)";
+
+    private final String indexMessenger = "CREATE INDEX idx_Status ON Messenger(Statuss)" +
+            " CREATE INDEX idx_sentDate ON Messenger(SentDate) " +
+            "CREATE INDEX idx_Account_ID ON Messenger(Account_ID)";
+    //---------------------------- TRIGGER ---------------------------------------
     private final String TriggerOne = "CREATE TRIGGER TRIG_Update_MoneySeller ON OrderDetails" +
             " FOR INSERT " +
             " AS" +
@@ -627,11 +697,11 @@ public class CreateSQL {
             "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    " +
             "    UPDATE Product" +
-            "    SET Sold = (SELECT SUM(Quantity) FROM OrderDetails WHERE Product_ID = Product.MaSP)" +
+            "    SET Sold += (SELECT (Quantity) FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    " +
             "    UPDATE Product" +
-            "    SET TotalRevenue = (SELECT SUM(Quantity*Price) FROM OrderDetails WHERE Product_ID = Product.MaSP)" +
+            "    SET TotalRevenue += (SELECT SUM(Quantity*Price) FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "END";
 
@@ -644,6 +714,17 @@ public class CreateSQL {
             "    WHERE Account.ID = (SELECT Users_ID FROM inserted) " +
             "END";
 
+    private final String TriggerUpdateVoucher = "CREATE TRIGGER Trig_UpdateVoucher ON Orders " +
+            "FOR INSERT " +
+            "AS " +
+            "BEGIN " +
+            " IF exists (SELECT MaVoucher FROM inserted) " +
+            " BEGIN " +
+            " UPDATE Voucher " +
+            "            SET SoLuong = SoLuong-1 " +
+            "             WHERE Voucher.MaVoucher = (SELECT MaVoucher From inserted) " +
+            " END " +
+            "END";
     private final String proc_getProductOfPages = "CREATE PROC proc_getProductOfPages " +
             " @Category_ID INT," +
             " @Offset int, " +
@@ -655,7 +736,7 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE Category_ID = @Category_ID " +
             " AND p.Activity = 'ON'" +
-            " ORDER BY MaSP" +
+            " ORDER BY TotalRevenue" +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -670,7 +751,7 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE p.TenSP LIKE @nameProduct " +
             " AND p.Activity = 'ON' " +
-            " ORDER BY MaSP " +
+            " ORDER BY TotalRevenue " +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -684,7 +765,7 @@ public class CreateSQL {
             " ON Product.MaSP = ProductSeller.Product_ID " +
             " AND ProductSeller.Users_ID = @User_ID " +
             " AND Product.Activity = 'ON' " +
-            " ORDER BY MaSP " +
+            " ORDER BY TotalRevenue " +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 

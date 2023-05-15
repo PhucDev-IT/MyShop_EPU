@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.model.User;
 import com.epu.oop.myshop.model.VoucherModel;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -52,7 +53,10 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
     public List<VoucherModel> SelectAll() {
         List<VoucherModel> list = new ArrayList<>();
 
-        String sql = "SELECT * FROM Voucher";
+        String sql = "SELECT Voucher.*, Users.Email" +
+                " FROM Voucher" +
+                " LEFT JOIN VoucherUser ON Voucher.MaVoucher = VoucherUser.MaVoucher" +
+                " LEFT JOIN Users ON VoucherUser.ID_User = Users.Account_ID;";
 
         try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -66,8 +70,8 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
                 String ImgVoucher = rs.getString("ImgVoucher");
                 Date NgayThem = rs.getDate("NgayBatDau");
                 Date NgayKetThuc = rs.getDate("NgayKetThuc");
-
-                list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc));
+                String email = rs.getString("Email");
+                list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc,new User(email)));
             }
 
         }catch (SQLException e) {
@@ -83,12 +87,74 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
     }
 
     @Override
-    public int Update(VoucherModel voucherModel) {
-        return 0;
+    public int Update(VoucherModel voucherModel) throws SQLException {
+        String sql = "UPDATE Voucher" +
+                " SET TileGiamGia = ? ," +
+                " SoTienGiamGia = ? ," +
+                " SoLuong = ?, " +
+                " NoiDung = ?," +
+                " ImgVoucher = ?," +
+                " NgayBatDau = ?," +
+                " NgayKetThuc = ? " +
+                " WHERE MaVoucher = ?";
+        Connection connection = null;
+        try{
+            connection = jdbcUtil.getConnection();
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setFloat(1,voucherModel.getTiLeGiamGia());
+            statement.setBigDecimal(2,voucherModel.getSoTienGiam());
+            statement.setInt(3,voucherModel.getSoLuong());
+            statement.setString(4,voucherModel.getNoiDung());
+            statement.setString(5,voucherModel.getImgVoucher());
+            statement.setDate(6,voucherModel.getNgayBatDau());
+            statement.setDate(7,voucherModel.getNgayKetThuc());
+            statement.setString(8,voucherModel.getMaVoucher());
+            statement.executeUpdate();
+
+            connection.commit();
+            statement.close();
+
+        } catch (SQLException e) {
+            if(connection!=null)
+            {
+                connection.rollback();
+                System.out.println("Roll back: "+e.getMessage());
+            }
+            return 0;
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+
+        return 1;
     }
 
     @Override
-    public int Delete(VoucherModel voucherModel) {
+    public int Delete(VoucherModel voucherModel)  {
+
+        String sql = "BEGIN TRANSACTION " +
+                " IF EXISTS(SELECT * FROM orders WHERE MaVoucher = ?)" +
+                " BEGIN" +
+                "    UPDATE Voucher SET SoLuong = -1 WHERE MaVoucher = ?" +
+                " END" +
+                " ELSE" +
+                " BEGIN" +
+                "    DELETE FROM Voucher WHERE MaVoucher = ?" +
+                " END" +
+                " COMMIT TRANSACTION";
+        try{
+            Connection connection = jdbcUtil.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1,voucherModel.getMaVoucher());
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
         return 0;
     }
 
@@ -98,7 +164,8 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
 
         String sql = "SELECT * FROM voucher " +
                 "WHERE NgayKetThuc >= GETDATE() " +
-                "AND NgayBatDau <= GETDATE() " +
+                "AND NgayBatDau <= GETDATE()" +
+                " AND SoLuong > 0 " +
                 "AND ( MaVoucher NOT IN (SELECT MaVoucher FROM orders " +
                 "                       WHERE Users_ID = ?" +
                 "                       AND MaVoucher IS NOT NULL) " +

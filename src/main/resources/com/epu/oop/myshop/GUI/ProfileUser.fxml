@@ -139,7 +139,10 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <JFXTextField fx:id="Jtxt_HoTen" layoutX="173.0" layoutY="128.0" prefHeight="31.0" prefWidth="194.0" />
+            <JFXTextField fx:id="Jtxt_HoTen" layoutX="173.0" layoutY="128.0" prefHeight="31.0" prefWidth="194.0">
+               <font>
+                  <Font name="Calibri" size="16.0" />
+               </font></JFXTextField>
             <Label layoutX="88.0" layoutY="200.0" text="Giới Tính:">
                <font>
                   <Font name="System Bold" size="15.0" />
@@ -170,7 +173,7 @@
             </Label>
             <Label fx:id="email_label" layoutX="167.0" layoutY="426.0" prefHeight="21.0" prefWidth="205.0">
                <font>
-                  <Font name="System Bold" size="15.0" />
+                  <Font name="Calibri" size="16.0" />
                </font>
             </Label>
             <Label layoutX="88.0" layoutY="475.0" prefHeight="21.0" prefWidth="105.0" text="Số Điện Thoại:">
@@ -205,14 +208,20 @@
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></JFXTextField>
-            <JFXTextField fx:id="Jtxt_CCCD" layoutX="174.0" layoutY="359.0" prefHeight="31.0" prefWidth="205.0" />
-            <JFXTextField fx:id="Jtxt_SDT" layoutX="213.0" layoutY="467.0" />
-            <JFXButton fx:id="btn_updateProfile" layoutX="507.0" layoutY="510.0" prefHeight="31.0" prefWidth="142.0" ripplerFill="#88e19a" style="-fx-background-color: #CCFF66;" text="Cập nhật" />
+            <JFXTextField fx:id="Jtxt_CCCD" layoutX="174.0" layoutY="359.0" prefHeight="31.0" prefWidth="205.0">
+               <font>
+                  <Font name="Calibri" size="16.0" />
+               </font></JFXTextField>
+            <JFXTextField fx:id="Jtxt_SDT" layoutX="213.0" layoutY="467.0">
+               <font>
+                  <Font name="Calibri" size="16.0" />
+               </font></JFXTextField>
+            <JFXButton fx:id="btn_updateProfile" layoutX="507.0" layoutY="510.0" onAction="#updateProfile" prefHeight="31.0" prefWidth="142.0" ripplerFill="#88e19a" style="-fx-background-color: #CCFF66;" text="Cập nhật" />
             <Separator layoutX="79.0" layoutY="87.0" prefHeight="4.0" prefWidth="99.0" />
             <Label layoutX="194.0" layoutY="77.0" text="Thông Tin Cá Nhân" />
             <Separator layoutX="335.0" layoutY="88.0" prefHeight="4.0" prefWidth="99.0" />
             <DatePicker fx:id="ngaySinh_datepicker" layoutX="175.0" layoutY="254.0" stylesheets="@../StyleCSS/Profile.css" />
-            <JFXButton layoutX="877.0" layoutY="242.0" ripplerFill="#dd3838" style="-fx-background-color: #e2ffc7;" text="Đổi mật khẩu" />
+            <JFXButton fx:id="btnChane_password" layoutX="877.0" layoutY="242.0" onAction="#ChangePassword" ripplerFill="#dd3838" style="-fx-background-color: #e2ffc7;" text="Đổi mật khẩu" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;">
@@ -257,7 +266,7 @@
                   <ImageView fx:id="bank_img" fitHeight="46.0" fitWidth="50.0" layoutX="22.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane layoutX="210.0" layoutY="322.0" prefHeight="87.0" prefWidth="299.0" styleClass="pane-main" stylesheets="@../StyleCSS/Profile.css">
+            <Pane fx:id="changePass_pane_btn" layoutX="210.0" layoutY="322.0" onMouseClicked="#clickConverForm" prefHeight="87.0" prefWidth="299.0" styleClass="pane-main" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="83.0" layoutY="30.0" text="Đổi mật khẩu">
                      <font>
@@ -702,7 +711,7 @@
                         <Font size="14.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton fx:id="soDuTK_btn" layoutX="10.0" layoutY="351.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="    Số dư TK       " textOverrun="LEADING_ELLIPSIS">
+                  <JFXButton fx:id="soDuTK_btn" layoutX="10.0" layoutY="351.0" onMouseClicked="#clickConverForm" prefHeight="63.0" prefWidth="169.0" styleClass="button-aside" stylesheets="@../StyleCSS/Profile.css" text="    Ví MyVi       " textOverrun="LEADING_ELLIPSIS">
                      <graphic>
                         <ImageView fx:id="img_SoDuTK" fitHeight="30.0" fitWidth="35.0" layoutX="14.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" />
                      </graphic>

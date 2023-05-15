@@ -74,12 +74,7 @@ public class ItemProductsInBanHang {
         SoLuong_label.setText(p.getQuantity()+"");
 
         DaBan_Label.setText(p.getSold()+"");
-
-        if(p.getTotalRevenue()!=null){
             DoanhThu_Label.setText(App.numf.format(p.getTotalRevenue())+"đ");
-        }else {
-            DoanhThu_Label.setText("0đ");
-        }
         GiaBan_label.setText(App.numf.format(p.getPrice())+ "đ");
 
     }

@@ -1,6 +1,7 @@
 package com.epu.oop.myshop.Dao;
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.*;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -45,11 +46,11 @@ public class Order_Dao implements Dao_Interface<Order> {
 
 
     //Thanh toán hóa đơn băng ngân hàng
-    public  boolean OrderDetailsPayByBank(Order hoaDon, OrderDetails cthd, PaymentHistory paymentHistory) throws SQLException {
+    public  boolean OrderDetailsPayByBank(Order hoaDon, List<itemCartModel> list, PaymentHistory paymentHistory) throws SQLException {
         PreparedStatement preOrder = null;
         PreparedStatement preDetails = null;
         PreparedStatement prePaymentHistory = null;
-
+        PreparedStatement preMessenge = null;
         try {
             openConnection();
             connection.setAutoCommit(false); // Bắt đầu transaction
@@ -72,7 +73,8 @@ public class Order_Dao implements Dao_Interface<Order> {
             String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
                     " VALUES (?,?,?,?,?,?)";
 
-
+            String sqlMess = "INSERT INTO Messenger(Sender,Content,Statuss,SentDate,SrcIcon,Account_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
 
             preOrder.setDate(1, hoaDon.getNgayLapHD());
             preOrder.setBigDecimal(2, hoaDon.getTongTien());
@@ -91,12 +93,16 @@ public class Order_Dao implements Dao_Interface<Order> {
                 }
             }
             preDetails = connection.prepareStatement(sqlOrderDtails);
-            preDetails.setInt(1, cthd.getProduct().getID());
-            preDetails.setInt(2, hoaDonId);
-            preDetails.setFloat(3, cthd.getQuantity());
-            preDetails.setBigDecimal(4, new BigDecimal(cthd.getPrice() + ""));
+            for(itemCartModel it:list)
+            {
+                preDetails.setInt(1,it.getProduct().getID());
+                preDetails.setInt(2,hoaDonId);
+                preDetails.setFloat(3,it.getQuantity());
+                preDetails.setBigDecimal(4,new BigDecimal(it.getProduct().getPrice()+""));
+                preDetails.executeUpdate();
+            }
 
-            preDetails.executeUpdate();
+
 
             prePaymentHistory = connection.prepareStatement(sqlPayment);
             prePaymentHistory.setString(1, paymentHistory.getTenGiaoDich());
@@ -108,6 +114,16 @@ public class Order_Dao implements Dao_Interface<Order> {
 
             prePaymentHistory.executeUpdate();
 
+            preMessenge = connection.prepareStatement(sqlMess);
+            preMessenge.setString(1,"Tin nhắn từ hệ thống");
+            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng! \nMã Hóa Đơn của bạn là: 0"+hoaDonId+" - Tổng thanh toán: "+ App.numf.format(hoaDon.getThanhTien())+" đồng");
+            preMessenge.setBoolean(3,false);
+            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
+            preMessenge.setString(5,null);
+            preMessenge.setInt(6,hoaDon.getUser().getID());
+
+            preMessenge.executeUpdate();
+
             connection.commit();
             System.out.println("Theem hóa đơn thành công");
         } catch(SQLException ex){
@@ -115,7 +131,8 @@ public class Order_Dao implements Dao_Interface<Order> {
                         connection.rollback();
                         System.out.println("Rolled back.");
                 }
-            System.out.println("Lỗi: "+ ex.getMessage());
+           // System.out.println("Lỗi: "+ ex.getMessage());
+            ex.printStackTrace();
             return false;
             } finally{
 
@@ -129,6 +146,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                     if(prePaymentHistory!=null){
                         prePaymentHistory.close();
                     }
+                    if(preMessenge!=null)   preMessenge.close();
                     connection.setAutoCommit(true);
                 closeConnection();
             }
@@ -136,12 +154,11 @@ public class Order_Dao implements Dao_Interface<Order> {
     }
 
         //Hóa đơn có tại nhà
-    public boolean OrderDetailsPayAtHome(Order hoaDon, OrderDetails cthd) throws SQLException {
+    public boolean OrderDetailsPayAtHome(Order hoaDon,List<itemCartModel> list) throws SQLException {
         PreparedStatement orderDetails = null;
         PreparedStatement order = null;
+        PreparedStatement preMessenge = null;
 
-        int checkOrder = 0;
-        int checkDetails=0;
 
         try {
            openConnection();
@@ -161,13 +178,14 @@ public class Order_Dao implements Dao_Interface<Order> {
 
             String sqlOrderDtails = "INSERT INTO orderDetails(Product_ID,Order_ID,Quantity,Price)" +
                     " VALUES (?,?,?,?)";
-
+            String sqlMess = "INSERT INTO Messenger(Sender,Content,Statuss,SentDate,SrcIcon,Account_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
             order.setDate(1,hoaDon.getNgayLapHD());
             order.setBigDecimal(2,hoaDon.getTongTien());
             order.setBigDecimal(3,hoaDon.getThanhTien());
             order.setInt(4,hoaDon.getUser().getID());
 
-            checkOrder = order.executeUpdate();
+            order.executeUpdate();
 
             int hoaDonId;
             //phương thức getGeneratedKeys() để lấy giá trị ID của bản ghi vừa được chèn vào.
@@ -179,13 +197,25 @@ public class Order_Dao implements Dao_Interface<Order> {
                     throw new SQLException("Creating order failed, no ID obtained.");
                 }
             }
-            orderDetails = connection.prepareStatement(sqlOrderDtails);
-            orderDetails.setInt(1,cthd.getProduct().getID());
-            orderDetails.setInt(2,hoaDonId);
-            orderDetails.setFloat(3,cthd.getQuantity());
-            orderDetails.setBigDecimal(4,new BigDecimal(cthd.getPrice()+""));
+            for(itemCartModel it:list)
+            {
+                orderDetails = connection.prepareStatement(sqlOrderDtails);
+                orderDetails.setInt(1,it.getProduct().getID());
+                orderDetails.setInt(2,hoaDonId);
+                orderDetails.setFloat(3,it.getQuantity());
+                orderDetails.setBigDecimal(4,new BigDecimal(it.getProduct().getPrice()+""));
+                orderDetails.executeUpdate();
+            }
 
-            checkDetails = orderDetails.executeUpdate();
+            preMessenge = connection.prepareStatement(sqlMess);
+            preMessenge.setString(1,"Tin nhắn từ hệ thống");
+            preMessenge.setString(2,"Cảm ơn bạn đã mua hàng! \nMã Hóa Đơn của bạn là: 0"+hoaDonId+" - Tổng thanh toán: "+ App.numf.format(hoaDon.getThanhTien())+" đồng");
+            preMessenge.setBoolean(3,false);
+            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
+            preMessenge.setString(5,"");
+            preMessenge.setInt(6,hoaDon.getUser().getID());
+
+            preMessenge.executeUpdate();
             connection.commit();
             System.out.println("Thành công");
         } catch (SQLException ex) {
@@ -194,6 +224,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 System.out.println("Rolled back.");
             }
             System.out.println("Lỗi: "+ ex.getMessage());
+            return false;
         } finally {
                 if (order != null) {
                     order.close();
@@ -202,11 +233,12 @@ public class Order_Dao implements Dao_Interface<Order> {
                 if (orderDetails != null) {
                     orderDetails.close();
                 }
+                if(preMessenge!=null)   preMessenge.close();
 
                 connection.setAutoCommit(true);
                 closeConnection();
         }
-        return checkOrder>0 && checkDetails>0;
+        return true;
     }
 
     @Override
@@ -225,7 +257,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 BigDecimal ThanhTien = rs.getBigDecimal("ThanhTien");
                 int Users_ID = rs.getInt("Users_ID");
 
-                list.add(new Order(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID)));
+                list.add(new Order(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID,"")));
             }
             statement.close();
         }catch (SQLException e){

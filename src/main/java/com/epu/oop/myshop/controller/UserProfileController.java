@@ -69,6 +69,8 @@ public class UserProfileController implements Initializable {
 
     // ------------------------------------- DASBROAD ---------------------------------------------------
     @FXML
+    private Pane changePass_pane_btn;
+    @FXML
     private Pane paneLienKetBank_btn;
     @FXML
     private Pane showVoucher_pane_btn;
@@ -324,13 +326,7 @@ public class UserProfileController implements Initializable {
     private JFXTextField Jtxt_SDT;
 
     @FXML
-    private JFXTextField Jtxt_SoTaiKhoan;
-
-    @FXML
-    private JFXTextField Jtxt_TenNganHang;
-
-    @FXML
-    private JFXTextField Jtxt_ChuSoHuu;
+    private JFXButton btnChane_password;
 
     @FXML
     private DatePicker ngaySinh_datepicker;
@@ -464,6 +460,8 @@ public class UserProfileController implements Initializable {
     private Product_Dao product_dao = Product_Dao.getInstance(connectionPool);
     private PaymentHistory_Dao paymentHistory_dao = PaymentHistory_Dao.getInstance(connectionPool);
     private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
+
+    private MessengeDao messengeDao = MessengeDao.getInstance(connectionPool);
     private Bank bank;
     private User user;
 
@@ -885,6 +883,9 @@ public class UserProfileController implements Initializable {
         }
         if(bank_Dao.Insert(bank)){
             AlertNotification.showAlertSucces("Thêm thành công","");
+            btnAddBank.setDisable(true);
+            btnUpdateBank.setDisable(false);
+            btnDeleteBank.setDisable(false);
         }else{
             AlertNotification.showAlertError("Có lỗi xảy ra, thử lại sau!","");
         }
@@ -906,6 +907,7 @@ public class UserProfileController implements Initializable {
                 "Đồng ý, việc mua bán có thể bị gián đoạn")){
             if(bank_Dao.Delete(bank)>0){
                 AlertNotification.showAlertSucces("Xóa thành công","");
+                bank=null;
                 clearDataBank();
             }else{
                 AlertNotification.showAlertError("Có lỗi xảy ra, thử lại sau!","");
@@ -955,7 +957,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    public void withdrawMoney(ActionEvent e) {
+    public void withdrawMoney(ActionEvent e) throws SQLException {
 
         if (isStringEmpty(txtSoTienRut_RTForm.getText())) {
             AlertNotification.showAlertWarning("", "Nhập số tiền muốn rút!");
@@ -972,10 +974,10 @@ public class UserProfileController implements Initializable {
                     String pass = AlertNotification.textInputDialog("Rút tiền", "Nhập mật khẩu", "");
                     if (Temp.account.getPassword().equals(pass)) {
                         PaymentHistory paymentBank = new PaymentHistory("Rút tiền", "Rút về ngân hàng", soTienRut,
-                                new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", Temp.user, null);
+                                new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", user, null);
                         Temp.account.setMoney(Temp.account.getMoney().subtract(soTienRut));
 
-                        if (account_dao.Update(Temp.account) > 0) {
+                        if (account_dao.transferMoney(Temp.account,paymentBank)) {
                             labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
                             AlertNotification.showAlertSucces("Rút tiền thành công", "");
                             refreshPayment(e);
@@ -999,26 +1001,21 @@ public class UserProfileController implements Initializable {
 
                 String pass = AlertNotification.textInputDialog("Chuyển tiền", "Nhập mật khẩu", "");
                 if (Temp.account.getPassword().equals(pass)) {
-
-                    Account a = account_dao.SelectByID(new Account(0, taiKhoanNhan_txt.getText(), ""));
-                    if (a == null) {
-                        AlertNotification.showAlertWarning("Người dùng không tồn tại", "");
+                    Account nguoiNhan = new Account(0, taiKhoanNhan_txt.getText(), "");
+                    PaymentHistory pm = new PaymentHistory("Chuyển tiền", user.getFullName(), soTienChuyen, new Date(System.currentTimeMillis()),
+                            "/com/epu/oop/myshop/image/profile/iconClickChuyenTien.png", user, nguoiNhan);
+                    Temp.account.setMoney(Temp.account.getMoney().subtract(soTienChuyen));
+                    nguoiNhan.setMoney(soTienChuyen);
+                    if (account_dao.UpdatetransferMoney(Temp.account, nguoiNhan, pm)) {
+                        AlertNotification.showAlertSucces("Chuyển tiền thành công", "");
+                        labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
+                        refreshPayment(e);
                     } else {
-                        PaymentHistory pm = new PaymentHistory("Chuyển tiền",user.getFullName(),soTienChuyen,new Date(System.currentTimeMillis()),
-                                "/com/epu/oop/myshop/image/profile/iconClickChuyenTien.png",user,a);
-                        Temp.account.setMoney(Temp.account.getMoney().subtract(soTienChuyen));
-                        a.setMoney(a.getMoney().add(soTienChuyen));
-                        if (account_dao.UpdatetransferMoney(Temp.account, a,pm)) {
-                            AlertNotification.showAlertSucces("Chuyển tiền thành công", "");
-                            labsoDu_RutTienForm.setText(App.numf.format(Temp.account.getMoney()));
-                            refreshPayment(e);
-                        } else {
-                            AlertNotification.showAlertError("Có lỗi xảy ra", "Thử lại sau!");
-                        }
+                        AlertNotification.showAlertError("Có lỗi xảy ra", "Người dùng không tồn tại!");
                     }
-
                 }
-
+            }else {
+                AlertNotification.showAlertWarning("","Số dư không đủ");
             }
 
         }
@@ -1033,7 +1030,7 @@ public class UserProfileController implements Initializable {
             Temp.account.setMoney(Temp.account.getMoney().add(soTienNap));
             PaymentHistory pm = new PaymentHistory("Nạp tiền","Từ STK: "+bank.getSoTaiKhoan(),soTienNap,new Date(System.currentTimeMillis()),
                     "/com/epu/oop/myshop/image/profile/iconNapTien.png",user,null);
-            if(account_dao.Update(Temp.account)>0 && paymentHistory_dao.PaymentMyShop(pm)>0){
+            if(account_dao.transferMoney(Temp.account,pm)){
                 AlertNotification.showAlertSucces("Nạp tiền thành công","Cảm ơn bạn đã đồng hành với chúng tôi");
                 refreshPayment(e);
             }else{
@@ -1141,6 +1138,108 @@ public class UserProfileController implements Initializable {
         }else if(e.getSource() == RutTienPane){
 
         }else if(e.getSource()==btnBackRutTien){
+
+        }
+    }
+    //--------------------------------------- SỬA THÔNG TIN CÁ NHÂN --------------------------------------------
+    public void hiddenInformation(boolean result){
+        Jtxt_Pass.setText("******");
+        Jtxt_HoTen.setEditable(result);
+        JRadion_Nu.setDisable(!result);
+        JRadion_Khac.setDisable(!result);
+        JRadion_Nam.setDisable(!result);
+        ngaySinh_datepicker.setDisable(!result);
+        Jcombox_diaChi.setDisable(!result);
+        Jtxt_CCCD.setEditable(result);
+        Jtxt_SDT.setEditable(result);
+        Jtxt_Pass.setEditable(!result);
+        btnChane_password.setVisible(!result);
+        btn_updateProfile.setVisible(result);
+    }
+
+    public void showInformationUser()
+    {
+        Jtxt_HoTen.setText(user.getFullName());
+        if(user.getGender().equals("Nam"))
+        {
+            JRadion_Nam.setSelected(true);
+        }else if(user.getGender().equals("Nữ"))
+        {
+            JRadion_Nu.setSelected(true);
+        }else{
+            JRadion_Khac.setSelected(true);
+        }
+
+        if(user.getDateOfBirth()!=null){
+            ngaySinh_datepicker.setValue(user.getDateOfBirth().toLocalDate());
+        }
+        Jcombox_diaChi.setValue(user.getAddress());
+        Jtxt_CCCD.setText(user.getCanCuocCongDan());
+        Jtxt_SDT.setText(user.getNumberPhone());
+        email_label.setText(user.getEmail());
+        userName_label.setText(user.getEmail());
+    }
+    public void updateProfile(ActionEvent e)
+    {
+        String hoTen = Jtxt_HoTen.getText();
+
+        if(isStringEmpty(hoTen)){
+            AlertNotification.showAlertWarning("","Họ tên không được phép trống");
+            return;
+        }
+
+        String gioiTinh = Khac;
+        Date ngaySinh = null;
+
+        if (JRadion_Nu.isSelected()) {
+            gioiTinh = Nu;
+        } else if (JRadion_Nam.isSelected()) {
+            gioiTinh = Nam;
+        }
+
+        // Chuyển đổi datepicker thành Date của SQL
+        if (ngaySinh_datepicker.getValue() != null) {
+            LocalDate mydate = ngaySinh_datepicker.getValue();
+            ngaySinh = Date.valueOf(mydate);
+        }
+        String diaChi = Jcombox_diaChi.getValue();
+        String CCCD = Jtxt_CCCD.getText();
+        String SDT = Jtxt_SDT.getText();
+
+        User us = new User(Temp.account.getID(), hoTen, gioiTinh, ngaySinh, diaChi, CCCD, user.getEmail(), SDT,
+                UrlAvatar);
+        if(userDao.Update(us)>0){
+            AlertNotification.showAlertSucces("","Cập nhật thành công");
+            user = us;
+        }else {
+            AlertNotification.showAlertError("","Có lỗi xảy ra");
+        }
+
+    }
+    //---------------------------------- ĐỔI MẬT KHẨU -----------------------------------------
+    public void showChangePassForm()
+    {
+        hiddenInformation(false);
+        showInformationUser();
+        editProfile_Form.setVisible(true);
+    }
+
+    public void ChangePassword(ActionEvent e)
+    {
+        if(!isStringEmpty(Jtxt_Pass.getText())){
+                String pass = AlertNotification.textInputDialog("Đổi mật khẩu","Nhập mật khẩu hiện tại","");
+                if(Temp.account.getPassword().equals(pass)){
+                    String oldPass = Temp.account.getPassword();
+                    Temp.account.setPassword(Jtxt_Pass.getText());
+                    if(account_dao.Update(Temp.account)>0){
+                        AlertNotification.showAlertSucces("","Đổi mật khẩu thành công");
+                    }else {
+                        AlertNotification.showAlertError("","Có lỗi xảy ra!");
+                        Temp.account.setPassword(oldPass);
+                    }
+                }else {
+                    AlertNotification.showAlertError("","Mật khẩu không chính xác");
+                }
 
         }
     }
@@ -1321,7 +1420,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    public void checkProfile(){
+    public void checkProfile() throws SQLException {
         if(bank==null || isStringEmpty(user.getFullName()) || isStringEmpty(user.getAddress()) || user.getDateOfBirth()==null
         || isStringEmpty(user.getCanCuocCongDan()) || isStringEmpty(user.getNumberPhone())){
             AlertNotification.showAlertWarning("","Vui lòng cập nhật đầy đủ thông tin\nVà liên kết ngân hàng để tham gia bán hàng");
@@ -1333,18 +1432,23 @@ public class UserProfileController implements Initializable {
             if(age>=18){
                 Temp.account.setPhanQuyen("Seller");
                 if(account_dao.Update(Temp.account)>0){
+                    Messenger messenger = new Messenger(0,null,"Hệ thống","Chúc mừng bạn đã trở thành người bán hàng của chúng tôi" ,
+                            new Date(System.currentTimeMillis()),false,user.getID());
                     Anch_ThamGiaBanHang.setVisible(false);
                     AlertNotification.showAlertSucces("Chúc mừng bạn đã trở thành người bán hàng.","Cảm ơn bạn đã đồng hành cùng chúng tôi");
-
+                    dashboard_form.setVisible(true);
+                    messengeDao.Insert(messenger);
                 }else{
                     AlertNotification.showAlertError("","Có lỗi xảy ra");
                     Temp.account.setPhanQuyen("Member");
                 }
+            }else{
+                AlertNotification.showAlertWarning("","Bạn chưa đủ 18+");
             }
         }
     }
 
-    public void btnJoinSell(ActionEvent e){
+    public void btnJoinSell(ActionEvent e) throws SQLException {
         if(e.getSource() == btnRequest){
             if(checkBoxJoinSell.isSelected()){
                 checkProfile();
@@ -1357,7 +1461,7 @@ public class UserProfileController implements Initializable {
         }
     }
 
-    //--------------------------- SỬA THÔNG TIN  CÁ NHÂN-----------------------------------------------
+
 
     private Object[] objects;
     public void calculateMoneyMain() throws SQLException {
@@ -1399,7 +1503,7 @@ public class UserProfileController implements Initializable {
             protected Void call() throws Exception {
 
                 if (!isCancelled() || !isStopped) {
-                    objects = product_dao.sumTotalOrder(new User(Temp.account.getID()));
+                    objects = product_dao.sumTotalOrder(new User(Temp.account.getID(),""));
                 }
                 //Thread.sleep(1000);
                 Platform.runLater(() -> {
@@ -1434,12 +1538,7 @@ public class UserProfileController implements Initializable {
         });
     }
     public void getObjectUser(){
-        if(Temp.user!=null){
-            user = Temp.user;
-
-        }else{
-            user = userDao.SelectByID(new User(Temp.account.getID()));
-        }
+            user = userDao.SelectByID(new User(Temp.account.getID(),""));
         try {
             bank = bank_Dao.SelectByID(new Bank(user));
         } catch (SQLException e) {
@@ -1475,18 +1574,21 @@ public class UserProfileController implements Initializable {
 
         }else if(event.getSource() == editProfile_btn){
             editProfile_Form.setVisible(true);
-
+            hiddenInformation(true);
+            showInformationUser();
         }else if(event.getSource() == sell_btn){
             if(Temp.account.getPhanQuyen().equals("Seller")){
                 setValueCategory();
                 banHang_Form.setVisible(true);
                 refreshDataInSell(event);
             }else{
+                dashboard_form.setVisible(true);
                 AlertNotification.showAlertWarning("","Đăng ký tở thành người bán cùng chúng tôi");
             }
 
         }else if(event.getSource() == soDuTK_btn){
             soDuTK_Form.setVisible(true);
+            showDataSoDuTaiKhoan();
             refreshPayment(event);
         }else if (event.getSource() == MyShop_txt) {
             stopTask();
@@ -1507,6 +1609,8 @@ public class UserProfileController implements Initializable {
                 Anch_ThamGiaBanHang.setVisible(true);
                 loadingDataJoinSell();
             }
+        }else if(event.getSource() == changePass_pane_btn){
+            showChangePassForm();
         }
     }
 
@@ -1583,6 +1687,7 @@ public class UserProfileController implements Initializable {
 
         DateTime_label.setText(App.timeDay);
         loadImage();
+        defaultAddress();
 
         Platform.runLater(() -> getObjectUser());
         if(Temp.account.getPhanQuyen().equals("Seller")) {
@@ -1597,7 +1702,19 @@ public class UserProfileController implements Initializable {
 
     }
 
+    public void defaultAddress() {
+        ObservableList<String> address = FXCollections.observableArrayList("An Giang", "Bà Rịa – Vũng Tàu", "Bạc Liêu",
+                "Bắc Giang", "Bắc Kạn", "Bắc Ninh", "Bến Tre", "Bình Dương", "Bình Định", "Bình Phước", "Bình Thuận",
+                "Cà Mau", "Cao Bằng", "Cần Thơ", "Đà Nẵng", "Đắk Lắk", "Đắk Nông", "Điện Biên", "Đồng Nai", "Đồng Tháp",
+                "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội", "Hà Tĩnh", "Hải Dương", "Hải Phòng", "Hậu Giang", "Hòa Bình",
+                "Thành phố Hồ Chí Minh", "Hưng Yên", "Khánh Hòa", "Kiên Giang", "Kon Tum", "Lai Châu", "Lạng Sơn",
+                "Lào Cai", "Lâm Đồng", "Long An", "Nam Định", "Nghệ An", "Ninh Bình", "Ninh Thuận", "Phú Thọ",
+                "Phú Yên", "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh", "Quảng Trị", "Sóc Trăng", "Sơn La",
+                "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế", "Tiền Giang", "Trà Vinh",
+                "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái");
 
+        Jcombox_diaChi.setItems(address);
+    }
     public void clearScene(){
         listPaymentHistory.clear();
         listProducts.clear();
