@@ -54,11 +54,6 @@
                               <Font name="Arial Bold" size="15.0" />
                            </font>
                         </JFXButton>
-                        <JFXButton fx:id="Notification_btn" layoutX="10.0" layoutY="226.0" onAction="#ConverScene" prefHeight="72.0" prefWidth="183.0" stylesheets="@../StyleCSS/Admin.css" text="Thông báo" textFill="WHITE">
-                           <font>
-                              <Font name="Arial Bold" size="15.0" />
-                           </font>
-                        </JFXButton>
                         <JFXButton fx:id="logout_btn" layoutX="10.0" layoutY="298.0" onAction="#ConverScene" prefHeight="72.0" prefWidth="183.0" stylesheets="@../StyleCSS/Admin.css" text="Đăng Xuất" textFill="WHITE">
                            <font>
                               <Font name="Arial Bold" size="15.0" />
@@ -229,5 +224,14 @@
             </AnchorPane>
          </center>
       </BorderPane>
+<<<<<<< Updated upstream
+=======
+      <AnchorPane fx:id="paneLoading" prefHeight="650.0" prefWidth="1200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ImageView fx:id="imgLoading" fitHeight="62.0" fitWidth="79.0" layoutX="500.0" layoutY="273.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </AnchorPane>
+      <ImageView fx:id="imgHome" fitHeight="45.0" fitWidth="58.0" layoutX="15.0" layoutY="1.0" onMouseClicked="#goHome" pickOnBounds="true" preserveRatio="true" />
+>>>>>>> Stashed changes
    </children>
 </AnchorPane>

@@ -412,7 +412,7 @@ public class Product_Dao implements Dao_Interface<Product>{
                 "                 AND ProductSeller.Users_ID =?" +
                 "                AND Product.TenSP LIKE ?" +
                 "                 AND Product.Activity = 'ON'" +
-                "                 ORDER BY MaSP" +
+                "                 ORDER BY TotalRevenue DESC" +
                 "                 OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
         try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
@@ -443,6 +443,74 @@ public class Product_Dao implements Dao_Interface<Product>{
         return list;
     }
 
+<<<<<<< Updated upstream
+=======
+    //Lấy tất cả product có phân trang (ADMIN)
+    public List<Product> selectAllProductPage(AtomicInteger lastIndex) throws SQLException {
+        List<Product> list = new ArrayList<>();
+
+        String sql = "SELECT p.MaSP,p.TenSP,p.Price,p.Sold,p.TotalRevenue,p.SrcImg,u.Account_ID,u.FullName " +
+                " FROM Product p JOIN ProductSeller ps" +
+                " ON p.MaSP = ps.Product_ID" +
+                " AND Activity = 'ON'" +
+                " JOIN Users u ON ps.Users_ID = u.Account_ID" +
+                " ORDER BY TotalRevenue DESC" +
+                " OFFSET ? ROWS FETCH NEXT 10 ROWS ONLY  ";
+        openConnection();
+        try(PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1,lastIndex.get());
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                Product product = new Product();
+                product.setID(rs.getInt("MaSP"));
+                product.setTenSP(rs.getString("TenSP"));
+                product.setPrice(rs.getBigDecimal("Price"));
+                product.setSold(rs.getInt("sold"));
+                product.setTotalRevenue(rs.getBigDecimal("TotalRevenue"));
+                product.setSrcImg(rs.getString("SrcImg"));
+
+                User u = new User();
+                u.setID(rs.getInt("Account_ID"));
+                u.setFullName(rs.getString("FullName"));
+
+                product.setUser(u);
+
+                list.add(product);
+            }
+            rs.close();
+        }catch (SQLException e){
+            System.out.println("Có lỗi xảy ra "+e.getMessage());
+        }finally {
+            closeConnection();
+        }
+
+        return list;
+    }
+
+    //Lấy top 3 sản phẩm bán chạy
+    public Vector<Product> selectTopThreeProduct() throws SQLException {
+        Vector<Product> list = new Vector<>();
+
+        String sql = "select top(3) TenSP,Price,Sold,SrcImg from product " +
+                "order by Sold desc";
+        openConnection();
+        try(PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet rs = statement.executeQuery()){
+
+            while (rs.next()){
+                Product product = new Product();
+                product.setTenSP(rs.getString("TenSP"));
+                product.setPrice(rs.getBigDecimal("Price"));
+                product.setSold(rs.getInt("Sold"));
+                product.setSrcImg(rs.getString("SrcImg"));
+                list.add(product);
+            }
+        }finally {
+            closeConnection();
+        }
+        return list;
+    }
+>>>>>>> Stashed changes
 
 }
 

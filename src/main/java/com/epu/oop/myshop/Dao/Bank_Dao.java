@@ -88,7 +88,11 @@ public class Bank_Dao implements Dao_Interface<Bank> {
                 String tenChiNhanh = rs.getString("TenChiNhanh");
                 String SoCCCD = rs.getString("SoCCCD");
 
+<<<<<<< Updated upstream
                 bank = new Bank(SoTaiKhoan,TenNH,tenChiNhanh,ChuSoHuu,SoCCCD,new User(user_id));
+=======
+                bank = new Bank(SoTaiKhoan,tenChiNhanh,SoCCCD,TenNH,ChuSoHuu,new User(user_id,""));
+>>>>>>> Stashed changes
             }
             statement.close();
             rs.close();

@@ -1,7 +1,7 @@
 
 .nav-button:hover{
     -fx-pref-height: 30px;
-    -fx-background-color: #dfe7de;
+    -fx-background-color: #dfe7de !important;
 
 }
 .nav-container-list-item{

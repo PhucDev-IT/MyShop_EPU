@@ -20,7 +20,7 @@ public class ProductsOfMarketController {
     private ImageView imgProducts;
 
     @FXML
-    private Text nameProduct_txt;
+    private Label nameProduct_txt;
 
     @FXML
     private Label price;
@@ -52,7 +52,6 @@ public class ProductsOfMarketController {
             imgProducts.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
         }
         nameProduct_txt.setText((prod.getTenSP()));
-
         sold.setText(prod.getSold()+"");
 
         //Định dạng tiền tệ việt nam

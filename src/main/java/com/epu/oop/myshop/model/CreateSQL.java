@@ -1,8 +1,13 @@
 package com.epu.oop.myshop.model;
 
+<<<<<<< Updated upstream
 import com.epu.oop.myshop.Dao.Product_Dao;
+=======
+import com.epu.oop.myshop.Dao.VoucherDao;
+>>>>>>> Stashed changes
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.Map;
@@ -12,9 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CreateSQL {
     public static final String databaseName = "MyShop";
 
-    //public static final String url = "jdbc:mysql://localhost:3306/";
-   // public static final String driver = "com.mysql.jdbc.Driver";
-    private static final String url = "jdbc:sqlserver://localhost:1433;";
+    private static final String url = "jdbc:sqlserver://localhost:1433";
 
     public static final String urlConnect =  "jdbc:sqlserver://localhost:1433;databaseName="+databaseName;
     public static final String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
@@ -42,7 +45,9 @@ public class CreateSQL {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }finally {
-            conn.close();
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
@@ -111,8 +116,10 @@ public class CreateSQL {
             throw new RuntimeException(e);
         }
         finally {
-            conn.setAutoCommit(true);
-            conn.close();
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
         }
         return true;
     }
@@ -155,8 +162,10 @@ public class CreateSQL {
             if(stm!=null){
                 stm.close();
             }
-            connection.setAutoCommit(true);
-            connection.close();
+            if (connection != null) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return result>0;
     }
@@ -189,8 +198,10 @@ public class CreateSQL {
                 if (stm != null) {
                     stm.close();
                 }
-                connection.setAutoCommit(true);
-                connection.close();
+                if (connection != null) {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                }
             }
         return true;
     }
@@ -224,8 +235,10 @@ public class CreateSQL {
             if (stm != null) {
                 stm.close();
             }
-            connection.setAutoCommit(true);
-            connection.close();
+            if (connection != null) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return check.get() == true;
     }
@@ -258,8 +271,10 @@ public class CreateSQL {
             if (stm != null) {
                 stm.close();
             }
-            connection.setAutoCommit(true);
-            connection.close();
+            if (connection != null) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return true;
     }
@@ -323,9 +338,10 @@ public class CreateSQL {
 
             if(preProSeler!=null) preProSeler.close();
 
-            connection.setAutoCommit(true);
-
-            connection.close();
+            if (connection != null) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return check.get();
     }
@@ -395,8 +411,10 @@ public class CreateSQL {
                 preCategory.close();
             }
 
-            connection.setAutoCommit(true);
-            connection.close();
+            if (connection != null) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return true;
     }
@@ -404,8 +422,11 @@ public class CreateSQL {
     public void setDataOnDatabase() throws ClassNotFoundException, SQLException {
         Class.forName(driver);
         Connection connection = DriverManager.getConnection(urlConnect, userName, password);
-
+        String[] linkName = {"phone", "Laptop", "may-choi-game", "cham-soc-da", "trang-diem", "Nước hoa", "thực phẩm chức năng",
+                "thiết bị y tế", "quan-ao-nam", "giay-nam", "dong-ho", "", "thoi-trang-nu", "tui-xach-nu", "do-ngu-nu", "trang sức nữ", "xe-may"
+                , "oto", "", "phu-kien-the-thao", "", "Vali-túi xách", "kính mắt", "", ""};
         Random random = new Random();
+<<<<<<< Updated upstream
         for (int i = 1; i < 10000; i++) {
             Product product = new Product(0,"Sản phẩm " + i, (random.nextInt(9200) + 1), BigDecimal.valueOf(123 * i), "Không nói gì",
                     "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(24) + 1, new User(random.nextInt(3) + 2));
@@ -413,10 +434,37 @@ public class CreateSQL {
                 Insert(product,connection);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
+=======
+        int i=1;
+        for(String lastFileName : linkName){
+
+            File folder = new File("src/main/resources/com/epu/oop/myshop/image/Product/"+lastFileName);
+            File[] listOfFiles = folder.listFiles();
+            for (File file : listOfFiles) {
+                if (file.isFile()) {
+                    String fileName = file.getName();
+                    String nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+                    String filePath = "/" + file.getPath().substring(file.getPath().indexOf("com")).replace('\\', '/');
+
+                    int quantity = random.nextInt(4921)+4;
+                    BigDecimal total = new BigDecimal(quantity*0.5);
+                    Product product = new Product(0,nameWithoutExtension,random.nextInt(10000)+12,total,"Người bán không" +
+                            " nói gì",filePath,quantity,total.multiply(BigDecimal.valueOf(quantity)),i, new User(random.nextInt(3) + 2,""));
+
+                    try {
+                        Insert(product,connection);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+>>>>>>> Stashed changes
             }
-            System.out.println(i);
+            System.out.println(i++);
         }
-        connection.close();
+
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     public synchronized boolean Insert(Product t,Connection connection) throws SQLException {
@@ -486,10 +534,15 @@ public class CreateSQL {
             " Account_ID INT, " +
             " PRIMARY KEY(Account_ID)," +
             " FOREIGN KEY(Account_ID) REFERENCES Account(ID)," +
+<<<<<<< Updated upstream
             " FullName NVARCHAR(40)," +
             " Gender NVARCHAR(6)," +
+=======
+            " FullName NVARCHAR(60)," +
+            " Gender NVARCHAR(6) DEFAULT N'Khác'," +
+>>>>>>> Stashed changes
             " DateOfBirth DATE, " +
-            " HomeTown NVARCHAR(300), " +
+            " HomeTown NVARCHAR(1000), " +
             " CCCD VARCHAR(20), " +
             " Email VARCHAR(30) NOT NULL UNIQUE," +
             " Phone VARCHAR(15), " +
@@ -498,7 +551,11 @@ public class CreateSQL {
     private final String TblBank = "CREATE TABLE Bank " +
             "( " +
             " SoTaiKhoan VARCHAR(20) PRIMARY KEY, " +
+<<<<<<< Updated upstream
             " TenNH NVARCHAR(20), " +
+=======
+            " TenNH NVARCHAR(300), " +
+>>>>>>> Stashed changes
             " TenChiNhanh NVARCHAR(100), " +
             " SoCCCD VARCHAR(25),"+
             " ChuSoHuu NVARCHAR(50), " +
@@ -515,11 +572,11 @@ public class CreateSQL {
     private final String TblProduct = "CREATE TABLE Product " +
             "( " +
             " MaSP INT PRIMARY KEY IDENTITY," +
-            " TenSP NVARCHAR(40)," +
+            " TenSP NVARCHAR(300)," +
             " Quantity INT, " +
             " Price DECIMAL, " +
-            " MoTa NVARCHAR(500) DEFAULT (N'Người bán không viết gì')," +
-            " SrcImg VARCHAR(400)," +
+            " MoTa NVARCHAR(MAX) DEFAULT (N'Người bán không viết gì')," +
+            " SrcImg NVARCHAR(600)," +
             " Activity VARCHAR(10) DEFAULT 'ON', " +
             " Sold FLOAT, " +
             " TotalRevenue DECIMAL, " +
@@ -541,7 +598,7 @@ public class CreateSQL {
             " TiLeGiamGia FLOAT," +
             " SotienGiamGia DECIMAL," +
             " SoLuong INT," +
-            " NoiDung NVARCHAR(300)," +
+            " NoiDung NVARCHAR(500)," +
             " ImgVoucher VARCHAR(300)," +
             " NgayBatDau DATE," +
             " NgayKetThuc DATE" +
@@ -655,7 +712,11 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE Category_ID = @Category_ID " +
             " AND p.Activity = 'ON'" +
+<<<<<<< Updated upstream
             " ORDER BY MaSP" +
+=======
+            " ORDER BY TotalRevenue DESC" +
+>>>>>>> Stashed changes
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -670,7 +731,11 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE p.TenSP LIKE @nameProduct " +
             " AND p.Activity = 'ON' " +
+<<<<<<< Updated upstream
             " ORDER BY MaSP " +
+=======
+            " ORDER BY TotalRevenue DESC" +
+>>>>>>> Stashed changes
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -684,7 +749,11 @@ public class CreateSQL {
             " ON Product.MaSP = ProductSeller.Product_ID " +
             " AND ProductSeller.Users_ID = @User_ID " +
             " AND Product.Activity = 'ON' " +
+<<<<<<< Updated upstream
             " ORDER BY MaSP " +
+=======
+            " ORDER BY TotalRevenue DESC" +
+>>>>>>> Stashed changes
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 

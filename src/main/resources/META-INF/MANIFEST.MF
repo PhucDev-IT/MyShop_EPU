@@ -1,3 +1,5 @@
 Manifest-Version: 1.0
+Class-Path: . lib/javafx-base-19.jar lib/javafx-graphics-19.jar lib/javafx-controls-19.jar lib/javafx-fxml-19.jar lib/javafx-media-19.jar lib/javafx-swing-19.jar lib/javafx-web-19.jar
 Main-Class: com.epu.oop.myshop.Main.App
+Module-Name: com.epu.oop.myshop
 

@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane onMouseClicked="#click" prefHeight="221.0" prefWidth="247.0" styleClass="item-product" stylesheets="@../StyleCSS/pageHome.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ProductsOfMarketController">
    <children>
@@ -18,14 +17,11 @@
                   <Insets left="46.0" top="10.0" />
                </VBox.margin>
             </ImageView>
-            <Text fx:id="nameProduct_txt" lineSpacing="0.5" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="239.6708984375">
+            <Label fx:id="nameProduct_txt" alignment="CENTER" prefHeight="21.0" prefWidth="241.0" text="ếu dùng replace thì nó sẽ mất O(n) thời gian phải không, nếu chương trình của tôi có 1000 ảnh thì việc đó c" textAlignment="CENTER">
                <font>
-                  <Font name="Arial Bold" size="17.0" />
+                  <Font name="Calibri Bold" size="17.0" />
                </font>
-               <VBox.margin>
-                  <Insets top="4.0" />
-               </VBox.margin>
-            </Text>
+            </Label>
             <Pane prefHeight="26.0" prefWidth="242.0">
                <VBox.margin>
                   <Insets top="5.0" />

@@ -3,12 +3,13 @@ package com.epu.oop.myshop.model;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
 public class Category implements Serializable {
 
-   public static final Map<String,Integer> listCategory = new HashMap<>();
+   public static final Map<String,Integer> listCategory = new LinkedHashMap<>();
 
    public Category()
    {

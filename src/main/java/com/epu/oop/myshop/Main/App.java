@@ -1,26 +1,20 @@
 package com.epu.oop.myshop.Main;
 
-import com.epu.oop.myshop.Dao.Product_Dao;
 import com.epu.oop.myshop.model.CreateSQL;
-import com.epu.oop.myshop.model.Product;
-import com.epu.oop.myshop.model.User;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ConcurrentModificationException;
 import java.util.Locale;
-import java.util.Random;
+import java.util.Objects;
 
 public class App extends Application {
     public static final SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -35,21 +29,27 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-
+       // System.out.println("3");
         FXMLLoader loader = new FXMLLoader(getClass().getResource(urlScene));
-        Parent root = (Parent) loader.load();
+        Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.centerOnScreen();
         stage.setResizable(false);
+<<<<<<< Updated upstream
+=======
+        stage.setTitle("Trang chủ");
+        stage.getIcons().add(new Image(Objects.requireNonNull(this.getClass().getResourceAsStream("/com/epu/oop/myshop/image/logo-app.png"))));
+>>>>>>> Stashed changes
         stage.setScene(scene);
         stage.show();
     }
 
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-
+      //  System.out.println("1");
         CreateSQL cr = new CreateSQL();
         if(cr.checkExistDatabase()){
+           // System.out.println("2");
             urlScene = "/com/epu/oop/myshop/GUI/PageHome.fxml";
             launch();
         }else{

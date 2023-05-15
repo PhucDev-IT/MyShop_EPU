@@ -1,44 +1,47 @@
 package com.epu.oop.myshop.Main;
 
-import com.epu.oop.myshop.Dao.Product_Dao;
-import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
-import com.epu.oop.myshop.model.CreateSQL;
 import com.epu.oop.myshop.model.Product;
 import com.epu.oop.myshop.model.User;
 
-import java.sql.SQLException;
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
-
-public class Test{
-    public Test() throws SQLException {
-    }
-
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-
-//        CreateSQL createSQL = CreateSQL.getInstance();
-//        createSQL.AutoCreateDatabase();
-//        ConnectionPool connectionPool = ConnectionPool.getInstance();
-//        Product_Dao productDao = Product_Dao.getInstance(connectionPool);
-//        Random random = new Random();
-//        for(int i=75000;i<500000;i++)
-//        {
-//                Product product = new Product(0,"Sản phẩm "+i,random.nextInt(9200)+1, BigDecimal.valueOf(123*i),"Khong nói gì",
-//                        "/com/epu/oop/myshop/image/Product/product1.png", random.nextInt(25)+1,new User(random.nextInt(4)+2));
-//            productDao.Insert(product);
-//                System.out.println(i);
-//        }
-//
-//        ConnectionPool connectionPool = ConnectionPool.getInstance();
-//        Product_Dao product_dao = Product_Dao.getInstance(connectionPool);
-//
-//        CreateSQL cr = new CreateSQL();
-//        cr.autoCreate();
-
-
-
+public class test {
+    private static boolean isImageFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif");
     }
 
 
+
+    public static void main(String[] args) {
+
+
+        String[] linkName = {"phone", "Laptop", "may-choi-game", "cham-soc-da", "trang-diem", "Nước hoa", "thực phẩm chức năng",
+                "thiết bị y tế", "quan-ao-nam", "giay-nam", "dong-ho", "", "thoi-trang-nu", "tui-xach-nu", "do-ngu-nu", "trang sức nữ", "xe-may"
+                , "oto", "", "phu-kien-the-thao", "", "Vali-túi xách", "kính mắt", "", ""};
+
+
+        Random random = new Random();
+
+        StringBuilder filePathBuilder = new StringBuilder();
+        StringBuilder newFilePathBuilder = new StringBuilder();
+        int i=1;
+        for(String lastFileName : linkName){
+            System.out.println(i++);
+            File folder = new File("src/main/resources/com/epu/oop/myshop/image/Product/"+lastFileName);
+            File[] listOfFiles = folder.listFiles();
+            for (File file : listOfFiles) {
+                if (file.isFile()) {
+                    String fileName = file.getName();
+                    String nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+                    String filePath = "/" + file.getPath().substring(file.getPath().indexOf("com")).replace('\\', '/');
+                    System.out.println("Name: "+nameWithoutExtension+" - Link: "+filePath);
+                }
+            }
+        }
+    }
 }

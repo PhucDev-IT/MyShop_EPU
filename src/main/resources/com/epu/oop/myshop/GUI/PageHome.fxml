@@ -314,9 +314,9 @@
                            </font>
                         </Label>
                         <ImageView fx:id="imgProdInfor" fitHeight="125.0" fitWidth="144.0" layoutX="14.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true" />
-                        <Text fx:id="nameProdInfor_txt" layoutX="171.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="212.6708984375">
+                        <Text fx:id="nameProdInfor_txt" fill="#2c2b2b" layoutX="171.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="212.6708984375">
                            <font>
-                              <Font name="Times New Roman Bold" size="20.0" />
+                              <Font name="Calibri Bold" size="19.0" />
                            </font>
                         </Text>
                         <Label layoutX="28.0" layoutY="161.0" text="Gía bán:">
@@ -344,7 +344,7 @@
                               <Font name="Times New Roman Bold" size="16.0" />
                            </font>
                         </Label>
-                        <Label fx:id="remainInfor_lb" layoutX="302.0" layoutY="190.0" prefHeight="21.0" prefWidth="85.0" text="0" textFill="#0d0d0d">
+                        <Label fx:id="remainInfor_lb" layoutX="302.0" layoutY="190.0" prefHeight="21.0" prefWidth="85.0" text="0" textFill="#4507ae">
                            <font>
                               <Font name="Times New Roman Bold" size="16.0" />
                            </font>

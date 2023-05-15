@@ -56,6 +56,17 @@ public class AdminController implements Initializable {
 
     private Product_Dao prod_dao = Product_Dao.getInstance(connectionPool);
 
+<<<<<<< Updated upstream
+=======
+    @FXML
+    private AnchorPane paneLoading;
+
+    @FXML
+    private ImageView imgLoading;
+
+    @FXML
+    private ImageView imgHome;
+>>>>>>> Stashed changes
 
     // --------------------------- Quản Lý Danh Mục FORM  -------------------------------------------------------
 
@@ -472,16 +483,7 @@ public class AdminController implements Initializable {
                 item.setData(myListener_Voucher,listVouchers.get(i));
 
                 row++;
-                gridVoucher.add(anchorPane, col, row); // (child,column,row)
-                // set grid width
-                gridVoucher.setMinWidth(Region.USE_COMPUTED_SIZE);
-                gridVoucher.setPrefWidth(Region.USE_COMPUTED_SIZE);
-                gridVoucher.setMaxWidth(Region.USE_PREF_SIZE);
-
-                // set grid height
-                gridVoucher.setMinHeight(Region.USE_COMPUTED_SIZE);
-                gridVoucher.setPrefHeight(Region.USE_COMPUTED_SIZE);
-                gridVoucher.setMaxHeight(Region.USE_PREF_SIZE);
+                setDataGridPane(gridVoucher,anchorPane,col,row);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -614,8 +616,8 @@ public class AdminController implements Initializable {
         }
 
     }
-
     @FXML
+<<<<<<< Updated upstream
     private Label close;
 
     @FXML
@@ -634,6 +636,18 @@ public class AdminController implements Initializable {
         }
     }
 
+=======
+    public void goHome(MouseEvent e)
+    {
+         if(e.getSource() == imgHome){
+        try{
+            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    }
+>>>>>>> Stashed changes
 
     public void setDefaulValue()
     {
@@ -677,7 +691,6 @@ public class AdminController implements Initializable {
                 }
 
             }
-
             @Override
             public LocalDate fromString(String date) {
                 if (date != null && !date.isEmpty()) {
@@ -688,10 +701,30 @@ public class AdminController implements Initializable {
             }
         });
     }
+
+    public void setDataGridPane(GridPane gridPane,AnchorPane anchorPane,int col,int row){
+        gridPane.add(anchorPane, col, row); // (child,column,row)
+        // set grid width
+        gridPane.setMinWidth(Region.USE_COMPUTED_SIZE);
+        gridPane.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        gridPane.setMaxWidth(Region.USE_PREF_SIZE);
+
+        // set grid height
+        gridPane.setMinHeight(Region.USE_COMPUTED_SIZE);
+        gridPane.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        gridPane.setMaxHeight(Region.USE_PREF_SIZE);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setDefaulValue();
+<<<<<<< Updated upstream
 
+=======
+        imgHome.setImage(new Image("C:\\Users\\84374\\Downloads\\icon-home.png"));
+        imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
+        imgRefreshVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-refresh.png")));
+>>>>>>> Stashed changes
     }
 }
 
