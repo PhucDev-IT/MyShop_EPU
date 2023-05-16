@@ -406,7 +406,6 @@ public class Product_Dao implements Dao_Interface<Product>{
         }finally {
             closeConnection();
         }
-        System.out.println("Success");
         return list;
     }
 

@@ -33,23 +33,22 @@ public class setDataAppController implements Initializable {
     private ImageView imgLoading;
 
 
-
     private void setData() throws SQLException, ClassNotFoundException {
         CreateSQL cr = new CreateSQL();
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 Thread.sleep(2000);
-                    cr.autoCreate();
+                cr.autoCreate();
                 Thread.sleep(500);
-               Platform.runLater(()->{
-                   try {
-                       ConverForm.showForm((Stage) imgLoading.getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
-                   } catch (IOException e) {
-                       throw new RuntimeException(e);
-                   }
-               });
-               return null;
+                Platform.runLater(() -> {
+                    try {
+                        ConverForm.showForm((Stage) imgLoading.getScene().getWindow(), "/com/epu/oop/myshop/GUI/PageHome.fxml", "Trang chủ");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                return null;
             }
         };
         Thread thread = new Thread(task);
@@ -58,7 +57,9 @@ public class setDataAppController implements Initializable {
             thread.interrupt();
         });
     }
-    AtomicBoolean check  = new AtomicBoolean(true);
+
+    AtomicBoolean check = new AtomicBoolean(true);
+
     public void event(MouseEvent e) throws SQLException, ClassNotFoundException {
 //        if (check.get()){
 //            System.out.println("Vào");

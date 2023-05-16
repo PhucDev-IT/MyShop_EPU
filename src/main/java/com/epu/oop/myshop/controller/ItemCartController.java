@@ -16,11 +16,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Text;
+
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Objects;
 
 public class ItemCartController {
 
@@ -31,7 +30,7 @@ public class ItemCartController {
     private CheckBox checkbox;
 
     @FXML
-    private Text nameProduct;
+    private Label nameProduct;
 
     @FXML
     private Label price;
@@ -44,7 +43,6 @@ public class ItemCartController {
 
     @FXML
     private JFXButton btnUp;
-
 
     private itemCartModel item;
 
@@ -59,30 +57,30 @@ public class ItemCartController {
 
     public void setData(MyListener<itemCartModel> myListener, itemCartModel it, ListenerItemCart<Event, itemCartModel> event) {
         this.myListener = myListener;
-        this.listenerEvent  = event;
+        this.listenerEvent = event;
 
         item = it;
         try {
-            if(!it.getProduct().getSrcImg().contains(":")){
-                imgProduct.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(it.getProduct().getSrcImg()))));
-            }else
+            if (!it.getProduct().getSrcImg().contains(":")) {
+                imgProduct.setImage(new Image(getClass().getResourceAsStream(it.getProduct().getSrcImg())));
+            } else
                 imgProduct.setImage(new Image(it.getProduct().getSrcImg()));
-        }catch (Exception e){
-            imgProduct.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png"))));
-            System.out.println("Lỗi: "+e.getMessage());
+        } catch (Exception e) {
+            imgProduct.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+            System.out.println("Lỗi: " + e.getMessage());
         }
 
         nameProduct.setText(it.getProduct().getTenSP());
-        price.setText(App.numf.format(it.getProduct().getPrice())+"đ");
-        txtNumbers.setText(String.valueOf(it.getQuantity()));
-        number+=it.getQuantity();
+        price.setText(App.numf.format(it.getProduct().getPrice()) + "đ");
+        txtNumbers.setText(it.getQuantity() + "");
+        number += it.getQuantity();
     }
 
-    public void chooseProduct()  {
+    public void chooseProduct(MouseEvent e) {
 
-        if(checkbox.isSelected()){
+        if (checkbox.isSelected()) {
             item.setChoose(true);
-        }else{
+        } else {
             item.setChoose(false);
         }
         item.setSumMoney(item.getProduct().getPrice().multiply(BigDecimal.valueOf(number)));
@@ -90,7 +88,7 @@ public class ItemCartController {
     }
 
     @FXML
-    public void handle(ActionEvent event){
+    public void handle(ActionEvent event) {
         if (event.getSource() == btnUp) {
             number++;
         } else if (event.getSource() == btnDown) {
@@ -99,18 +97,18 @@ public class ItemCartController {
             }
         }
         item.setSumMoney(item.getProduct().getPrice().multiply(BigDecimal.valueOf(number)));
-        txtNumbers.setText(String.valueOf(number));
+        txtNumbers.setText(number + "");
         item.setQuantity(number);
-        listenerEvent.onClickListener(event,item);
+        listenerEvent.onClickListener(event, item);
     }
 
     public void removeItem(ActionEvent e) throws SQLException {
         itemCartModel it = item;
-            if(itemDao.Delete(item)<0){
-                AlertNotification.showAlertError("","Có lỗi xảy ra");
-            }else {
-                listenerEvent.onClickListener(e,it);
-            }
+        if (itemDao.Delete(item) < 0) {
+            AlertNotification.showAlertError("", "Có lỗi xảy ra");
+        } else {
+            listenerEvent.onClickListener(e, it);
+        }
     }
 
 

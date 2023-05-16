@@ -1,18 +1,15 @@
 package com.epu.oop.myshop.controller;
 
-import com.epu.oop.myshop.Dao.OrderDetails_Dao;
+
+import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.MyListener;
 import com.epu.oop.myshop.model.Product;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Text;
 
-import java.net.URL;
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.Objects;
 
 public class ProductsOfMarketController {
 
@@ -37,30 +34,26 @@ public class ProductsOfMarketController {
     private MyListener<Product> mylistener;
 
     @FXML
-    private void click(MouseEvent mouseEvent) {
+    private void click() {
         mylistener.onClickListener(product);
     }
 
-    public void setData(MyListener<Product> myListener,Product prod)
-    {
+    public void setData(MyListener<Product> myListener, Product prod) {
         this.product = prod;
         this.mylistener = myListener;
 
         try {
-            if(!prod.getSrcImg().contains(":")){
-                imgProducts.setImage(new Image(getClass().getResourceAsStream(prod.getSrcImg())));
-            }else
+            if (!prod.getSrcImg().contains(":")) {
+                imgProducts.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(prod.getSrcImg()))));
+            } else
                 imgProducts.setImage(new Image(product.getSrcImg()));
-        }catch (Exception e){
-            imgProducts.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+        } catch (Exception e) {
+            imgProducts.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png"))));
         }
         nameProduct_txt.setText((prod.getTenSP()));
-        sold.setText(prod.getSold()+"");
-        maSP_lb.setText("0"+prod.getID());
-        //Định dạng tiền tệ việt nam
-        Locale lc = new Locale("vi","VN");
-        NumberFormat numf = NumberFormat.getInstance(lc);
-        price.setText(numf.format(prod.getPrice())+ "");
+        sold.setText(String.valueOf(prod.getSold()));
+        maSP_lb.setText("0" + prod.getID());
+        price.setText(App.numf.format(prod.getPrice()));
 
     }
 

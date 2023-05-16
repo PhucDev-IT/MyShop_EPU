@@ -24,7 +24,7 @@ public class Account_Dao implements Dao_Interface<Account> {
         return instance;
     }
 
-    public Account_Dao(ConnectionPool jdbcUtil){
+    public Account_Dao(ConnectionPool jdbcUtil) {
 
         this.jdbcUtil = jdbcUtil;
     }
@@ -36,30 +36,30 @@ public class Account_Dao implements Dao_Interface<Account> {
                 " VALUES (?,?,?,?,?)";
 
         Connection connection = null;
-           try{
-               connection = jdbcUtil.getConnection();
-               connection.setAutoCommit(false);
-               PreparedStatement statement = connection.prepareStatement(sql);
-               statement.setString(1,t.getUserName());
-               statement.setString(2,t.getPassword());
-               statement.setBigDecimal(3,new BigDecimal(0));
-               statement.setString(4,"ON");
-               statement.setString(5,"Member");
+        try {
+            connection = jdbcUtil.getConnection();
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, t.getUserName());
+            statement.setString(2, t.getPassword());
+            statement.setBigDecimal(3, new BigDecimal(0));
+            statement.setString(4, "ON");
+            statement.setString(5, "Member");
 
-               //Bước 3:Thực thi câu lệnh
-               results =  statement.executeUpdate();
-               statement.close();
-               connection.commit();
-       }catch (SQLException e) {
-               if(connection!=null){
-                   connection.rollback();
-               }
-           e.printStackTrace();
-       }finally {
-              connection.setAutoCommit(true);
-              connection.close();
-           }
-        return results>0;
+            //Bước 3:Thực thi câu lệnh
+            results = statement.executeUpdate();
+            statement.close();
+            connection.commit();
+        } catch (SQLException e) {
+            if (connection != null) {
+                connection.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return results > 0;
     }
 
     @Override
@@ -67,12 +67,12 @@ public class Account_Dao implements Dao_Interface<Account> {
 
         List<Account> list = new ArrayList<>();
 
-            String sql = "SELECT * FROM Account";
+        String sql = "SELECT * FROM Account";
 
-            try(Connection connection = jdbcUtil.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql);
-                ResultSet rs = statement.executeQuery()){
-                 while (rs.next()){
+        try (Connection connection = jdbcUtil.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
                 int ID = rs.getInt("ID");
                 String UserName = rs.getString("UserName");
                 String Passwords = rs.getString("Passwords");
@@ -80,10 +80,10 @@ public class Account_Dao implements Dao_Interface<Account> {
                 String Statuss = rs.getString("Activity");
                 String PhanQuyen = rs.getString("PhanQuyen");
 
-                list.add(new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen));
+                list.add(new Account(ID, UserName, Passwords, money, Statuss, PhanQuyen));
             }
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
@@ -94,12 +94,12 @@ public class Account_Dao implements Dao_Interface<Account> {
         Account account = null;
         String sql = "SELECT * FROM Account WHERE UserName=?";
         try (Connection connection = jdbcUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1,t.getUserName());
+            statement.setString(1, t.getUserName());
             ResultSet rs = statement.executeQuery();
 
-            while (rs.next()){
+            while (rs.next()) {
                 int ID = rs.getInt("ID");
                 String UserName = rs.getString("UserName");
                 String Passwords = rs.getString("Passwords");
@@ -107,10 +107,10 @@ public class Account_Dao implements Dao_Interface<Account> {
                 String Statuss = rs.getString("Activity");
                 String PhanQuyen = rs.getString("PhanQuyen");
 
-                account =  new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen);
+                account = new Account(ID, UserName, Passwords, money, Statuss, PhanQuyen);
             }
             rs.close();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return account;
@@ -119,24 +119,24 @@ public class Account_Dao implements Dao_Interface<Account> {
     @Override
     public int Update(Account t) {
         int results = 0;
-            String sql = "UPDATE Account SET " +
-                    "Passwords=?," +
-                    " Currency=?," +
-                    " Activity=?," +
-                    " PhanQuyen=?" +
-                    " WHERE UserName=?";
+        String sql = "UPDATE Account SET " +
+                "Passwords=?," +
+                " Currency=?," +
+                " Activity=?," +
+                " PhanQuyen=?" +
+                " WHERE UserName=?";
         try (Connection connection = jdbcUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1,t.getPassword());
-            statement.setBigDecimal(2,t.getMoney());
-            statement.setString(3,t.getStatus());
-            statement.setString(4,t.getPhanQuyen());
-            statement.setString(5,t.getUserName());
+            statement.setString(1, t.getPassword());
+            statement.setBigDecimal(2, t.getMoney());
+            statement.setString(3, t.getStatus());
+            statement.setString(4, t.getPhanQuyen());
+            statement.setString(5, t.getUserName());
 
             results = statement.executeUpdate();
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return results;
@@ -145,16 +145,16 @@ public class Account_Dao implements Dao_Interface<Account> {
     @Override
     public int Delete(Account t) {
         int results = 0;
-            String sql = "DELETE FROM Account" +
-                    " WHERE UserName = ?";
+        String sql = "DELETE FROM Account" +
+                " WHERE UserName = ?";
         try (Connection connection = jdbcUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setString(1,t.getUserName());
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, t.getUserName());
             //Bước 3:Thực thi câu lệnh
             results = statement.executeUpdate();
-            System.out.println("Có "+results +" thay đổi");
+            System.out.println("Có " + results + " thay đổi");
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return results;
@@ -162,38 +162,36 @@ public class Account_Dao implements Dao_Interface<Account> {
 
     //---------------Kiểm tra đăng ký tài khoản---------------------
 
-    public boolean checkRegister(Account account)
-    {
+    public boolean checkRegister(Account account) {
         int check = 0;
         String sql = "SELECT COUNT(*) AS number FROM Account WHERE ID = ?";
-        try(Connection conn = jdbcUtil.getConnection();
-        PreparedStatement statement = conn.prepareStatement(sql)){
-            statement.setInt(1,account.getID());
+        try (Connection conn = jdbcUtil.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setInt(1, account.getID());
             ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 check = resultSet.getInt("number");
             }
 
-        }catch (SQLException e){
-            System.out.println("Có lỗi xảy ra: "+e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Có lỗi xảy ra: " + e.getMessage());
         }
-        return  check>0;
+        return check > 0;
     }
 
     //Kiểm tra đăng nhập
-    public Account checkLogin(Account account)
-    {
+    public Account checkLogin(Account account) {
         Account a = null;
-            String sql = "SELECT * FROM Account " +
-                    "WHERE UserName=? " +
-                    "AND Passwords = ?";
+        String sql = "SELECT * FROM Account " +
+                "WHERE UserName=? " +
+                "AND Passwords = ?";
         try (Connection connection = jdbcUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setString(1,account.getUserName());
-            statement.setString(2,account.getPassword());
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, account.getUserName());
+            statement.setString(2, account.getPassword());
             ResultSet rs = statement.executeQuery();
 
-            while (rs.next()){
+            while (rs.next()) {
                 int ID = rs.getInt("ID");
                 String UserName = rs.getString("UserName");
                 String Passwords = rs.getString("Passwords");
@@ -201,14 +199,14 @@ public class Account_Dao implements Dao_Interface<Account> {
                 String Statuss = rs.getString("Activity");
                 String PhanQuyen = rs.getString("PhanQuyen");
 
-                a = new Account(ID,UserName,Passwords,money,Statuss,PhanQuyen);
+                a = new Account(ID, UserName, Passwords, money, Statuss, PhanQuyen);
             }
             statement.close();
             rs.close();
-        }catch (SQLException e){
-            System.out.println("Có lỗi xảy ra: "+e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Có lỗi xảy ra: " + e.getMessage());
         }
-       return a;
+        return a;
     }
 
     //Đăng ký thông tin người dùng
@@ -218,7 +216,7 @@ public class Account_Dao implements Dao_Interface<Account> {
         PreparedStatement preAccount = null;
         PreparedStatement preUser = null;
         PreparedStatement preMessenge = null;
-        try{
+        try {
 
             String sql = "INSERT INTO Account(UserName,Passwords,Currency,Activity,PhanQuyen)" +
                     " VALUES (?,?,?,?,?)";
@@ -228,55 +226,55 @@ public class Account_Dao implements Dao_Interface<Account> {
                     " VALUES (?,?,?,?,?,?)";
             connection = jdbcUtil.getConnection();
             connection.setAutoCommit(false);
-            preAccount = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
-            preAccount.setString(1,account.getUserName());
-            preAccount.setString(2,account.getPassword());
-            preAccount.setBigDecimal(3,new BigDecimal(0));
-            preAccount.setString(4,"ON");
-            preAccount.setString(5,"Member");
+            preAccount = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            preAccount.setString(1, account.getUserName());
+            preAccount.setString(2, account.getPassword());
+            preAccount.setBigDecimal(3, new BigDecimal(0));
+            preAccount.setString(4, "ON");
+            preAccount.setString(5, "Member");
             preAccount.executeUpdate();
 
             int index;
-            try(ResultSet rs = preAccount.getGeneratedKeys()){
-                if(rs.next()){
-                   index =  rs.getInt(1);
-                }else {
+            try (ResultSet rs = preAccount.getGeneratedKeys()) {
+                if (rs.next()) {
+                    index = rs.getInt(1);
+                } else {
                     throw new SQLException("Không thể đăng ký");
                 }
             }
             preUser = connection.prepareStatement(sqlUs);
-            preUser.setInt(1,index);
-            preUser.setString(2,user.getFullName());
-            preUser.setString(3,user.getEmail());
+            preUser.setInt(1, index);
+            preUser.setString(2, user.getFullName());
+            preUser.setString(3, user.getEmail());
             check = preUser.executeUpdate();
 
             preMessenge = connection.prepareStatement(sqlMess);
-            preMessenge.setString(1,"Tin nhắn từ hệ thống");
-            preMessenge.setString(2,"Welcome to MyShop");
-            preMessenge.setBoolean(3,false);
-            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
-            preMessenge.setString(5,null);
-            preMessenge.setInt(6,index);
+            preMessenge.setString(1, "Tin nhắn từ hệ thống");
+            preMessenge.setString(2, "Welcome to MyShop");
+            preMessenge.setBoolean(3, false);
+            preMessenge.setDate(4, new Date(System.currentTimeMillis()));
+            preMessenge.setString(5, null);
+            preMessenge.setInt(6, index);
 
             preMessenge.executeUpdate();
 
 
             connection.commit();
-        }catch (SQLException e) {
-            if(connection!=null){
+        } catch (SQLException e) {
+            if (connection != null) {
                 connection.rollback();
             }
             e.printStackTrace();
-        }finally {
-            if(preUser!=null)   preUser.close();
+        } finally {
+            if (preUser != null) preUser.close();
 
-            if(preAccount!=null) preAccount.close();
+            if (preAccount != null) preAccount.close();
 
-            if(preMessenge!=null) preMessenge.close();
+            if (preMessenge != null) preMessenge.close();
             connection.setAutoCommit(true);
             connection.close();
         }
-        return check>0;
+        return check > 0;
     }
 
     //Chuyển tiền, k dùng update vì method này sử dụng transaction tránh mất tiền oan
@@ -306,29 +304,29 @@ public class Account_Dao implements Dao_Interface<Account> {
             PreparedStatement stmPayment = connection.prepareStatement(sqlPayment);
             PreparedStatement preMessenge = connection.prepareStatement(sqlMess);
 
-            statement.setBigDecimal(1,sender.getMoney());
-            statement.setString(2,sender.getUserName());
+            statement.setBigDecimal(1, sender.getMoney());
+            statement.setString(2, sender.getUserName());
             statement.executeUpdate();
 
-            stmReceiver.setBigDecimal(1,receiver.getMoney());
-            stmReceiver.setString(2,receiver.getUserName());
+            stmReceiver.setBigDecimal(1, receiver.getMoney());
+            stmReceiver.setString(2, receiver.getUserName());
             stmReceiver.executeUpdate();
 
-            stmPayment.setString(1,paymentHistory.getTenGiaoDich());
-            stmPayment.setString(2,paymentHistory.getNoiDung());
-            stmPayment.setBigDecimal(3,paymentHistory.getSoTien());
-            stmPayment.setDate(4,paymentHistory.getNgayGiaoDich());
-            stmPayment.setString(5,paymentHistory.getImgSrcIcon());
-            stmPayment.setInt(6,paymentHistory.getUser().getID());
-            stmPayment.setInt(7,paymentHistory.getAccount().getID());
+            stmPayment.setString(1, paymentHistory.getTenGiaoDich());
+            stmPayment.setString(2, paymentHistory.getNoiDung());
+            stmPayment.setBigDecimal(3, paymentHistory.getSoTien());
+            stmPayment.setDate(4, paymentHistory.getNgayGiaoDich());
+            stmPayment.setString(5, paymentHistory.getImgSrcIcon());
+            stmPayment.setInt(6, paymentHistory.getUser().getID());
+            stmPayment.setInt(7, paymentHistory.getAccount().getID());
             stmPayment.executeUpdate();
 
-            preMessenge.setString(1,"Tin nhắn từ hệ thống");
-            preMessenge.setString(2,"Bạn vừa được nhận "+ App.numf.format(receiver.getMoney())+ " từ: "+sender.getUserName());
-            preMessenge.setBoolean(3,false);
-            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
-            preMessenge.setString(5,null);
-            preMessenge.setString(6,sender.getUserName());
+            preMessenge.setString(1, "Tin nhắn từ hệ thống");
+            preMessenge.setString(2, "Bạn vừa được nhận " + App.numf.format(receiver.getMoney()) + " từ: " + sender.getUserName());
+            preMessenge.setBoolean(3, false);
+            preMessenge.setDate(4, new Date(System.currentTimeMillis()));
+            preMessenge.setString(5, null);
+            preMessenge.setString(6, receiver.getUserName());
 
             preMessenge.executeUpdate();
 
@@ -337,13 +335,13 @@ public class Account_Dao implements Dao_Interface<Account> {
             stmReceiver.close();
             stmPayment.close();
             preMessenge.close();
-        }catch (SQLException e) {
-            if(connection!=null){
+        } catch (SQLException e) {
+            if (connection != null) {
                 connection.rollback();
-                System.out.println("Roll back: "+e.getMessage());
+                System.out.println("Roll back: " + e.getMessage());
             }
             return false;
-        }finally {
+        } finally {
             connection.setAutoCommit(true);
             connection.close();
         }
@@ -351,7 +349,7 @@ public class Account_Dao implements Dao_Interface<Account> {
     }
 
     //Rút tiền - nạp tiền
-    public boolean transferMoney(Account account,PaymentHistory paymentHistory) throws SQLException {
+    public boolean transferMoney(Account account, PaymentHistory paymentHistory) throws SQLException {
         String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
                 " VALUES (?,?,?,?,?,?)";
 
@@ -366,50 +364,50 @@ public class Account_Dao implements Dao_Interface<Account> {
             PreparedStatement statement = connection.prepareStatement(sql);
             PreparedStatement stmPayment = connection.prepareStatement(sqlPayment);
 
-            statement.setBigDecimal(1,account.getMoney());
-            statement.setString(2,account.getUserName());
+            statement.setBigDecimal(1, account.getMoney());
+            statement.setString(2, account.getUserName());
             statement.executeUpdate();
 
-            stmPayment.setString(1,paymentHistory.getTenGiaoDich());
-            stmPayment.setString(2,paymentHistory.getNoiDung());
-            stmPayment.setBigDecimal(3,paymentHistory.getSoTien());
-            stmPayment.setDate(4,paymentHistory.getNgayGiaoDich());
-            stmPayment.setString(5,paymentHistory.getImgSrcIcon());
-            stmPayment.setInt(6,paymentHistory.getUser().getID());
+            stmPayment.setString(1, paymentHistory.getTenGiaoDich());
+            stmPayment.setString(2, paymentHistory.getNoiDung());
+            stmPayment.setBigDecimal(3, paymentHistory.getSoTien());
+            stmPayment.setDate(4, paymentHistory.getNgayGiaoDich());
+            stmPayment.setString(5, paymentHistory.getImgSrcIcon());
+            stmPayment.setInt(6, paymentHistory.getUser().getID());
             stmPayment.executeUpdate();
 
             connection.commit();
             statement.close();
             stmPayment.close();
-        }catch (SQLException e) {
-            if(connection!=null){
+        } catch (SQLException e) {
+            if (connection != null) {
                 connection.rollback();
-                System.out.println("Roll back: "+e.getMessage());
+                System.out.println("Roll back: " + e.getMessage());
             }
             return false;
-        }finally {
+        } finally {
             connection.setAutoCommit(true);
             connection.close();
         }
         return true;
     }
+
     //----------------- KHÓA TÀI KHOẢN ĐĂNG NHẬP ---------------------------------
-    public boolean lockAccount(String userName)
-    {
+    public boolean lockAccount(String userName) {
         String sql = "UPDATE Account" +
                 " SET Activity = 'LOCK' " +
                 " WHERE userName = ?";
-        try(Connection connection = jdbcUtil.getConnection();
-        PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1,userName);
-            return statement.executeUpdate()>0;
+        try (Connection connection = jdbcUtil.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, userName);
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
     //-------------------------- QUÊN MẬT KHẨU ĐĂNG NHẬP--------------------------------------
 
-    public boolean changeFogotPass(String userName,String password) throws SQLException {
+    public boolean changeFogotPass(String userName, String password) throws SQLException {
         int result = 0;
         String sql = "UPDATE Account" +
                 " SET Passwords = ? " +
@@ -420,24 +418,23 @@ public class Account_Dao implements Dao_Interface<Account> {
             connection = jdbcUtil.getConnection();
             connection.setAutoCommit(false);
 
-             statement = connection.prepareStatement(sql);
-            statement.setString(1,password);
-            statement.setString(2,userName);
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, password);
+            statement.setString(2, userName);
 
-            result= statement.executeUpdate() ;
+            result = statement.executeUpdate();
 
             connection.commit();
         } catch (SQLException e) {
-            if(connection!=null)
-            {
+            if (connection != null) {
                 connection.rollback();
-                System.out.println("Roll back: "+e.getMessage());
+                System.out.println("Roll back: " + e.getMessage());
             }
-        }finally {
-            if(statement!=null) statement.close();
+        } finally {
+            if (statement != null) statement.close();
             connection.setAutoCommit(true);
             connection.close();
         }
-        return result>0;
+        return result > 0;
     }
 }

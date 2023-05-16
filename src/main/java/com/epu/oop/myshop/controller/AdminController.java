@@ -14,30 +14,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import org.w3c.dom.ls.LSOutput;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -51,13 +45,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class AdminController implements Initializable {
-    private   ConnectionPool connectionPool = new ConnectionPool();
+    @FXML
+    private ImageView imgHome;
+    private final ConnectionPool connectionPool = new ConnectionPool();
 
-    private Account_Dao account_Dao = Account_Dao.getInstance(connectionPool);
+    private final Account_Dao account_Dao = Account_Dao.getInstance(connectionPool);
 
-    private UserDao user_dao = UserDao.getInstance(connectionPool);
+    private final UserDao user_dao = UserDao.getInstance(connectionPool);
 
-    private Product_Dao prod_dao = Product_Dao.getInstance(connectionPool);
+    private final Product_Dao prod_dao = Product_Dao.getInstance(connectionPool);
 
     @FXML
     private AnchorPane paneLoading;
@@ -65,27 +61,14 @@ public class AdminController implements Initializable {
     @FXML
     private ImageView imgLoading;
 
-    @FXML
-    private ImageView imgHome;
-
 
     // --------------------------- Quản Lý Danh Mục FORM  -------------------------------------------------------
-
-
 
     @FXML
     private JFXButton QLProduct_Btn;
 
     @FXML
-    private JFXButton Notification_btn;
-
-    @FXML
     private JFXButton logout_btn;
-
-    @FXML
-    private AnchorPane QLDanhMuc_Form;
-
-
 
 
     // ------------------------------- FORM Quản Lý Tài Khoản --------------------------------------------
@@ -139,73 +122,69 @@ public class AdminController implements Initializable {
 
     private User user;
 
-    public void loadDataAccount()
-    {
+    public void loadDataAccount() {
         ListAccount.clear();
         ObslistAccounts.clear();
         ListAccount = account_Dao.SelectAll();
-        for (Account account : ListAccount) {
-            ObslistAccounts.add(account);
-        }
+        ObslistAccounts.addAll(ListAccount);
         initTableInAccountForm();
     }
-    public void initTableInAccountForm()
-    {
-        userName_Col.setCellValueFactory(new PropertyValueFactory<Account,String>("UserName"));
-        Password_Col.setCellValueFactory(new PropertyValueFactory<Account,String>("Password"));
-        Status_Col.setCellValueFactory(new PropertyValueFactory<Account,String>("Status"));
-        PhanQuyen_Col.setCellValueFactory(new PropertyValueFactory<Account,String>("PhanQuyen"));
+
+    public void initTableInAccountForm() {
+        userName_Col.setCellValueFactory(new PropertyValueFactory<>("UserName"));
+        Password_Col.setCellValueFactory(new PropertyValueFactory<>("Password"));
+        Status_Col.setCellValueFactory(new PropertyValueFactory<>("Status"));
+        PhanQuyen_Col.setCellValueFactory(new PropertyValueFactory<>("PhanQuyen"));
 
         tbleViewAccount.setItems(ObslistAccounts);
 
     }
+
     //Tìm kiếm tài khoản
-    public void SearchAccount(ActionEvent e){
-        if(!isStringEmpty(searchUser_AccountFrm.getText())){
-            Account a = account_Dao.SelectByID(new Account(0,searchUser_AccountFrm.getText(),""));
+    public void SearchAccount() {
+        if (!isStringEmpty(searchUser_AccountFrm.getText())) {
+            Account a = account_Dao.SelectByID(new Account(0, searchUser_AccountFrm.getText(), ""));
             ListAccount.clear();
             ObslistAccounts.clear();
             ListAccount = account_Dao.SelectAll();
             ObslistAccounts.add(a);
             initTableInAccountForm();
-        }else {
-            AlertNotification.showAlertWarning("","Nhập tên ta khoản cần tìm");
+        } else {
+            AlertNotification.showAlertWarning("", "Nhập tên ta khoản cần tìm");
         }
     }
 
 
     @FXML
-    public void OnLockAccount(ActionEvent e){
+    public void OnLockAccount() {
         int selected = tbleViewAccount.getSelectionModel().getSelectedIndex();
         Account accout = tbleViewAccount.getSelectionModel().getSelectedItem();
-            if(accout.getStatus().equals("ON"))
-            {
-                accout.setStatus("LOCK");
-            }else if(accout.getStatus().equals("LOCK")) {
-                accout.setStatus("ON");
-            }
+        if (accout.getStatus().equals("ON")) {
+            accout.setStatus("LOCK");
+        } else if (accout.getStatus().equals("LOCK")) {
+            accout.setStatus("ON");
+        }
 
-            int check = account_Dao.Update(accout);
-            if(check>0)
-            {
-                ObslistAccounts.get(selected).setStatus(accout.getStatus());
-                AlertNotification.showAlertSucces("", "Tài khoản: "+accout.getUserName()+" vừa "+accout.getStatus());
-                tbleViewAccount.refresh();
-            }else {
-                AlertNotification.showAlertWarning("", "Có lỗi xảy ra");
-            }
+        int check = account_Dao.Update(accout);
+        if (check > 0) {
+            ObslistAccounts.get(selected).setStatus(accout.getStatus());
+            AlertNotification.showAlertSucces("", "Tài khoản: " + accout.getUserName() + " vừa " + accout.getStatus());
+            tbleViewAccount.refresh();
+        } else {
+            AlertNotification.showAlertWarning("", "Có lỗi xảy ra");
+        }
 
     }
 
     @FXML
-    public void PhanQuyen(ActionEvent e) {
+    public void PhanQuyen() {
 
         Account accout = tbleViewAccount.getSelectionModel().getSelectedItem();
 
         if (accout != null && !PhanQuyen_AccountFrm.getValue().equals("Phân Quyền")) {
 
             String phanquyen = PhanQuyen_AccountFrm.getValue();
-            if (accout.getPhanQuyen() != phanquyen) {
+            if (!accout.getPhanQuyen().equals(phanquyen)) {
                 if (AlertNotification.showAlertConfirmation("WARNING", "Bạn chắc chắn " +
                         "muốn thay đổi?")) {
                     accout.setPhanQuyen(phanquyen);
@@ -214,22 +193,21 @@ public class AdminController implements Initializable {
                     tbleViewAccount.refresh();
                 }
             }
-        }else {
-            AlertNotification.showAlertWarning("","Bạn chưa chọn người dùng");
+        } else {
+            AlertNotification.showAlertWarning("", "Bạn chưa chọn người dùng");
         }
     }
 
-    public void showInformationUser()
-    {
+    public void showInformationUser() {
         Account accout = tbleViewAccount.getSelectionModel().getSelectedItem();
-        user = new User(accout.getID(),"");
+        user = new User(accout.getID(), "");
         user = user_dao.SelectByID(user);
 
         informationUser_AccountFrm.setVisible(true);
         LbName_AccountFrm.setText(user.getFullName());
         LbLienHe_AccountFrm.setText(user.getNumberPhone());
-        if(user.getDateOfBirth()!=null)
-            LbBirth_AccountFrm.setText(user.getDateOfBirth().toLocalDate()+"");
+        if (user.getDateOfBirth() != null)
+            LbBirth_AccountFrm.setText(String.valueOf(user.getDateOfBirth().toLocalDate()));
         LbAddress_Account_Frm.setText(user.getAddress());
     }
 
@@ -239,8 +217,6 @@ public class AdminController implements Initializable {
     @FXML
     private AnchorPane QLVoucher_form;
 
-    @FXML
-    private Tab voucherTab;
     @FXML
     private TextField maVoucher_txt;
 
@@ -269,9 +245,6 @@ public class AdminController implements Initializable {
     private ImageView imgVoucher;
 
     @FXML
-    private JFXButton addImgVoucher_btn;
-
-    @FXML
     private TextField sotienGiam_txt;
 
     @FXML
@@ -280,7 +253,7 @@ public class AdminController implements Initializable {
     @FXML
     private TextField EmailUserVoucher_txt;
 
-                    //-------------------------TAB QUẢN LÝ VOUCHER------------------------
+    //-------------------------TAB QUẢN LÝ VOUCHER------------------------
 
     @FXML
     private TableView<VoucherModel> TableView_Voucher;
@@ -304,9 +277,6 @@ public class AdminController implements Initializable {
     private TableColumn<VoucherModel, Date> colNgayKetThuc;
 
     @FXML
-    private Tab QLVoucher_tab;
-
-    @FXML
     private ImageView imgRefreshVoucher;
 
     @FXML
@@ -320,58 +290,54 @@ public class AdminController implements Initializable {
     private String imgVoucherTemp;
     private List<VoucherModel> listVouchers = new ArrayList<>();
 
-    private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
+    private final VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
 
     private VoucherModel voucher;
     private MyListener<VoucherModel> myListener_Voucher;
 
-    public void clickChooseVoucher(){
-        myListener_Voucher = new MyListener<VoucherModel>() {
-            @Override
-            public void onClickListener(VoucherModel t) {
-                voucher = t;
-
-                showInformationVoucher();
-            }
+    public void clickChooseVoucher() {
+        myListener_Voucher = t -> {
+            voucher = t;
+            showInformationVoucher();
         };
     }
 
     //Khi nhấn vào 1 voucher bâất kì thì hiển thị thông tin
-    public void showInformationVoucher(){
+    public void showInformationVoucher() {
         Platform.runLater(() -> ramdomVoucher_btn.setDisable(true));
-        try{
-            if(voucher.getImgVoucher().contains(":")){
+        try {
+            if (voucher.getImgVoucher().contains(":")) {
                 imgVoucher.setImage(new Image(voucher.getImgVoucher()));
-            }else{
-                imgVoucher.setImage(new Image(getClass().getResourceAsStream(voucher.getImgVoucher())));
+            } else {
+                imgVoucher.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(voucher.getImgVoucher()))));
             }
-        }catch (Exception e){
-            imgVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
-            System.out.println("Không load được ảnh: "+e.getMessage());
+        } catch (Exception e) {
+            imgVoucher.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png"))));
+            System.out.println("Không load được ảnh: " + e.getMessage());
         }
         maVoucher_txt.setText(voucher.getMaVoucher());
-        tileGiamGia_txt.setText(voucher.getTiLeGiamGia()+"");
-        if(voucher.getSoTienGiam()!=null)
+        tileGiamGia_txt.setText(String.valueOf(voucher.getTiLeGiamGia()));
+        if (voucher.getSoTienGiam() != null)
             sotienGiam_txt.setText(App.numf.format(voucher.getSoTienGiam()));
         else
             sotienGiam_txt.setText("");
         App.formatter.format(voucher.getNgayKetThuc());
         ngayKTDate.setValue(voucher.getNgayKetThuc().toLocalDate());
         ngayBatDau_date.setValue(voucher.getNgayBatDau().toLocalDate());
-        soLuong_txt.setText(voucher.getSoLuong()+"");
+        soLuong_txt.setText(String.valueOf(voucher.getSoLuong()));
         noiDung_txa.setText(voucher.getNoiDung());
         EmailUserVoucher_txt.setDisable(true);
         EmailUserVoucher_txt.setText(voucher.getUser().getEmail());
         them_btn.setDisable(true);
     }
-    public void addImageVoucher(ActionEvent e){
-        imgVoucherTemp = importImageOnForm(QLVoucher_form,imgVoucher);
+
+    public void addImageVoucher() {
+        imgVoucherTemp = importImageOnForm(QLVoucher_form, imgVoucher);
     }
 
-    public void refreshVoucher()
-    {
+    public void refreshVoucher() {
         listVouchers.clear();
-        listVouchers = voucherDao.SelectAll();
+        listVouchers = voucherDao.selectAllVoucherLeftTime();
         displayVoucherForm();
         them_btn.setDisable(false);
         ramdomVoucher_btn.setDisable(false);
@@ -379,7 +345,8 @@ public class AdminController implements Initializable {
 
         setEmptyElement();
     }
-    public void ConverTab(MouseEvent e){
+
+    public void ConverTab(MouseEvent e) {
         //Tab đầu tiên = 0;
         int selectedIndex = tabPane_Voucher.getSelectionModel().getSelectedIndex();
         if (e.getSource() == imgRefreshVoucher) {
@@ -392,7 +359,7 @@ public class AdminController implements Initializable {
         }
     }
 
-    public void removeKiTuDacBiet(String str){
+    public void removeKiTuDacBiet(String str) {
         if (str.contains(".")) {
             str = str.replace('.', ' ');
         }
@@ -403,27 +370,29 @@ public class AdminController implements Initializable {
             str = str.replaceAll(" ", "");
         }
     }
-    public void checkInputGiamGia(KeyEvent e){
-        if(e.getSource() == tileGiamGia_txt){
+
+    public void checkInputGiamGia(KeyEvent e) {
+        if (e.getSource() == tileGiamGia_txt) {
             sotienGiam_txt.setDisable(true);
-        }else if(e.getSource() == sotienGiam_txt){
+        } else if (e.getSource() == sotienGiam_txt) {
             tileGiamGia_txt.setDisable(true);
-        }else if(e.getSource() == EmailUserVoucher_txt){
+        } else if (e.getSource() == EmailUserVoucher_txt) {
             soLuong_txt.setDisable(true);
             soLuong_txt.setText("1");
         }
-        if(tileGiamGia_txt.getText().equals("")){
+        if (tileGiamGia_txt.getText().equals("")) {
             sotienGiam_txt.setDisable(false);
         }
-        if(isStringEmpty(sotienGiam_txt.getText())){
+        if (isStringEmpty(sotienGiam_txt.getText())) {
             tileGiamGia_txt.setDisable(false);
         }
-        if(isStringEmpty(EmailUserVoucher_txt.getText())){
+        if (isStringEmpty(EmailUserVoucher_txt.getText())) {
             soLuong_txt.setDisable(false);
         }
 
     }
-    public void setEmptyElement(){
+
+    public void setEmptyElement() {
         maVoucher_txt.setText("");
         tileGiamGia_txt.setText("");
         sotienGiam_txt.setText("");
@@ -433,8 +402,10 @@ public class AdminController implements Initializable {
         ngayKTDate.setValue(null);
         imgVoucher.setImage(null);
         EmailUserVoucher_txt.setText("");
+
     }
-    public void AddVoucher(ActionEvent e) throws SQLException {
+
+    public void AddVoucher() throws SQLException {
 
 
         if (ngayKTDate.getValue().compareTo(ngayBatDau_date.getValue()) >= 0) {
@@ -461,26 +432,26 @@ public class AdminController implements Initializable {
             if (!isStringEmpty(EmailUserVoucher_txt.getText())) {
                 if (voucherDao.GiftVoucher(voucher, EmailUserVoucher_txt.getText()) <= 0) {
                     AlertNotification.showAlertError("", "Người dùng không tồn tại");
-                }else{
+                } else {
                     AlertNotification.showAlertSucces("", "Thêm thành công");
                     setEmptyElement();
                     refreshVoucher();
                 }
-            }else{
+            } else {
                 if (voucherDao.Insert(voucher)) {
                     AlertNotification.showAlertSucces("", "Thêm thành công");
                     setEmptyElement();
-                }else {
+                } else {
                     AlertNotification.showAlertError("", "Có lỗi xảy ra");
                 }
             }
 
-        }else{
+        } else {
             AlertNotification.showAlertWarning("", "Ngày kết thúc voucher phải lớn hơn ngày bắt đầu.");
         }
     }
 
-    public void updateVoucher(ActionEvent e) throws SQLException {
+    public void updateVoucher() throws SQLException {
         if (ngayKTDate.getValue().compareTo(ngayBatDau_date.getValue()) >= 0) {
             float tilegiamgia = 0;
             if (!tileGiamGia_txt.getText().equals("")) {
@@ -501,38 +472,38 @@ public class AdminController implements Initializable {
                     (Integer.parseInt(soLuong_txt.getText())), noiDung_txa.getText(), imgVoucherTemp,
                     Date.valueOf(ngayBatDau_date.getValue()), Date.valueOf(ngayKTDate.getValue()));
 
-                if (voucherDao.Update(voucher)>0) {
-                    AlertNotification.showAlertSucces("", "Sửa thành công");
-                    setEmptyElement();
-                }else {
-                    AlertNotification.showAlertError("", "Có lỗi xảy ra");
+            if (voucherDao.Update(voucher) > 0) {
+                AlertNotification.showAlertSucces("", "Sửa thành công");
+                setEmptyElement();
+            } else {
+                AlertNotification.showAlertError("", "Có lỗi xảy ra");
             }
-        }else{
+        } else {
             AlertNotification.showAlertWarning("", "Ngày kết thúc voucher phải lớn hơn ngày bắt đầu.");
         }
     }
 
-    public void removeVoucher(ActionEvent e)
-    {
-        if(AlertNotification.showAlertConfirmation("","Bạn chắc chắn muốn xóa voucher này?")){
-            if(voucherDao.Delete(voucher)>0){
-                AlertNotification.showAlertSucces("","Xóa thành công");
+    public void removeVoucher() {
+        if (AlertNotification.showAlertConfirmation("", "Bạn chắc chắn muốn xóa voucher này?")) {
+            if (voucherDao.Delete(voucher) > 0) {
+                AlertNotification.showAlertSucces("", "Xóa thành công");
                 refreshVoucher();
-            }else {
-                AlertNotification.showAlertError("","Đã xảy ra lỗi");
+            } else {
+                AlertNotification.showAlertError("", "Đã xảy ra lỗi");
             }
         }
     }
+
     @FXML
-    public void FormatDate(MouseEvent e){
-        if(e.getSource() == ngayBatDau_date){
+    public void FormatDate(MouseEvent e) {
+        if (e.getSource() == ngayBatDau_date) {
             ConverterFormDatepicker(ngayBatDau_date);
-        }else if(e.getSource() == ngayKTDate){
+        } else if (e.getSource() == ngayKTDate) {
             ConverterFormDatepicker(ngayKTDate);
         }
     }
 
-    public void RamDomMaVoucher(ActionEvent e){
+    public void RamDomMaVoucher() {
         RanDom rd = new RanDom();
         Thread thread = new Thread(rd);
         thread.start();
@@ -546,40 +517,40 @@ public class AdminController implements Initializable {
         });
     }
 
-    public void displayVoucherForm(){
-        int col = 0;
+    public void displayVoucherForm() {
         int row = 1;
+        gridVoucher.getChildren().clear();
         clickChooseVoucher();
         try {
-            for (int i = 0; i < listVouchers.size(); i++) {
+            for (VoucherModel voucher : listVouchers) {
                 FXMLLoader fxmlLoader = new FXMLLoader();
                 fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/Voucher.fxml"));
                 AnchorPane anchorPane = fxmlLoader.load();
                 VoucherController item = fxmlLoader.getController();
-                item.setData(myListener_Voucher,listVouchers.get(i));
+                item.setData(myListener_Voucher, voucher);
 
                 row++;
-                setDataGridPane(gridVoucher,anchorPane,col,row);
+                setDataGridPane(gridVoucher, anchorPane, 0, row);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    private ObservableList<VoucherModel> obsListVoucher = FXCollections.observableArrayList();
-    //Quản lý voucher
-    public void setDataQLVoucher(){
-        obsListVoucher.clear();
-        for(VoucherModel vc : listAllVouchers){
-            obsListVoucher.add(vc);
-        }
 
-        colMaVoucher.setCellValueFactory(new PropertyValueFactory<VoucherModel,String>("MaVoucher"));
-        colTiLeGiam.setCellValueFactory(new PropertyValueFactory<VoucherModel,Float>("TiLeGiamGia"));
-        ColSoTienGiam.setCellValueFactory(new PropertyValueFactory<VoucherModel,BigDecimal>("soTienGiam"));
-        ColSoLuongVoucher.setCellValueFactory(new PropertyValueFactory<VoucherModel,Integer>("soLuong"));
-        colNgayBatDau.setCellValueFactory(new PropertyValueFactory<VoucherModel,Date>("ngayBatDau"));
-        colNgayKetThuc.setCellValueFactory(new PropertyValueFactory<VoucherModel,Date>("ngayKetThuc"));
-        ColNoiDung.setCellValueFactory(new PropertyValueFactory<VoucherModel,String>("noiDung"));
+    private ObservableList<VoucherModel> obsListVoucher = FXCollections.observableArrayList();
+
+    //Quản lý voucher
+    public void setDataQLVoucher() {
+        obsListVoucher.clear();
+        obsListVoucher.addAll(listAllVouchers);
+
+        colMaVoucher.setCellValueFactory(new PropertyValueFactory<>("MaVoucher"));
+        colTiLeGiam.setCellValueFactory(new PropertyValueFactory<>("TiLeGiamGia"));
+        ColSoTienGiam.setCellValueFactory(new PropertyValueFactory<>("soTienGiam"));
+        ColSoLuongVoucher.setCellValueFactory(new PropertyValueFactory<>("soLuong"));
+        colNgayBatDau.setCellValueFactory(new PropertyValueFactory<>("ngayBatDau"));
+        colNgayKetThuc.setCellValueFactory(new PropertyValueFactory<>("ngayKetThuc"));
+        ColNoiDung.setCellValueFactory(new PropertyValueFactory<>("noiDung"));
 
         TableView_Voucher.setItems(obsListVoucher);
     }
@@ -594,9 +565,6 @@ public class AdminController implements Initializable {
 
     @FXML
     private JFXTextField IDProductSearch_jtxt;
-
-    @FXML
-    private JFXButton deleteProduct;
 
     private MyListener<Product> myListenerProducts;
     private Product prod_temp = null;
@@ -625,11 +593,11 @@ public class AdminController implements Initializable {
     @FXML
     private Label lb_TongDoanhThu;
 
-    private MessengeDao messengeDao = MessengeDao.getInstance(connectionPool);
+    private final MessengeDao messengeDao = MessengeDao.getInstance(connectionPool);
     int col = 0;
     int row = 1;
 
-    public void clearDataProduct(){
+    public void clearDataProduct() {
         lb_IdSeller.setText("");
         nameSeller_lb.setText("");
         lb_maSP.setText("");
@@ -640,93 +608,92 @@ public class AdminController implements Initializable {
         IDProductSearch_jtxt.setText("");
         prod_temp = null;
     }
+
     @FXML
-    public void ResetDataForm(ActionEvent e)
-    {
+    public void ResetDataForm() {
         refreshDataProduct();
     }
-    @FXML
-    public void deleteProduct(ActionEvent e) throws SQLException {
-            if (prod_temp!=null && AlertNotification.showAlertConfirmation("","Bạn chắc chắn muốn xóa sản phẩm này?")) {
-                if(prod_dao.Update(prod_temp)>0){
-                    AlertNotification.showAlertSucces("","Xóa thành công");
 
-                    Messenger messenger = new Messenger(0,"/com/epu/oop/myshop/image/icon-admin.png","ADMIN","Do sản phẩm "+prod_temp.getID() +
-                            " - "+prod_temp.getTenSP()+" đã vi phạm quy định và chính sách của chúng tôi nên đã bị xóa\nMọi thắc vui lòng liên hệ với chúng tôi",new Date(System.currentTimeMillis()),false,prod_temp.getUser().getID());
-                    messengeDao.Insert(messenger);
-                    prod_temp = null;
-                    refreshDataProduct();
-                }else {
-                    AlertNotification.showAlertError("","Có lỗi xảy ra");
-                }
+    @FXML
+    public void deleteProduct() throws SQLException {
+        if (prod_temp != null && AlertNotification.showAlertConfirmation("", "Bạn chắc chắn muốn xóa sản phẩm này?")) {
+            if (prod_dao.Update(prod_temp) > 0) {
+                AlertNotification.showAlertSucces("", "Xóa thành công");
+
+                Messenger messenger = new Messenger(0, "/com/epu/oop/myshop/image/icon-admin.png", "ADMIN", "Do sản phẩm " + prod_temp.getID() +
+                        " - " + prod_temp.getTenSP() + " đã vi phạm quy định và chính sách của chúng tôi nên đã bị xóa\nMọi thắc vui lòng liên hệ với chúng tôi", new Date(System.currentTimeMillis()), false, prod_temp.getUser().getID());
+                messengeDao.Insert(messenger);
+                prod_temp = null;
+                refreshDataProduct();
+            } else {
+                AlertNotification.showAlertError("", "Có lỗi xảy ra");
             }
+        }
 
     }
 
-    public void searchProduct(ActionEvent e){
-        if(isStringEmpty(IDProductSearch_jtxt.getText())){
-            AlertNotification.showAlertWarning("","Nhập mã sản phẩm cần tìm");
-        }else {
-            Product product = prod_dao.SelectByID(new Product(Integer.parseInt(IDProductSearch_jtxt.getText()),""));
-            if(product!=null){
+    public void searchProduct() {
+        if (isStringEmpty(IDProductSearch_jtxt.getText())) {
+            AlertNotification.showAlertWarning("", "Nhập mã sản phẩm cần tìm");
+        } else {
+            Product product = prod_dao.SelectByID(new Product(Integer.parseInt(IDProductSearch_jtxt.getText()), ""));
+            if (product != null) {
                 clearDataProduct();
-                IDProductSearch_jtxt.setText(product.getID()+"");
+                IDProductSearch_jtxt.setText(String.valueOf(product.getID()));
                 grid_QLProduct.getChildren().clear();
                 setDataProducts(product);
-            }else {
-                AlertNotification.showAlertWarning("","Sản phẩm không tồn tại");
+            } else {
+                AlertNotification.showAlertWarning("", "Sản phẩm không tồn tại");
 
             }
         }
     }
-    public void showInforProduct()
-    {
-        lb_IdSeller.setText(prod_temp.getUser().getID()+"");
+
+    public void showInforProduct() {
+        lb_IdSeller.setText(String.valueOf(prod_temp.getUser().getID()));
         nameSeller_lb.setText(prod_temp.getUser().getFullName());
-        lb_maSP.setText("0"+prod_temp.getID());
+        lb_maSP.setText("0" + prod_temp.getID());
         lb_TenSP.setText(prod_temp.getTenSP());
-        lb_PrriceProduct.setText(App.numf.format(prod_temp.getPrice())+"đ");
-        lb_SoldProduct.setText(prod_temp.getSold()+"");
-        lb_TongDoanhThu.setText(App.numf.format(prod_temp.getTotalRevenue())+"đ");
+        lb_PrriceProduct.setText(App.numf.format(prod_temp.getPrice()) + "đ");
+        lb_SoldProduct.setText(String.valueOf(prod_temp.getSold()));
+        lb_TongDoanhThu.setText(App.numf.format(prod_temp.getTotalRevenue()) + "đ");
     }
+
     public void onclick() {
-        myListenerProducts = new MyListener<Product>() {
-            @Override
-            public void onClickListener(Product t) {
-                prod_temp = t;
-                showInforProduct();
-            }
+        myListenerProducts = t -> {
+            prod_temp = t;
+            showInforProduct();
         };
 
 
     }
 
-    public void refreshDataProduct(){
+    public void refreshDataProduct() {
         clearDataProduct();
         SizeProduct.set(0);
         listProduct.clear();
-        row=1;
-        col=0;
+        row = 1;
+        col = 0;
         grid_QLProduct.getChildren().clear();
         loadDataProduct();
     }
 
     public void displayProduct() {
         int index = SizeProduct.get();
-        while (index<listProduct.size()){
+        while (index < listProduct.size()) {
             setDataProducts(listProduct.get(index));
             index++;
         }
-        System.out.println("ist Product: "+listProduct.size());
-        SizeProduct.set(SizeProduct.get() + (listProduct.size()-SizeProduct.get()));
+        System.out.println("ist Product: " + listProduct.size());
+        SizeProduct.set(SizeProduct.get() + (listProduct.size() - SizeProduct.get()));
     }
 
-    public void ScrollProduct(ScrollEvent e) throws SQLException {
+    @FXML
+    public void ScrollProduct() {
         loadDataProduct();
     }
 
-    public void loadDataProduct()
-    {
+    public void loadDataProduct() {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -735,7 +702,7 @@ public class AdminController implements Initializable {
                 return null;
             }
         };
-        Thread thread  = new Thread(task);
+        Thread thread = new Thread(task);
         thread.start();
 
         task.setOnSucceeded(event -> {
@@ -748,8 +715,8 @@ public class AdminController implements Initializable {
             thread.interrupt();
         });
     }
-    public void setDataProducts(Product product)
-    {
+
+    public void setDataProducts(Product product) {
 
         onclick();
         try {
@@ -757,24 +724,23 @@ public class AdminController implements Initializable {
             fxmlLoader.setLocation(getClass().getResource("/com/epu/oop/myshop/GUI/ItemProductOfMarket.fxml"));
             AnchorPane anchorPane = fxmlLoader.load();
             ProductsOfMarketController item = fxmlLoader.getController();
-                item.setData(myListenerProducts, product);
+            item.setData(myListenerProducts, product);
 
-                if(col == 2)
-                {
-                    col = 0;
-                    row++;
-                }
+            if (col == 2) {
+                col = 0;
+                row++;
+            }
 
-                grid_QLProduct.add(anchorPane, col++, row); //(child,column,row)
-                //set grid width
-                grid_QLProduct.setMinWidth(Region.USE_COMPUTED_SIZE);
-                grid_QLProduct.setPrefWidth(Region.USE_COMPUTED_SIZE);
-                grid_QLProduct.setMaxWidth(Region.USE_PREF_SIZE);
+            grid_QLProduct.add(anchorPane, col++, row); //(child,column,row)
+            //set grid width
+            grid_QLProduct.setMinWidth(Region.USE_COMPUTED_SIZE);
+            grid_QLProduct.setPrefWidth(Region.USE_COMPUTED_SIZE);
+            grid_QLProduct.setMaxWidth(Region.USE_PREF_SIZE);
 
-                //set grid height
-                grid_QLProduct.setMinHeight(Region.USE_COMPUTED_SIZE);
-                grid_QLProduct.setPrefHeight(Region.USE_COMPUTED_SIZE);
-                grid_QLProduct.setMaxHeight(Region.USE_PREF_SIZE);
+            //set grid height
+            grid_QLProduct.setMinHeight(Region.USE_COMPUTED_SIZE);
+            grid_QLProduct.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            grid_QLProduct.setMaxHeight(Region.USE_PREF_SIZE);
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -783,12 +749,9 @@ public class AdminController implements Initializable {
     }
 
 
-
-
-
 //-------------------------------------------------------------
 
-    public void ConverScene(ActionEvent e) throws SQLException {
+    public void ConverScene(ActionEvent e) {
         if (e.getSource() == QLAccount_Btn) {
             QLSanPham_Form.setVisible(false);
             QLVoucher_form.setVisible(false);
@@ -802,42 +765,37 @@ public class AdminController implements Initializable {
             QLSanPham_Form.setVisible(true);
 
             refreshDataProduct();
-        }else if(e.getSource() == QLVoucher_btn){
+        } else if (e.getSource() == QLVoucher_btn) {
 
             QLAccount_Form.setVisible(false);
             QLSanPham_Form.setVisible(false);
             QLVoucher_form.setVisible(true);
             refreshVoucher();
-        }else if(e.getSource() == logout_btn)
-        {
-            try{
-                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/LoginForm.fxml","Đăng nhập");
+        } else if (e.getSource() == logout_btn) {
+            try {
+                ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/LoginForm.fxml", "Đăng nhập");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
-
     }
-    @FXML
 
-    public void goHome(MouseEvent e)
-    {
-         if(e.getSource() == imgHome){
-        try{
-            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(),"/com/epu/oop/myshop/GUI/PageHome.fxml","Trang chủ");
+    @FXML
+    public void backHome(MouseEvent e) {
+        try {
+            ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/PageHome.fxml", "Trang chủ");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-    }
-    public void setDefaulValue()
-    {
-        ObservableList<String> PhanQuyen = FXCollections.observableArrayList("ADMIN", "Seller","Member");
+
+    public void setDefaulValue() {
+        ObservableList<String> PhanQuyen = FXCollections.observableArrayList("ADMIN", "Seller", "Member");
         PhanQuyen_AccountFrm.setItems(PhanQuyen);
     }
 
     //Method chung cho import ảnh từ hệ thống máy tính
-    public String importImageOnForm(AnchorPane anchorPane,ImageView img) {
+    public String importImageOnForm(AnchorPane anchorPane, ImageView img) {
         String url = null;
         FileChooser open = new FileChooser();
         open.setTitle("Vui lòng chọn ảnh");
@@ -853,25 +811,27 @@ public class AdminController implements Initializable {
         }
         return url;
     }
+
     //Kiểm tra chuỗi nhập vào có rỗng hay không
-    public boolean isStringEmpty(String str){
-        return str==null || str.equals("") || str.length()==0;
+    public boolean isStringEmpty(String str) {
+        return str == null || str.length() == 0;
     }
 
     //Định dạng lại ngày tháng theo dd/mm/yyy trong datepicker
-    public void ConverterFormDatepicker(DatePicker datePicker){
+    public void ConverterFormDatepicker(DatePicker datePicker) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", new Locale("vi"));
         // Set the formatter on the date picker
-        datePicker.setConverter(new StringConverter<LocalDate>() {
+        datePicker.setConverter(new StringConverter<>() {
             @Override
             public String toString(LocalDate date) {
                 if (date != null) {
                     return dateFormatter.format(date);
-                }else{
+                } else {
                     return "";
                 }
 
             }
+
             @Override
             public LocalDate fromString(String date) {
                 if (date != null && !date.isEmpty()) {
@@ -883,7 +843,8 @@ public class AdminController implements Initializable {
         });
     }
 
-    public void setDataGridPane(GridPane gridPane,AnchorPane anchorPane,int col,int row){
+
+    public void setDataGridPane(GridPane gridPane, AnchorPane anchorPane, int col, int row) {
         gridPane.add(anchorPane, col, row); // (child,column,row)
         // set grid width
         gridPane.setMinWidth(Region.USE_COMPUTED_SIZE);
@@ -899,22 +860,20 @@ public class AdminController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setDefaulValue();
-        imgHome.setImage(new Image("C:\\Users\\84374\\Downloads\\icon-home.png"));
-        imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
-        imgRefreshVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-refresh.png")));
-        imgLoading.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif")));
-        imgRefreshVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-refresh.png")));
+        imgHome.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/logo-back-home.png"))));
+        imgLoading.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/loading.gif"))));
+        imgRefreshVoucher.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/profile/icon-refresh.png"))));
     }
 }
 
 class RanDom extends Task<String> {
 
     private static final SecureRandom random = new SecureRandom();
-    private ConnectionPool connectionPool = ConnectionPool.getInstance();
-    private VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
+    private final ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private final VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
 
     @Override
-    protected String call() throws Exception {
+    protected String call() {
         String result;
         do {
             byte[] bytes = new byte[6];
@@ -925,14 +884,5 @@ class RanDom extends Task<String> {
         return result;
     }
 
-//        String resul = null;
-//        long ressult = 0;
-//        for(int i = 1;i<=10000;i++){
-//            ressult+=i;
-//            resul = uuid.toString().replaceAll("-", "").substring(0, 6); // Lấy 12 ký tự đầu tiên
-//            updateValue(String.valueOf(ressult));
-//
-//        }
-//        return resul;
-    }
+}
 

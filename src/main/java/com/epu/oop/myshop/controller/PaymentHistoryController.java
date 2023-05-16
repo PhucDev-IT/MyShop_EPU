@@ -1,21 +1,19 @@
 package com.epu.oop.myshop.controller;
 
-import com.epu.oop.myshop.Dao.Account_Dao;
-import com.epu.oop.myshop.Dao.PaymentHistory_Dao;
+
 import com.epu.oop.myshop.Dao.UserDao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 import com.epu.oop.myshop.Main.App;
-import com.epu.oop.myshop.model.Account;
+
 import com.epu.oop.myshop.model.PaymentHistory;
 import com.epu.oop.myshop.model.Temp;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
 
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.Objects;
+
 
 public class PaymentHistoryController {
 
@@ -34,16 +32,14 @@ public class PaymentHistoryController {
     @FXML
     private Label soTien_lb;
 
-    private ConnectionPool connectionPool = ConnectionPool.getInstance();
-    private UserDao userDao = UserDao.getInstance(connectionPool);
+
 
     public void setData(Object[] obj)
     {
         PaymentHistory p = (PaymentHistory) obj[0];
         String nguoiNhan = (String) obj[1];
 
-
-        icon_RutTien_IMG.setImage(new Image(getClass().getResourceAsStream(p.getImgSrcIcon())));
+        icon_RutTien_IMG.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(p.getImgSrcIcon()))));
         soTien_lb.setText(App.numf.format(p.getSoTien())+"đ");
         ngayGiaoDich_Lb.setText(p.getNgayGiaoDich()+"");
 

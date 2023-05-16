@@ -37,7 +37,7 @@
             </Button>
          </children>
       </AnchorPane>
-      <Label fx:id="register_label" layoutX="111.0" layoutY="337.0" onMouseClicked="#click" styleClass="register" stylesheets="@../StyleCSS/Login_register.css" text="Đăng ký tại đây" textFill="#1a4ef8">
+      <Label fx:id="register_label" layoutX="115.0" layoutY="342.0" onMouseClicked="#click" styleClass="register" stylesheets="@../StyleCSS/Login_register.css" text="Đăng ký tại đây" textFill="#1a4ef8">
          <font>
             <Font name="Arial" size="17.0" />
          </font></Label>
@@ -47,7 +47,12 @@
          </font>
       </Label>
       <Text id="myshop" fx:id="myshop" fill="WHITE" layoutX="118.0" layoutY="122.0" onMouseClicked="#click" strokeType="OUTSIDE" strokeWidth="0.0" text="MYSHOP" />
-      <ImageView fx:id="imgOfLogin" fitHeight="150.0" fitWidth="268.0" layoutX="47.0" layoutY="156.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imgChungNhan1" fitHeight="44.0" fitWidth="161.0" layoutX="14.0" layoutY="276.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imgChungNhan2" fitHeight="44.0" fitWidth="161.0" layoutX="14.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="vanchuyen1" fitHeight="38.0" fitWidth="59.0" layoutX="216.0" layoutY="227.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="vanchuyen2" fitHeight="38.0" fitWidth="59.0" layoutX="295.0" layoutY="231.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="vanchuyen3" fitHeight="38.0" fitWidth="59.0" layoutX="216.0" layoutY="271.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="vanchuyen4" fitHeight="38.0" fitWidth="59.0" layoutX="295.0" layoutY="271.0" pickOnBounds="true" preserveRatio="true" />
       <AnchorPane fx:id="paneForgot_pass" layoutX="54.0" layoutY="75.0" prefHeight="386.0" prefWidth="692.0" style="-fx-background-color: #f1f5d0;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <TextField fx:id="txt_Email_forpass" alignment="CENTER" layoutX="184.0" layoutY="130.0" prefHeight="31.0" prefWidth="324.0" promptText="Nhập tài khoản Email cần tìm">

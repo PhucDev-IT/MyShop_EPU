@@ -24,10 +24,7 @@ public class Bank implements Serializable {
     private User user;
 
 
-    public Bank() {pushBank();}
-
-
-
+    public Bank(){}
     public Bank(User u)
     {
         this.user = u;

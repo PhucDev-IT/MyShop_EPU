@@ -56,7 +56,9 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
         String sql = "SELECT Voucher.*, Users.Email" +
                 " FROM Voucher" +
                 " LEFT JOIN VoucherUser ON Voucher.MaVoucher = VoucherUser.MaVoucher" +
-                " LEFT JOIN Users ON VoucherUser.ID_User = Users.Account_ID;";
+                " LEFT JOIN Users ON VoucherUser.ID_User = Users.Account_ID" +
+                " WHERE SoLuong>0";
+
 
         try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -132,12 +134,16 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
 
     @Override
     public int Delete(VoucherModel voucherModel)  {
-
+        int resul = 0;
         String sql = "BEGIN TRANSACTION " +
                 " IF EXISTS(SELECT * FROM orders WHERE MaVoucher = ?)" +
                 " BEGIN" +
                 "    UPDATE Voucher SET SoLuong = -1 WHERE MaVoucher = ?" +
                 " END" +
+                " IF EXISTS (SELECT * FROM VoucherUser WHERE MaVoucher = ?)" +
+                "   BEGIN" +
+                "       UPDATE Voucher SET SoLuong = -1 WHERE MaVoucher = ?" +
+                "   END" +
                 " ELSE" +
                 " BEGIN" +
                 "    DELETE FROM Voucher WHERE MaVoucher = ?" +
@@ -147,7 +153,11 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
             Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1,voucherModel.getMaVoucher());
-            statement.executeUpdate();
+            statement.setString(2,voucherModel.getMaVoucher());
+            statement.setString(3,voucherModel.getMaVoucher());
+            statement.setString(4,voucherModel.getMaVoucher());
+            statement.setString(5,voucherModel.getMaVoucher());
+            resul = statement.executeUpdate();
 
             statement.close();
             connection.close();
@@ -155,10 +165,10 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
             System.out.println(e.getMessage());
         }
 
-        return 0;
+        return resul;
     }
 
-    //Select tất cả voucher trừ những voucher người dùng đã sử dụng khi còn thời hạn
+    //Select tất cả voucher trừ những voucher người dùng đã sử dụng khi còn thời hạn (CHO NGUỜI DÙNG)
     public List<VoucherModel> getVoucherConTime(int IDUser) {
         List<VoucherModel> list = new ArrayList<>();
 
@@ -263,6 +273,40 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
             e.printStackTrace();
         }
         return result;
+    }
+    //Laay tat ca voucher dang con thoi gian (admin)
+    public List<VoucherModel> selectAllVoucherLeftTime(){
+        List<VoucherModel> list = new ArrayList<>();
+
+        String sql = "SELECT Voucher.*, Users.Email" +
+                " FROM Voucher" +
+                " LEFT JOIN VoucherUser ON Voucher.MaVoucher = VoucherUser.MaVoucher" +
+                " LEFT JOIN Users ON VoucherUser.ID_User = Users.Account_ID" +
+                " WHERE NgayKetThuc >= GETDATE() " +
+                " AND NgayBatDau <= GETDATE()" +
+                " AND SoLuong > 0 " ;
+
+
+        try(Connection connection = jdbcUtil.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery()){
+            while (rs.next()){
+                String MaVoucher = rs.getString("MaVoucher");
+                float TiLeGiamGia = rs.getFloat("TiLeGiamGia");
+                int SoLuong = rs.getInt("SoLuong");
+                BigDecimal SotienGiamGia = rs.getBigDecimal("SotienGiamGia");
+                String NoiDung = rs.getString("NoiDung");
+                String ImgVoucher = rs.getString("ImgVoucher");
+                Date NgayThem = rs.getDate("NgayBatDau");
+                Date NgayKetThuc = rs.getDate("NgayKetThuc");
+                String email = rs.getString("Email");
+                list.add(new VoucherModel(MaVoucher,TiLeGiamGia,SotienGiamGia,SoLuong,NoiDung,ImgVoucher,NgayThem,NgayKetThuc,new User(email)));
+            }
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
 }

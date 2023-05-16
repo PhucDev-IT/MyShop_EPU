@@ -1,27 +1,21 @@
 package com.epu.oop.myshop.Main;
 
-import com.epu.oop.myshop.Dao.Product_Dao;
 import com.epu.oop.myshop.model.CreateSQL;
-import com.epu.oop.myshop.model.Product;
-import com.epu.oop.myshop.model.User;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ConcurrentModificationException;
 import java.util.Locale;
-import java.util.Random;
+import java.util.Objects;
+
 
 public class App extends Application {
     public static final SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -43,7 +37,7 @@ public class App extends Application {
         stage.centerOnScreen();
         stage.setResizable(false);
         stage.setTitle("Trang chủ");
-        stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/com/epu/oop/myshop/image/logo-app.png")));
+        stage.getIcons().add(new Image(Objects.requireNonNull(this.getClass().getResourceAsStream("/com/epu/oop/myshop/image/logo-app.png"))));
         stage.setScene(scene);
         stage.show();
     }

@@ -13,6 +13,7 @@ import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MessengerController implements Initializable {
@@ -37,36 +38,32 @@ public class MessengerController implements Initializable {
     private MessengeDao messengeDao = MessengeDao.getInstance(connectionPool);
 
 
-    public void setData(Messenger messenger)
-    {
+    public void setData(Messenger messenger) {
         this.messenge = messenger;
 
-        if(messenger.getImgSrc()==null)
-        {
-            if(messenger.isStatus())
-            {
-                imgMess.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-open-messenge.png")));
-            }else{
-                imgMess.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-close-mess.png")));
+        if (messenger.getImgSrc() == null) {
+            if (messenger.isStatus()) {
+                imgMess.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-open-messenge.png"))));
+            } else {
+                imgMess.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-close-mess.png"))));
             }
-        }else{
-            imgMess.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-admin.png")));
+        } else {
+            imgMess.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/icon-admin.png"))));
         }
 
         Sender.setText(messenger.getNameSender());
         dateSend.setText(String.valueOf(messenger.getSentDate().toLocalDate()));
         content.setText(messenger.getContent());
 
-        if(messenger.isStatus()){
+        if (messenger.isStatus()) {
             status.setVisible(false);
-        }else {
+        } else {
             status.setVisible(true);
         }
     }
 
     public void click(MouseEvent e) throws SQLException {
-        if(!messenge.isStatus())
-        {
+        if (!messenge.isStatus()) {
             messenge.setStatus(true);
             messengeDao.Update(messenge);
         }

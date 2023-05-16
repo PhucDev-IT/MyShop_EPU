@@ -39,35 +39,35 @@ public class VoucherController {
     private MyListener<VoucherModel> myListener;
 
     @FXML
-    public void click(MouseEvent event){
+    public void click(MouseEvent event) {
         myListener.onClickListener(voucher);
     }
 
-    public void setData(MyListener<VoucherModel> myListener, VoucherModel vc){
+    public void setData(MyListener<VoucherModel> myListener, VoucherModel vc) {
         this.myListener = myListener;
         this.voucher = vc;
 
-        try{
-            if(vc.getImgVoucher().contains(":")){
+        try {
+            if (vc.getImgVoucher().contains(":")) {
                 imgVoucher.setImage(new Image(vc.getImgVoucher()));
-            }else{
+            } else {
                 imgVoucher.setImage(new Image(getClass().getResourceAsStream(vc.getImgVoucher())));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             imgVoucher.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
-            System.out.println("Không load được ảnh: "+e.getMessage());
+            System.out.println("Không load được ảnh: " + e.getMessage());
         }
 
         maVoucher_lb.setText(vc.getMaVoucher());
-        soLuong_lb.setText(vc.getSoLuong()+"");
+        soLuong_lb.setText(vc.getSoLuong() + "");
         NoiDung_lb.setText(vc.getNoiDung());
         ngayBatDau_lb.setText(App.formatter.format(vc.getNgayBatDau()));
         ngayKetThuc_lb.setText(App.formatter.format(vc.getNgayKetThuc()));
 
-        if(vc.getTiLeGiamGia()>0.0){
-            giamGia_lb.setText(vc.getTiLeGiamGia()+"%");
-        }else if(vc.getSoTienGiam()!=null || vc.getSoTienGiam().compareTo(BigDecimal.ZERO)>0){
-            giamGia_lb.setText(App.numf.format(vc.getSoTienGiam())+"đ");
+        if (vc.getTiLeGiamGia() > 0.0) {
+            giamGia_lb.setText(vc.getTiLeGiamGia() + "%");
+        } else if (vc.getSoTienGiam() != null || vc.getSoTienGiam().compareTo(BigDecimal.ZERO) > 0) {
+            giamGia_lb.setText(App.numf.format(vc.getSoTienGiam()) + "đ");
         }
     }
 

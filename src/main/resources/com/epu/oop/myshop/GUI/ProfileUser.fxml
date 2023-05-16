@@ -25,7 +25,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="profileUserPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" style="-fx-background-color: white;" stylesheets="@../StyleCSS/Profile.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.UserProfileController">
+<AnchorPane fx:id="profileUserPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.UserProfileController">
    <children>
       <Pane layoutY="-1.0" prefHeight="87.0" prefWidth="1200.0" styleClass="header" stylesheets="@../StyleCSS/Profile.css">
          <children>
@@ -220,7 +220,7 @@
             <Label layoutX="194.0" layoutY="77.0" text="Thông Tin Cá Nhân" />
             <Separator layoutX="335.0" layoutY="88.0" prefHeight="4.0" prefWidth="99.0" />
             <DatePicker fx:id="ngaySinh_datepicker" layoutX="175.0" layoutY="254.0" stylesheets="@../StyleCSS/Profile.css" />
-            <JFXButton fx:id="btnChane_password" layoutX="877.0" layoutY="242.0" onAction="#ChangePassword" ripplerFill="#dd3838" style="-fx-background-color: #e2ffc7;" text="Đổi mật khẩu" />
+            <JFXButton fx:id="btnChane_password" layoutX="877.0" layoutY="242.0" onAction="#ChangePassword" prefHeight="31.0" prefWidth="119.0" ripplerFill="#dd3838" style="-fx-background-color: #CCFF66;" text="Đổi mật khẩu" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="dashboard_form" focusTraversable="true" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;">
@@ -285,10 +285,10 @@
                   <ImageView fx:id="voucher_img" fitHeight="46.0" fitWidth="50.0" layoutX="22.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane fx:id="paneHeader_Main" layoutX="142.0" layoutY="26.0" prefHeight="61.0" prefWidth="975.0" style="-fx-background-color: white;" visible="false">
+            <Pane fx:id="paneHeader_Main" layoutX="142.0" layoutY="26.0" prefHeight="61.0" prefWidth="1036.0" style="-fx-background-color: white;" visible="false">
                <children>
                   <ImageView fx:id="imgIconTongDoanhThu" fitHeight="35.0" fitWidth="35.0" layoutX="770.0" layoutY="6.0" pickOnBounds="true" />
-                  <Label fx:id="SumDoanhThu_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="805.0" layoutY="39.0" prefHeight="21.0" prefWidth="169.0" style="-fx-background-color: white;" text="0" textFill="#d30a0a" visible="false">
+                  <Label fx:id="SumDoanhThu_lb" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="805.0" layoutY="39.0" prefHeight="21.0" prefWidth="187.0" style="-fx-background-color: white;" text="0" textFill="#d30a0a" visible="false">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
@@ -337,6 +337,7 @@
                   <ImageView fx:id="img_ThamgiaBanHang" fitHeight="46.0" fitWidth="50.0" layoutX="24.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
+
             <Pane fx:id="pane_chatMyShop_btn" layoutX="685.0" layoutY="450.0" onMouseClicked="#click" prefHeight="87.0" prefWidth="309.0" styleClass="pane-main" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <Label layoutX="84.0" layoutY="30.0" prefHeight="27.0" prefWidth="158.0" text="Trò chuyện với myshhop">
@@ -347,14 +348,15 @@
                   <ImageView fx:id="img_tuVanKH" fitHeight="46.0" fitWidth="50.0" layoutX="22.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <Pane fx:id="pane_baotri" layoutX="896.0" layoutY="350.0" prefHeight="119.0" prefWidth="289.0" style="-fx-border-color: #f896ff; -fx-background-color: white; -fx-border-radius: 20; -fx-background-radius: 20;" visible="false">
+            <Pane fx:id="pane_baotri" layoutX="896.0" layoutY="350.0" prefHeight="119.0" prefWidth="289.0" style="-fx-border-color: #f896ff; -fx-background-color: white; -fx-background-radius: 20; -fx-border-radius: 20;" visible="false">
                <children>
                   <ImageView fx:id="img_Baotri_ChatMyShop" fitHeight="117.0" fitWidth="256.0" layoutX="23.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
+
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="soDuTK_Form" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: #F8F8FF;" visible="false">
+      <AnchorPane fx:id="soDuTK_Form" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: #ffff;" stylesheets="@../StyleCSS/Profile.css" visible="false">
          <children>
             <Label layoutX="114.0" layoutY="41.0" text="Số Dư:">
                <font>
@@ -373,7 +375,7 @@
             </Label>
             <Label fx:id="LbSTK_rutTienForm" layoutX="278.0" layoutY="143.0" prefHeight="31.0" prefWidth="243.0">
                <font>
-                  <Font name="Calibri" size="21.0" />
+                  <Font size="21.0" />
                </font>
             </Label>
             <Label layoutX="123.0" layoutY="196.0" text="Ngân Hàng:">
@@ -381,9 +383,9 @@
                   <Font name="System Bold" size="21.0" />
                </font>
             </Label>
-            <Label fx:id="LbTenNH_RTForm" layoutX="278.0" layoutY="196.0" prefHeight="31.0" prefWidth="382.0">
+            <Label fx:id="LbTenNH_RTForm" layoutX="278.0" layoutY="196.0" prefHeight="31.0" prefWidth="243.0">
                <font>
-                  <Font name="Calibri" size="21.0" />
+                  <Font size="21.0" />
                </font>
             </Label>
             <Label layoutX="123.0" layoutY="246.0" text="Chủ Sở Hữu:">
@@ -393,7 +395,7 @@
             </Label>
             <Label fx:id="LbShuSoHuu_RTForm" layoutX="278.0" layoutY="246.0" prefHeight="31.0" prefWidth="218.0">
                <font>
-                  <Font name="Calibri" size="21.0" />
+                  <Font size="21.0" />
                </font>
             </Label>
             <Label layoutX="28.0" layoutY="525.0" text="Lưu ý:" textFill="#f20000">
@@ -433,7 +435,7 @@
                   </GridPane>
                </content></ScrollPane>
             <ImageView fx:id="icon_soDu" fitHeight="28.0" fitWidth="28.0" layoutX="79.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true" />
-            <AnchorPane fx:id="Anchor_chuyentienForm" layoutX="54.0" layoutY="134.0" prefHeight="294.0" prefWidth="601.0" style="-fx-background-color: #F8F8FF; -fx-border-color: #a74db3; -fx-background-radius: 20; -fx-border-radius: 20;" visible="false">
+            <AnchorPane fx:id="Anchor_chuyentienForm" layoutX="54.0" layoutY="134.0" prefHeight="294.0" prefWidth="601.0" style="-fx-background-color: #F8F8FF; -fx-border-color: #c14de8; -fx-background-radius: 10; -fx-border-radius: 10;" visible="false">
                <children>
                   <Label layoutX="33.0" layoutY="56.0" text="Tài khoản nhận:">
                      <font>
@@ -464,7 +466,7 @@
                   </Pane>
                </children>
             </AnchorPane>
-            <Pane fx:id="napTienPane" layoutX="417.0" layoutY="503.0" onMouseClicked="#converFormSoDuTK" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;" styleClass="btn-Account-Blance">
+            <Pane fx:id="napTienPane" layoutX="417.0" layoutY="503.0" onMouseClicked="#converFormSoDuTK" prefHeight="46.0" prefWidth="128.0" styleClass="btn-Account-Blance">
                <children>
                   <ImageView fx:id="img_clickNapTien" fitHeight="31.0" fitWidth="42.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
                   <Label layoutX="47.0" layoutY="13.0" prefHeight="21.0" prefWidth="68.0" text="Nạp tiền">
@@ -474,7 +476,7 @@
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="ChuyenTienPane" layoutX="561.0" layoutY="503.0" onMouseClicked="#converFormSoDuTK" prefHeight="46.0" prefWidth="128.0" style="-fx-background-color: #EEEEEE;" styleClass="btn-Account-Blance">
+            <Pane fx:id="ChuyenTienPane" layoutX="561.0" layoutY="503.0" onMouseClicked="#converFormSoDuTK" prefHeight="46.0" prefWidth="128.0" styleClass="btn-Account-Blance">
                <children>
                   <ImageView fx:id="img_clickChuyenTien" fitHeight="31.0" fitWidth="42.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
                   <Label layoutX="43.0" layoutY="13.0" prefHeight="21.0" prefWidth="89.0" text="Chuyển tiền">
@@ -484,7 +486,7 @@
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="paneNapTienForm" layoutX="108.0" layoutY="143.0" prefHeight="294.0" prefWidth="494.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #a74db3;" visible="false">
+            <Pane fx:id="paneNapTienForm" layoutX="108.0" layoutY="143.0" prefHeight="294.0" prefWidth="494.0" style="-fx-background-color: white; -fx-border-color: #4d66e8; -fx-border-radius: 10; -fx-background-radius: 10;" visible="false">
                <children>
                   <Label layoutX="35.0" layoutY="51.0" text="Số tiền muốn nạp:">
                      <font>
@@ -526,7 +528,7 @@
       </AnchorPane>
       <AnchorPane fx:id="voucherForm" layoutX="-2.0" layoutY="85.0" prefHeight="565.0" prefWidth="1200.0" style="-fx-background-color: white;" visible="false">
          <children>
-            <ScrollPane layoutX="280.0" layoutY="25.0" prefHeight="535.0" prefWidth="672.0" style="-fx-background-color: green;">
+            <ScrollPane hbarPolicy="NEVER" layoutX="280.0" layoutY="25.0" prefHeight="535.0" prefWidth="672.0" style="-fx-background-color: green;">
                <content>
                   <GridPane fx:id="gridVoucher" prefHeight="0.0" prefWidth="0.0">
                     <rowConstraints>
@@ -603,8 +605,8 @@
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></TextField>
-            <JFXButton fx:id="btnAddBank" layoutX="919.0" layoutY="496.0" onAction="#addBank" prefHeight="31.0" prefWidth="133.0" style="-fx-background-color: #b2e05c;" text="Thêm ngân hàng" />
-            <JFXButton fx:id="btnUpdateBank" layoutX="798.0" layoutY="496.0" onAction="#UpdateBank" prefHeight="31.0" prefWidth="110.0" style="-fx-background-color: #b2e05c;" text="Sửa thông tin" />
+            <JFXButton fx:id="btnAddBank" layoutX="919.0" layoutY="496.0" onAction="#addBank" style="-fx-background-color: #b2e05c;" text="Thêm ngân hàng" />
+            <JFXButton fx:id="btnUpdateBank" layoutX="798.0" layoutY="496.0" onAction="#UpdateBank" style="-fx-background-color: #b2e05c;" text="Sửa thông tin" />
             <JFXButton fx:id="btnDeleteBank" layoutX="1061.0" layoutY="496.0" onAction="#deleteBank" prefHeight="31.0" prefWidth="96.0" style="-fx-background-color: #b2e05c;" text="Xóa" />
          </children>
       </AnchorPane>

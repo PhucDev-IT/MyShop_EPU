@@ -4,6 +4,7 @@ import com.epu.oop.myshop.Dao.Product_Dao;
 import com.epu.oop.myshop.Dao.VoucherDao;
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.sql.*;
@@ -15,8 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CreateSQL {
     public static final String databaseName = "MyShop";
 
-    //public static final String url = "jdbc:mysql://localhost:3306/";
-   // public static final String driver = "com.mysql.jdbc.Driver";
     private static final String url = "jdbc:sqlserver://localhost:1433;";
 
     public static final String urlConnect =  "jdbc:sqlserver://localhost:1433;databaseName="+databaseName;
@@ -414,23 +413,40 @@ public class CreateSQL {
     public void setDataOnDatabase() throws ClassNotFoundException, SQLException {
         Class.forName(driver);
         Connection connection = DriverManager.getConnection(urlConnect, userName, password);
-
+        String[] linkName = {"phone", "Laptop", "may-choi-game", "cham-soc-da", "trang-diem", "Nước hoa", "thực phẩm chức năng",
+                "thiết bị y tế", "quan-ao-nam", "giay-nam", "dong-ho", "", "thoi-trang-nu", "tui-xach-nu", "do-ngu-nu", "trang sức nữ", "xe-may"
+                , "oto", "", "phu-kien-the-thao", "", "Vali-túi xách", "kính mắt", "", ""};
         Random random = new Random();
-        for (int i = 1; i < 10000; i++) {
 
-            int quantity = random.nextInt(4921)+4;
-            BigDecimal total = new BigDecimal(quantity*i*0.5);
-            Product product = new Product(0,"Sản phẩm "+i,random.nextInt(10000)+12,total,"Người bán không" +
-                    " nói gì","/com/epu/oop/myshop/image/Product/product1.png",quantity,total.multiply(BigDecimal.valueOf(quantity)),random.nextInt(24) + 1, new User(random.nextInt(3) + 2,""));
+        int i=1;
+        for(String lastFileName : linkName){
 
-            try {
-                Insert(product,connection);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            File folder = new File("src/main/resources/com/epu/oop/myshop/image/Product/"+lastFileName);
+            File[] listOfFiles = folder.listFiles();
+            for (File file : listOfFiles) {
+                if (file.isFile()) {
+                    String fileName = file.getName();
+                    String nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+                    String filePath = "/" + file.getPath().substring(file.getPath().indexOf("com")).replace('\\', '/');
+
+                    int sold = random.nextInt(4921)+4;
+                    BigDecimal total = new BigDecimal(sold*5423.7);
+                    Product product = new Product(0,nameWithoutExtension,random.nextInt(10000)+12,total,"Người bán không" +
+                            " nói gì",filePath,sold,total.multiply(BigDecimal.valueOf(sold)),i, new User(random.nextInt(3) + 2,""));
+
+                    try {
+                        Insert(product,connection);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
-            System.out.println(i);
+            System.out.println(i++);
         }
-        connection.close();
+
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     public synchronized boolean Insert(Product t,Connection connection) throws SQLException {
@@ -526,14 +542,14 @@ public class CreateSQL {
             " Account_ID INT, " +
             " PRIMARY KEY(Account_ID)," +
             " FOREIGN KEY(Account_ID) REFERENCES Account(ID)," +
-            " FullName NVARCHAR(40)," +
-            " Gender NVARCHAR(6) DEFAULT N'Khác'," +
+            " FullName NVARCHAR(100)," +
+            " Gender NVARCHAR(10) DEFAULT N'Khác'," +
             " DateOfBirth DATE, " +
-            " HomeTown NVARCHAR(300), " +
+            " HomeTown NVARCHAR(500), " +
             " CCCD VARCHAR(20), " +
             " Email VARCHAR(30) NOT NULL UNIQUE," +
             " Phone VARCHAR(15), " +
-            " SrcAvatar VARCHAR(300) " +
+            " SrcAvatar NVARCHAR(400) " +
             ");";
     private final String TblBank = "CREATE TABLE Bank " +
             "( " +
@@ -555,11 +571,11 @@ public class CreateSQL {
     private final String TblProduct = "CREATE TABLE Product " +
             "( " +
             " MaSP INT PRIMARY KEY IDENTITY," +
-            " TenSP NVARCHAR(40)," +
+            " TenSP NVARCHAR(300)," +
             " Quantity INT, " +
             " Price DECIMAL, " +
-            " MoTa NVARCHAR(500) DEFAULT (N'Người bán không viết gì')," +
-            " SrcImg VARCHAR(400)," +
+            " MoTa NVARCHAR(MAX) DEFAULT (N'Người bán không viết gì')," +
+            " SrcImg NVARCHAR(1000)," +
             " Activity VARCHAR(10) DEFAULT 'ON', " +
             " Sold FLOAT, " +
             " TotalRevenue DECIMAL DEFAULT 0, " +
@@ -577,18 +593,18 @@ public class CreateSQL {
 
     private final String Tblvoucher = "CREATE TABLE Voucher" +
             "(" +
-            " MaVoucher VARCHAR(10) PRIMARY KEY," +
+            " MaVoucher VARCHAR(20) PRIMARY KEY," +
             " TiLeGiamGia FLOAT," +
             " SotienGiamGia DECIMAL," +
             " SoLuong INT," +
-            " NoiDung NVARCHAR(300)," +
-            " ImgVoucher VARCHAR(300)," +
+            " NoiDung NVARCHAR(500)," +
+            " ImgVoucher NVARCHAR(500)," +
             " NgayBatDau DATE," +
             " NgayKetThuc DATE" +
             ");";
     private final String TblVoucherUser = "CREATE TABLE VoucherUser " +
             "(" +
-            " MaVoucher VARCHAR(10)," +
+            " MaVoucher VARCHAR(20)," +
             " FOREIGN KEY(MaVoucher) REFERENCES Voucher(MaVoucher)," +
             " ID_User INT, " +
             " FOREIGN KEY(ID_User) REFERENCES Users(Account_ID)," +
@@ -599,7 +615,7 @@ public class CreateSQL {
             " Order_ID INT PRIMARY KEY IDENTITY," +
             " NgayLapHD DATE, " +
             " TongTien DECIMAL, " +
-            " MaVoucher VARCHAR(10), " +
+            " MaVoucher VARCHAR(20), " +
             " FOREIGN KEY(MaVoucher) REFERENCES Voucher(MaVoucher)," +
             " ThanhTien DECIMAL, " +
             " Users_ID INT," +
@@ -622,7 +638,7 @@ public class CreateSQL {
             " NoiDung NVARCHAR(50)," +
             " SoTien DECIMAL," +
             " NgayGiaoDich DATE," +
-            " SrcImgIcon VARCHAR(300)," +
+            " SrcImgIcon NVARCHAR(500)," +
             " Users_ID INT," +
             " FOREIGN KEY(Users_ID) REFERENCES Users(Account_ID)," +
             " Account_ID INT," +
@@ -645,7 +661,7 @@ public class CreateSQL {
             " Content NVARCHAR(1000), " +
             " Statuss BIT, " +
             " SentDate DATE," +
-            " SrcIcon VARCHAR(500)," +
+            " SrcIcon NVARCHAR(500)," +
             " Account_ID INT FOREIGN KEY REFERENCES Account(ID) " +
             " )";
 
@@ -736,7 +752,7 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE Category_ID = @Category_ID " +
             " AND p.Activity = 'ON'" +
-            " ORDER BY TotalRevenue" +
+            " ORDER BY TotalRevenue DESC" +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -751,7 +767,7 @@ public class CreateSQL {
             " JOIN Users u ON ps.Users_ID = u.Account_ID " +
             " WHERE p.TenSP LIKE @nameProduct " +
             " AND p.Activity = 'ON' " +
-            " ORDER BY TotalRevenue " +
+            " ORDER BY TotalRevenue DESC" +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
@@ -765,7 +781,7 @@ public class CreateSQL {
             " ON Product.MaSP = ProductSeller.Product_ID " +
             " AND ProductSeller.Users_ID = @User_ID " +
             " AND Product.Activity = 'ON' " +
-            " ORDER BY TotalRevenue " +
+            " ORDER BY TotalRevenue DESC" +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";
 
