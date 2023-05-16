@@ -101,7 +101,13 @@ public class LoginController implements Initializable{
         {
             AlertNotification.showAlertWarning("","Vui lòng nhập thông tin đầy đủ");
             return;
-        }else if(!oldUserName.equals(userName)){
+        }else if(!checkEmail(userName)) {
+            if (!userName.equals("admin")) {
+                AlertNotification.showAlertWarning("", "Email chưa chính xác");
+                return;
+            }
+        }
+        else if(!oldUserName.equals(userName)){
             numbersLogin=0;
         }
 
@@ -121,7 +127,7 @@ public class LoginController implements Initializable{
                 AlertNotification.showAlertWarning("Tài khoản của bạn đang bị khóa","Mọi thắc mắc vui lòng liên hệ với chúng tôi");
             }
         }else {
-            AlertNotification.showAlertError("ERROR!","Tài khoản hoặc mật khẩu không chính xác");
+            AlertNotification.showAlertError("","Tài khoản hoặc mật khẩu không chính xác");
             oldUserName = userName;
             numbersLogin++;
         }
@@ -241,8 +247,12 @@ public class LoginController implements Initializable{
 
         if(accountDao.changeFogotPass(txt_Email_forpass.getText(),newPassword)){
             txtRandom_password.setText(newPassword);
+            txt_Email_forpass.setEditable(false);
+            pane_getPass.setVisible(true);
         }else{
+            pane_getPass.setVisible(false);
             AlertNotification.showAlertError("Có lỗi xảy ra","Email không tồn tại");
+
         }
     }
     //Button: Nhấn Gửi
@@ -251,8 +261,6 @@ public class LoginController implements Initializable{
 
         if(checkEmail(txt_Email_forpass.getText())){
             randomPassword();
-            txt_Email_forpass.setEditable(false);
-            pane_getPass.setVisible(true);
         }
     }
 

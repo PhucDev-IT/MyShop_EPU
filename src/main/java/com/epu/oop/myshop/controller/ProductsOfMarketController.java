@@ -26,6 +26,9 @@ public class ProductsOfMarketController {
     private Label price;
 
     @FXML
+    private Label maSP_lb;
+
+    @FXML
     private Label sold;
 
     private Product product;
@@ -53,7 +56,7 @@ public class ProductsOfMarketController {
         }
         nameProduct_txt.setText((prod.getTenSP()));
         sold.setText(prod.getSold()+"");
-
+        maSP_lb.setText("0"+prod.getID());
         //Định dạng tiền tệ việt nam
         Locale lc = new Locale("vi","VN");
         NumberFormat numf = NumberFormat.getInstance(lc);

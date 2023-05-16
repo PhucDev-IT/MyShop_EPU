@@ -191,11 +191,21 @@ public class Product implements Serializable {
         this.user = user;
     }
 
+
     @Override
     public String toString() {
-        return "\nProducts [ID=" + ID + ", TenSP=" + TenSP + ", SoLuong=" + quantity + ", DonGia=" + price + ", MoTa="
-                + MoTa + ", SrcImg=" + SrcImg+", "+ Activity;
+        return "\nProduct{" +
+                "ID=" + ID +
+                ", TenSP='" + TenSP + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", MoTa='" + MoTa + '\'' +
+                ", SrcImg='" + SrcImg + '\'' +
+                ", Activity='" + Activity + '\'' +
+                ", sold=" + sold +
+                ", TotalRevenue=" + TotalRevenue +
+                ", idCategory=" + idCategory +
+                ", user=" + user +
+                '}';
     }
-
-
 }

@@ -43,18 +43,19 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(int ID) {
+    public User(int ID,String name) {
         this.ID = ID;
+        this.FullName = name;
     }
 
     public User(Account a) {
         this.account = a;
 
     }
-
-    public User(String name){
-        this.FullName = name;
+    public User(String email){
+        this.Email = email;
     }
+
     public User(String fullName, String gender, Date dateOfBirth, String address, String canCuocCongDan,
                 String email, String numberPhone, String srcAvatar, Account account) {
         FullName = fullName;

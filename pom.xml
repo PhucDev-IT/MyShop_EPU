@@ -13,8 +13,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.9.1</junit.version>
-<<<<<<< Updated upstream
-=======
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.main-class>com.epu.oop.myshop.Main.App</project.main-class>
@@ -23,7 +21,6 @@
         <javafx.version>19</javafx.version>
         <jlink-image-name>${project.name}</jlink-image-name>
         <sqlserver-jar-name>mssql-jdbc-9.4.1.jre16.jar</sqlserver-jar-name>
->>>>>>> Stashed changes
     </properties>
 
     <dependencies>
@@ -74,8 +71,6 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-<<<<<<< Updated upstream
-=======
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
@@ -88,7 +83,6 @@
             <artifactId>javafx-base</artifactId>
             <version>${javafx.version}</version>
         </dependency>
->>>>>>> Stashed changes
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -109,20 +103,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-<<<<<<< Updated upstream
-                <version>3.10.1</version>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.8.3</version>
-                <configuration>
-                    <mainClass>com.epu.oop.myshop.Main.App</mainClass>
-=======
                 <version>3.8.1</version>
                 <configuration>
                     <release>17</release>
@@ -130,9 +110,7 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -172,7 +150,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <id>copy</id>
@@ -198,7 +176,6 @@
                     <outputDirectory>${project.build.directory}/MyShop/lib</outputDirectory>
                     <overWriteReleases>true</overWriteReleases>
                     <overWriteSnapshots>true</overWriteSnapshots>
->>>>>>> Stashed changes
                 </configuration>
             </plugin>
         </plugins>

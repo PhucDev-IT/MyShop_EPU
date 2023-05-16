@@ -19,15 +19,9 @@ public class ThreadImageV {
         imageView = img;
     }
     private Image[] images = {
-<<<<<<< Updated upstream
-            new Image("C:\\Users\\84374\\OneDrive\\Pictures\\free.png"),
-            new Image("C:\\Users\\84374\\OneDrive\\Pictures\\sale.png"),
-            new Image("C:\\Users\\84374\\OneDrive\\Pictures\\iconFreeShip.jpg"),
-=======
-            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-3.png")),
+            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher.png")),
             new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-2.png")),
             new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-1.jpg")),
->>>>>>> Stashed changes
 
     };
 

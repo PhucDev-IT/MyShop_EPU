@@ -2,6 +2,7 @@ package com.epu.oop.myshop.Dao;
 
 
 import com.epu.oop.myshop.JdbcConnection.ConnectionPool;
+import com.epu.oop.myshop.Main.App;
 import com.epu.oop.myshop.model.Account;
 import com.epu.oop.myshop.model.PaymentHistory;
 import com.epu.oop.myshop.model.User;
@@ -216,13 +217,15 @@ public class Account_Dao implements Dao_Interface<Account> {
         Connection connection = null;
         PreparedStatement preAccount = null;
         PreparedStatement preUser = null;
+        PreparedStatement preMessenge = null;
         try{
 
             String sql = "INSERT INTO Account(UserName,Passwords,Currency,Activity,PhanQuyen)" +
                     " VALUES (?,?,?,?,?)";
             String sqlUs = "INSERT INTO Users(Account_ID,FullName,Email)" +
                     " VALUES (?,?,?)";
-
+            String sqlMess = "INSERT INTO Messenger(Sender,Content,Statuss,SentDate,SrcIcon,Account_ID)" +
+                    " VALUES (?,?,?,?,?,?)";
             connection = jdbcUtil.getConnection();
             connection.setAutoCommit(false);
             preAccount = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
@@ -247,6 +250,17 @@ public class Account_Dao implements Dao_Interface<Account> {
             preUser.setString(3,user.getEmail());
             check = preUser.executeUpdate();
 
+            preMessenge = connection.prepareStatement(sqlMess);
+            preMessenge.setString(1,"Tin nhắn từ hệ thống");
+            preMessenge.setString(2,"Welcome to MyShop");
+            preMessenge.setBoolean(3,false);
+            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
+            preMessenge.setString(5,null);
+            preMessenge.setInt(6,index);
+
+            preMessenge.executeUpdate();
+
+
             connection.commit();
         }catch (SQLException e) {
             if(connection!=null){
@@ -257,6 +271,8 @@ public class Account_Dao implements Dao_Interface<Account> {
             if(preUser!=null)   preUser.close();
 
             if(preAccount!=null) preAccount.close();
+
+            if(preMessenge!=null) preMessenge.close();
             connection.setAutoCommit(true);
             connection.close();
         }
@@ -271,14 +287,24 @@ public class Account_Dao implements Dao_Interface<Account> {
         String sql = "UPDATE Account SET " +
                 " Currency=? " +
                 " WHERE UserName=?";
+
+        String sqlReceiver = "UPDATE Account " +
+                " SET " +
+                " Currency = Currency + ?" +
+                " WHERE UserName = ?";
+
+        String sqlMess = "INSERT INTO Messenger(Sender,Content,Statuss,SentDate,SrcIcon,Account_ID)" +
+                " VALUES (?,?,?,?,?,(SELECT ID FROM Account WHERE UserName = ?))";
+
         Connection connection = null;
         try {
             connection = jdbcUtil.getConnection();
             connection.setAutoCommit(false);
 
             PreparedStatement statement = connection.prepareStatement(sql);
-            PreparedStatement stmReceiver = connection.prepareStatement(sql);
+            PreparedStatement stmReceiver = connection.prepareStatement(sqlReceiver);
             PreparedStatement stmPayment = connection.prepareStatement(sqlPayment);
+            PreparedStatement preMessenge = connection.prepareStatement(sqlMess);
 
             statement.setBigDecimal(1,sender.getMoney());
             statement.setString(2,sender.getUserName());
@@ -295,24 +321,78 @@ public class Account_Dao implements Dao_Interface<Account> {
             stmPayment.setString(5,paymentHistory.getImgSrcIcon());
             stmPayment.setInt(6,paymentHistory.getUser().getID());
             stmPayment.setInt(7,paymentHistory.getAccount().getID());
+            stmPayment.executeUpdate();
+
+            preMessenge.setString(1,"Tin nhắn từ hệ thống");
+            preMessenge.setString(2,"Bạn vừa được nhận "+ App.numf.format(receiver.getMoney())+ " từ: "+sender.getUserName());
+            preMessenge.setBoolean(3,false);
+            preMessenge.setDate(4,new Date(System.currentTimeMillis()));
+            preMessenge.setString(5,null);
+            preMessenge.setString(6,sender.getUserName());
+
+            preMessenge.executeUpdate();
 
             connection.commit();
             statement.close();
             stmReceiver.close();
             stmPayment.close();
-            return true;
+            preMessenge.close();
         }catch (SQLException e) {
             if(connection!=null){
                 connection.rollback();
                 System.out.println("Roll back: "+e.getMessage());
             }
+            return false;
         }finally {
             connection.setAutoCommit(true);
             connection.close();
         }
-        return false;
+        return true;
     }
 
+    //Rút tiền - nạp tiền
+    public boolean transferMoney(Account account,PaymentHistory paymentHistory) throws SQLException {
+        String sqlPayment = "INSERT INTO PaymentHistory(TenGiaoDich,NoiDung,SoTien,NgayGiaoDich,SrcImgIcon,Users_ID)" +
+                " VALUES (?,?,?,?,?,?)";
+
+        String sql = "UPDATE Account SET " +
+                " Currency=? " +
+                " WHERE UserName=?";
+        Connection connection = null;
+        try {
+            connection = jdbcUtil.getConnection();
+            connection.setAutoCommit(false);
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement stmPayment = connection.prepareStatement(sqlPayment);
+
+            statement.setBigDecimal(1,account.getMoney());
+            statement.setString(2,account.getUserName());
+            statement.executeUpdate();
+
+            stmPayment.setString(1,paymentHistory.getTenGiaoDich());
+            stmPayment.setString(2,paymentHistory.getNoiDung());
+            stmPayment.setBigDecimal(3,paymentHistory.getSoTien());
+            stmPayment.setDate(4,paymentHistory.getNgayGiaoDich());
+            stmPayment.setString(5,paymentHistory.getImgSrcIcon());
+            stmPayment.setInt(6,paymentHistory.getUser().getID());
+            stmPayment.executeUpdate();
+
+            connection.commit();
+            statement.close();
+            stmPayment.close();
+        }catch (SQLException e) {
+            if(connection!=null){
+                connection.rollback();
+                System.out.println("Roll back: "+e.getMessage());
+            }
+            return false;
+        }finally {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return true;
+    }
     //----------------- KHÓA TÀI KHOẢN ĐĂNG NHẬP ---------------------------------
     public boolean lockAccount(String userName)
     {

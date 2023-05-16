@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="97.0" prefWidth="628.0" styleClass="item-cart" stylesheets="@../StyleCSS/Item.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ItemCartController">
+   <children>
+      <ImageView fx:id="imgProduct" fitHeight="67.0" fitWidth="81.0" layoutX="50.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+      <CheckBox fx:id="checkbox" layoutX="14.0" layoutY="36.0" mnemonicParsing="false" onMouseClicked="#chooseProduct" />
+      <Text fx:id="nameProduct" layoutX="151.0" layoutY="29.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="418.6708984375">
+         <font>
+            <Font name="Calibri Bold" size="19.0" />
+         </font>
+      </Text>
+      <Label fx:id="price" layoutX="151.0" layoutY="38.0" text="300.000đ" textFill="#f20a0a">
+         <font>
+            <Font name="Calibri Bold" size="16.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="btnDown" layoutX="324.0" layoutY="60.0" onAction="#handle" style="-fx-background-color: #ebab15;" text="-" textFill="WHITE">
+         <font>
+            <Font name="Calibri Bold" size="16.0" />
+         </font>
+      </JFXButton>
+      <JFXTextField fx:id="txtNumbers" alignment="CENTER" layoutX="359.0" layoutY="60.0" prefHeight="31.0" prefWidth="63.0" text="1" />
+      <JFXButton fx:id="btnUp" layoutX="429.0" layoutY="61.0" onAction="#handle" style="-fx-background-color: #ebab15;" text="+" textFill="WHITE">
+         <font>
+            <Font name="Calibri Bold" size="16.0" />
+         </font>
+      </JFXButton>
+      <JFXButton fx:id="btn_removeItem" layoutX="561.0" layoutY="6.0" onAction="#removeItem" prefHeight="31.0" prefWidth="63.0" ripplerFill="#307528" text="Xóa" textFill="RED">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </JFXButton>
+   </children>
+</AnchorPane>

@@ -48,7 +48,7 @@ public class VoucherController {
         this.voucher = vc;
 
         try{
-            if(vc.getImgVoucher().equals(":")){
+            if(vc.getImgVoucher().contains(":")){
                 imgVoucher.setImage(new Image(vc.getImgVoucher()));
             }else{
                 imgVoucher.setImage(new Image(getClass().getResourceAsStream(vc.getImgVoucher())));
