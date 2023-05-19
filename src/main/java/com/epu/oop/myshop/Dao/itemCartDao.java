@@ -42,21 +42,32 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
     }
 
 
-
+    //id_cart và users_ID cùng 1 value giống nhau sẵn nên lam theo cách này đ không phải truy vấn 2 lâần để tìm ID cart
     @Override
     public boolean Insert(itemCartModel itemCartModel) throws SQLException {
-        String sql = "INSERT INTO itemCart(Product_ID, Quantity,Category_ID, Users_ID)" +
-                " VALUES (?,?,?,?) ";
+        String sql = "DECLARE @id INT = ? " +
+                     " DECLARE @id_product INT = ?" +
+                    " DECLARE @number INT = ? " +
+                "IF EXISTS (SELECT Product_ID FROM CartDetails WHERE Product_ID = @id_product and id_Cart = @id) " +
+                "BEGIN " +
+                " UPDATE CartDetails " +
+                " SET Quantity += @number " +
+                " WHERE Product_ID = @id_product and id_Cart = @id " +
+                "END " +
+                "ELSE " +
+                "BEGIN " +
+                "  INSERT INTO CartDetails(id_Cart,Product_ID,Quantity) " +
+                "  VALUES(@id,@id_product,@number) " +
+                "END";
 
         try{
             openConnection();
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, itemCartModel.getUser_ID());
+            statement.setInt(2, itemCartModel.getProduct().getID());
+            statement.setInt(3, itemCartModel.getQuantity());
 
-            statement.setInt(1, itemCartModel.getProduct().getID());
-            statement.setInt(2, itemCartModel.getQuantity());
-            statement.setInt(3, itemCartModel.getCategory_ID());
-            statement.setInt(4, itemCartModel.getUser_ID());
 
             statement.executeUpdate();
 
@@ -95,14 +106,14 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
 
     @Override
     public int Delete(itemCartModel itemCartModel) throws SQLException {
-        String sql = "DELETE FROM itemCart WHERE id_Cart = ? ";
+        String sql = "DELETE FROM CartDetails WHERE id_Cart = ? AND Product_ID = ?";
 
         try{
             openConnection();
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, itemCartModel.getIdCart());
-
+            statement.setInt(2,itemCartModel.getProduct().getID());
             statement.executeUpdate();
 
             connection.commit();
@@ -125,9 +136,9 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
     //Lấy tất cả sản phẩm trong giỏ hàng của user...
     public List<itemCartModel> getDataByUser(int idUser) throws SQLException {
         List<itemCartModel> list = new ArrayList<>();
-        String sql = "SELECT it.*,p.MaSP,p.SrcImg,p.TenSP,p.Quantity as soLuongTon,p.Price FROM itemCart it JOIN Product p " +
+        String sql = "SELECT it.*,p.MaSP,p.SrcImg,p.TenSP,p.Quantity as soLuongTon,p.Price FROM CartDetails it JOIN Product p " +
                 "ON it.Product_ID = p.MaSP " +
-                "AND Users_ID = ? " +
+                "AND id_Cart = ? " +
                 "AND p.Activity = 'ON' ";
         try{
             openConnection();
@@ -139,8 +150,6 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
                 itemCartModel it = new itemCartModel();
                 it.setIdCart(rs.getInt("id_Cart"));
                 it.setQuantity(rs.getInt("Quantity"));
-                it.setCategory_ID(rs.getInt("Category_ID"));
-                it.setUser_ID(rs.getInt("Users_ID"));
 
                 Product product = new Product();
                 product.setID(rs.getInt("MaSP"));

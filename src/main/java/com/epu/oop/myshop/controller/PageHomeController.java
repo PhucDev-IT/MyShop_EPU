@@ -1093,7 +1093,7 @@ public class PageHomeController implements Initializable {
     //Thêm vào giỏ hàng
     public void addItemCart() throws SQLException {
         if (Temp.account != null) {
-            itemCartModel itemCartModel = new itemCartModel(0, SelectedProduct, Temp.account.getID(), keyCategory, Integer.parseInt(txtNumber.getText()));
+            itemCartModel itemCartModel = new itemCartModel(0, SelectedProduct, Temp.account.getID(), Integer.parseInt(txtNumber.getText()));
             if (itemCart_dao.Insert(itemCartModel)) {
                 AlertNotification.showAlertSucces("", "Kiểm tra giỏ hàng để xem nhé bạn!");
             } else {

@@ -17,7 +17,6 @@ public class CreateSQL {
     public static final String databaseName = "MyShop";
 
     private static final String url = "jdbc:sqlserver://localhost:1433;";
-
     public static final String urlConnect =  "jdbc:sqlserver://localhost:1433;databaseName="+databaseName;
     public static final String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     public static final String userName = "sa";
@@ -44,7 +43,10 @@ public class CreateSQL {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }finally {
-            conn.close();
+           if(conn!=null)
+           {
+               conn.close();
+           }
         }
     }
 
@@ -115,8 +117,11 @@ public class CreateSQL {
             throw new RuntimeException(e);
         }
         finally {
-            conn.setAutoCommit(true);
-            conn.close();
+            if(conn!=null)
+            {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
         }
         return true;
     }
@@ -137,13 +142,13 @@ public class CreateSQL {
             stm.executeUpdate(TblBank);
             stm.executeUpdate(TblCategory);
             stm.executeUpdate(TblProduct);
-            stm.executeUpdate(TblProductSeller);
             stm.executeUpdate(Tblvoucher);
             stm.executeUpdate(TblVoucherUser);
             stm.executeUpdate(Tblorder);
-            stm.executeUpdate(TblOrderDtails);
+            stm.executeUpdate(TblOrderDetails);
             stm.executeUpdate(TblPaymentHistory);
             stm.executeUpdate(TblItemCart);
+            stm.executeUpdate(TblCartDetails);
             stm.executeUpdate(tblMessenger);
             connection.commit();
 
@@ -160,8 +165,11 @@ public class CreateSQL {
             if(stm!=null){
                 stm.close();
             }
-            connection.setAutoCommit(true);
-            connection.close();
+            if(connection!=null)
+            {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return result>0;
     }
@@ -180,6 +188,7 @@ public class CreateSQL {
                 stm.executeUpdate(TriggerTwo);
                 stm.executeUpdate(TriggerThree);
                 stm.executeUpdate(TriggerUpdateVoucher);
+                stm.executeUpdate(TriggerAddCart);
 
                 connection.commit();
                 System.out.println("Tạo trigger thành công");
@@ -196,8 +205,11 @@ public class CreateSQL {
                 if (stm != null) {
                     stm.close();
                 }
-                connection.setAutoCommit(true);
-                connection.close();
+                if(connection!=null)
+                {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                }
             }
         return true;
     }
@@ -216,8 +228,8 @@ public class CreateSQL {
             stm.executeUpdate(indexOrder);
             stm.executeUpdate(indexPayment);
             stm.executeUpdate(indexProduct);
-            stm.executeUpdate(indexProductSeller);
             stm.executeUpdate(indexItemCart);
+            stm.executeUpdate(indexCartDetails);
             stm.executeUpdate(indexMessenger);
             connection.commit();
             System.out.println("Tạo index thành công");
@@ -233,8 +245,11 @@ public class CreateSQL {
             if (stm != null) {
                 stm.close();
             }
-            connection.setAutoCommit(true);
-            connection.close();
+            if(connection!=null)
+            {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return check.get() == true;
     }
@@ -267,8 +282,11 @@ public class CreateSQL {
             if (stm != null) {
                 stm.close();
             }
-            connection.setAutoCommit(true);
-            connection.close();
+            if(connection!=null)
+            {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return true;
     }
@@ -332,9 +350,11 @@ public class CreateSQL {
 
             if(preProSeler!=null) preProSeler.close();
 
-            connection.setAutoCommit(true);
-
-            connection.close();
+            if(connection!=null)
+            {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return check.get();
     }
@@ -404,8 +424,11 @@ public class CreateSQL {
                 preCategory.close();
             }
 
-            connection.setAutoCommit(true);
-            connection.close();
+            if(connection!=null)
+            {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
         return true;
     }
@@ -430,7 +453,7 @@ public class CreateSQL {
                     String filePath = "/" + file.getPath().substring(file.getPath().indexOf("com")).replace('\\', '/');
 
                     int sold = random.nextInt(4921)+4;
-                    BigDecimal total = new BigDecimal(sold*5423.7);
+                    BigDecimal total = new BigDecimal(sold*543.7);
                     Product product = new Product(0,nameWithoutExtension,random.nextInt(10000)+12,total,"Người bán không" +
                             " nói gì",filePath,sold,total.multiply(BigDecimal.valueOf(sold)),i, new User(random.nextInt(3) + 2,""));
 
@@ -452,15 +475,12 @@ public class CreateSQL {
     public synchronized boolean Insert(Product t,Connection connection) throws SQLException {
         int check = 0;
         PreparedStatement preProduct = null;
-        PreparedStatement preProSeller = null;
-
         try {
             connection.setAutoCommit(false);
-            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID,Sold,TotalRevenue)" +
-                    " VALUES (?,?,?,?,?,?,?,?)";
-            String sqlProductSeller = "INSERT INTO ProductSeller(Product_ID,Users_ID) " +
-                    "VALUES (?,?)";
-            preProduct = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
+            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID,Sold,TotalRevenue,Seller_ID)" +
+                    " VALUES (?,?,?,?,?,?,?,?,?)";
+
+            preProduct = connection.prepareStatement(sql);
 
             preProduct.setString(1,t.getTenSP());
             preProduct.setInt(2,t.getQuantity());
@@ -470,23 +490,8 @@ public class CreateSQL {
             preProduct.setInt(6,t.getCategory());
             preProduct.setInt(7,t.getSold());
             preProduct.setBigDecimal(8,t.getTotalRevenue());
-            preProduct.executeUpdate();
-
-            int index ;
-
-            try(ResultSet rs= preProduct.getGeneratedKeys()){
-                if(rs.next()){
-                    index = rs.getInt(1);
-                }else {
-                    throw new SQLException("Không thể thm dữ liệu bảng product");
-                }
-
-            }
-            preProSeller = connection.prepareStatement(sqlProductSeller);
-            preProSeller.setInt(1,index);
-            preProSeller.setInt(2,t.getUser().getID());
-
-            check = preProSeller.executeUpdate();
+            preProduct.setInt(9,t.getUser().getID());
+            check = preProduct.executeUpdate();
 
             connection.commit();
         }catch (SQLException e) {
@@ -497,9 +502,8 @@ public class CreateSQL {
         }finally {
             if(preProduct!=null)    preProduct.close();
 
-            if(preProSeller!=null)  preProSeller.close();
             connection.setAutoCommit(true);
-         //   connection.close();
+
         }
         return check>0;
     }
@@ -580,15 +584,8 @@ public class CreateSQL {
             " Sold FLOAT, " +
             " TotalRevenue DECIMAL DEFAULT 0, " +
             " Category_ID INT, " +
-            " FOREIGN KEY(Category_ID) REFERENCES Category(Category_ID) " +
-            ");";
-    private final String TblProductSeller = "CREATE TABLE ProductSeller " +
-            "( " +
-            " Product_ID INT," +
-            " Users_ID INT," +
-            " PRIMARY KEY(Product_ID,Users_ID)," +
-            " FOREIGN KEY(Product_ID) REFERENCES Product(MaSP)," +
-            " FOREIGN KEY(Users_ID) REFERENCES Users(Account_ID)" +
+            " FOREIGN KEY(Category_ID) REFERENCES Category(Category_ID), " +
+            " Seller_ID INT FOREIGN KEY REFERENCES Users(Account_ID)" +
             ");";
 
     private final String Tblvoucher = "CREATE TABLE Voucher" +
@@ -621,7 +618,7 @@ public class CreateSQL {
             " Users_ID INT," +
             " FOREIGN KEY(Users_ID) REFERENCES Users(Account_ID)" +
             ");";
-    private final String TblOrderDtails = "CREATE TABLE OrderDetails " +
+    private final String TblOrderDetails = "CREATE TABLE OrderDetails " +
             "( " +
             " Product_ID INT," +
             " FOREIGN KEY (Product_ID) REFERENCES Product(MaSP)," +
@@ -647,13 +644,17 @@ public class CreateSQL {
 
     private final String TblItemCart = "CREATE TABLE itemCart " +
             "( " +
-            " id_Cart INT PRIMARY KEY IDENTITY, " +
-            " Product_ID INT, " +
-            " Quantity INT, " +
-            " Category_ID INT FOREIGN KEY REFERENCES Category(Category_ID), " +
+            " id_Cart INT PRIMARY KEY , " +
             " Users_ID INT FOREIGN KEY REFERENCES Users(Account_ID) " +
             ")";
 
+    private final String TblCartDetails = "CREATE TABLE CartDetails " +
+            "( " +
+            " id_Cart INT FOREIGN KEY REFERENCES itemCart(id_Cart)," +
+            " Product_ID INT  FOREIGN KEY REFERENCES Product(MaSP)," +
+            " Quantity INT," +
+            " PRIMARY KEY(id_Cart,Product_ID) " +
+            ")";
     private final String tblMessenger = "CREATE TABLE Messenger " +
             "( " +
             " ID INT PRIMARY KEY IDENTITY, " +
@@ -669,7 +670,8 @@ public class CreateSQL {
     String indexProduct ="CREATE INDEX idx_MaSP ON Product(MaSP); " +
                         "CREATE INDEX idx_Category_ID ON Product(Category_ID); " +
                          "CREATE INDEX idx_Activity ON Product(Activity);" +
-                        "CREATE INDEX idx_TotalRevenue ON Product(TotalRevenue)";
+                        "CREATE INDEX idx_TotalRevenue ON Product(TotalRevenue)" +
+                        " CREATE INDEX idx_Seller_ID ON Product(Seller_ID)";
 
     String indexUser = "CREATE INDEX idx_Account_ID ON Users(Account_ID)";
 
@@ -681,12 +683,11 @@ public class CreateSQL {
             "CREATE INDEX idx_Users_ID ON PaymentHistory(Users_ID) " +
             "CREATE INDEX idx_Account_ID ON PaymentHistory(Account_ID)";
 
-    String indexProductSeller = "CREATE INDEX idx_Users_ID ON ProductSeller(Users_ID) " +
-            "CREATE INDEX idx_Product_ID ON ProductSeller(Product_ID)";
 
     private final String indexItemCart = "CREATE INDEX idx_id_Cart ON itemCart(id_Cart) " +
-            "CREATE INDEX idx_product_ID ON itemCart(Product_ID) " +
             "CREATE INDEX idx_User_ID ON itemCart(Users_ID)";
+    private final String indexCartDetails = "CREATE INDEX idx_product_ID ON CartDetails(Product_ID)" +
+            " CREATE INDEX idx_id_Cart ON CartDetails(id_Cart)";
 
     private final String indexMessenger = "CREATE INDEX idx_Status ON Messenger(Statuss)" +
             " CREATE INDEX idx_sentDate ON Messenger(SentDate) " +
@@ -698,10 +699,8 @@ public class CreateSQL {
             " BEGIN" +
             "    Update Account" +
             " SET Currency = Currency+(SELECT SUM(Quantity*Price) FROM inserted)" +
-            " where Account.ID = (SELECT ps.Users_ID FROM inserted cthd JOIN Product p" +
-            "                       ON p.MaSP = cthd.Product_ID " +
-            "                       JOIN ProductSeller ps " +
-            "                       ON p.MaSP = ps.Product_ID) " +
+            " where Account.ID = (SELECT p.Seller_ID FROM inserted cthd JOIN Product p" +
+            "                       ON p.MaSP = cthd.Product_ID) " +
             "END";
 
     private final String TriggerTwo = "CREATE TRIGGER TRIG_Update_Product ON OrderDetails " +
@@ -741,15 +740,23 @@ public class CreateSQL {
             "             WHERE Voucher.MaVoucher = (SELECT MaVoucher From inserted) " +
             " END " +
             "END";
+    //Mỗi người dùng chỉ có 1 giỏ hàng riêng tương ứng với 1 tài khoản, sử dụng chung ID
+    private final String TriggerAddCart = "CREATE TRIGGER add_Cart ON Users" +
+            " FOR Insert " +
+            "AS " +
+            "BEGIN " +
+            " DECLARE @id INT = (SELECT Account_ID FROM inserted)" +
+            " INSERT INTO itemCart(id_Cart,Users_ID)" +
+            " VALUES( @id, @id)" +
+            "END";
+
     private final String proc_getProductOfPages = "CREATE PROC proc_getProductOfPages " +
             " @Category_ID INT," +
             " @Offset int, " +
             " @Limit int" +
             " AS " +
             " BEGIN " +
-            " SELECT p.*, u.FullName FROM Product p JOIN ProductSeller ps " +
-            " ON p.MaSP = ps.Product_ID " +
-            " JOIN Users u ON ps.Users_ID = u.Account_ID " +
+            " SELECT p.*, u.FullName FROM Product p JOIN Users u ON p.Seller_ID = u.Account_ID " +
             " WHERE Category_ID = @Category_ID " +
             " AND p.Activity = 'ON'" +
             " ORDER BY TotalRevenue DESC" +
@@ -762,9 +769,7 @@ public class CreateSQL {
             " @Limit int" +
             " AS " +
             " BEGIN " +
-            " SELECT p.*, u.FullName FROM Product p JOIN ProductSeller ps " +
-            " ON p.MaSP = ps.Product_ID " +
-            " JOIN Users u ON ps.Users_ID = u.Account_ID " +
+            " SELECT p.*, u.FullName FROM Product p  JOIN Users u ON p.Seller_ID = u.Account_ID " +
             " WHERE p.TenSP LIKE @nameProduct " +
             " AND p.Activity = 'ON' " +
             " ORDER BY TotalRevenue DESC" +
@@ -777,10 +782,9 @@ public class CreateSQL {
             " @Limit int " +
             " AS " +
             " BEGIN " +
-            " SELECT Product.* FROM Product INNER JOIN ProductSeller  " +
-            " ON Product.MaSP = ProductSeller.Product_ID " +
-            " AND ProductSeller.Users_ID = @User_ID " +
-            " AND Product.Activity = 'ON' " +
+            " SELECT * FROM Product " +
+            " WHERE Seller_ID = @User_ID " +
+            " AND Activity = 'ON' " +
             " ORDER BY TotalRevenue DESC" +
             " OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY " +
             " END";

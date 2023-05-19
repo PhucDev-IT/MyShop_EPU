@@ -10,8 +10,6 @@ public class itemCartModel {
 
     private int User_ID;
 
-    private int Category_ID;
-
     private int quantity;
 
     private boolean choose;
@@ -22,11 +20,10 @@ public class itemCartModel {
 
     }
 
-    public itemCartModel(int idCart, Product product, int user_ID, int category_ID, int quantity) {
+    public itemCartModel(int idCart, Product product, int user_ID, int quantity) {
         this.idCart = idCart;
         this.product = product;
         User_ID = user_ID;
-        Category_ID = category_ID;
         this.quantity = quantity;
     }
 
@@ -59,13 +56,6 @@ public class itemCartModel {
         User_ID = user_ID;
     }
 
-    public int getCategory_ID() {
-        return Category_ID;
-    }
-
-    public void setCategory_ID(int category_ID) {
-        Category_ID = category_ID;
-    }
 
     public int getQuantity() {
         return quantity;
@@ -110,7 +100,6 @@ public class itemCartModel {
                 "idCart=" + idCart +
               //  ", product=" + product +
                 ", User_ID=" + User_ID +
-                ", Category_ID=" + Category_ID +
                 ", quantity=" + quantity +
                 ", choose=" + choose +
                 ", SumMoney=" + SumMoney +

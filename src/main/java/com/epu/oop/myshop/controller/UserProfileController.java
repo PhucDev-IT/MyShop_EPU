@@ -628,6 +628,7 @@ public class UserProfileController implements Initializable {
                 AlertNotification.showAlertError("Có lỗi xảy ra!", "Thêm sản phẩm thất bại.");
             } else {
                 //Mỗi lần thêm thành công sẽ k truy vẫn lại dữ liệu từ CSDL nữa, thêm trực tiếp vào arraylist
+                AlertNotification.showAlertSucces("", "Sản phẩm này đã được đăng bán!");
                 listProducts.add(pro);
                 clearTextData();
                 row = 1;
@@ -668,12 +669,12 @@ public class UserProfileController implements Initializable {
     @FXML
     public void RemoveProducts() throws SQLException {
 
-        if (AlertNotification.showAlertConfirmation("", "Bạn chắc chắn muốn xóa sản phẩm này?")) {
+        if (AlertNotification.showAlertConfirmation("", "Bạn chắc chắn muốn ngừng bán sản phẩm này?")) {
 
             pro_onclick.setActivity("LOCK");    //Sản phẩm đang được chọn
 
             if (product_dao.Update(pro_onclick) > 0) {
-                AlertNotification.showAlertSucces("", "Xóa thành công!");
+                AlertNotification.showAlertSucces("", "Sản phẩm đã ngưng bán!");
                 grid_BanHangForm.getChildren().clear();
                 row = 1;
                 listProducts.remove(pro_onclick);
@@ -996,14 +997,15 @@ public class UserProfileController implements Initializable {
             AlertNotification.showAlertWarning("", "Nhập số tiền bạn muốn nạp");
         } else {
 
-            String pass = AlertNotification.textInputDialog("Chuyển tiền", "Nhập mật khẩu", "");
+            String pass = AlertNotification.textInputDialog("Nạp tiền", "Nhập mật khẩu", "");
             if (Temp.account.getPassword().equals(pass)) {
+
                 BigDecimal soTienNap = new BigDecimal(deleteChar(txtNapTien.getText()));
-                Temp.account.setMoney(Temp.account.getMoney().add(soTienNap));
                 PaymentHistory pm = new PaymentHistory("Nạp tiền", "Từ STK: " + bank.getSoTaiKhoan(), soTienNap, new Date(System.currentTimeMillis()),
                         "/com/epu/oop/myshop/image/profile/iconNapTien.png", user, null);
                 if (account_dao.transferMoney(Temp.account, pm)) {
-                    AlertNotification.showAlertSucces("Nạp tiền thành công", "Cảm ơn bạn đã đồng hành với chúng tôi");
+                    Temp.account.setMoney(Temp.account.getMoney().add(soTienNap));
+                    AlertNotification.showAlertSucces("Nạp tiền thành công", "Nhanh tay mua sắm thôi!...");
                     refreshPayment();
                 } else {
                     Temp.account.setMoney(Temp.account.getMoney().subtract(soTienNap));

@@ -46,16 +46,14 @@ public class Product_Dao implements Dao_Interface<Product>{
 
     @Override
     public synchronized boolean Insert(Product t) throws SQLException {
-        boolean results = false;
+        int check = 0;
         PreparedStatement preProduct = null;
-        PreparedStatement preProSeller = null;
+
         try {
             openConnection();
             connection.setAutoCommit(false);
-            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID)" +
-                    " VALUES (?,?,?,?,?,?)";
-            String sqlProductSeller = "INSERT INTO ProductSeller(Product_ID,Users_ID) " +
-                    "VALUES (?,?)";
+            String sql = "INSERT INTO Product(TenSP,Quantity,Price,MoTa,SrcImg,Category_ID,Seller_ID)" +
+                    " VALUES (?,?,?,?,?,?,?)";
             preProduct = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
 
             preProduct.setString(1,t.getTenSP());
@@ -64,26 +62,11 @@ public class Product_Dao implements Dao_Interface<Product>{
             preProduct.setString(4,t.getMoTa());
             preProduct.setString(5,t.getSrcImg());
             preProduct.setInt(6,t.getCategory());
-            preProduct.executeUpdate();
-
-            int index ;
-
-            try(ResultSet rs= preProduct.getGeneratedKeys()){
-                if(rs.next()){
-                    index = rs.getInt(1);
-                }else {
-                    throw new SQLException("Không thể thm dữ liệu bảng product");
-                }
-
-            }
-            preProSeller = connection.prepareStatement(sqlProductSeller);
-            preProSeller.setInt(1,index);
-            preProSeller.setInt(2,t.getUser().getID());
-
-            preProSeller.executeUpdate();
+            preProduct.setInt(7,t.getUser().getID());
+            check = preProduct.executeUpdate();
 
             connection.commit();
-            results = true;
+
         }catch (SQLException e) {
             if(connection!=null){
                 connection.rollback();
@@ -92,11 +75,10 @@ public class Product_Dao implements Dao_Interface<Product>{
         }finally {
             if(preProduct!=null)    preProduct.close();
 
-            if(preProSeller!=null)  preProSeller.close();
             connection.setAutoCommit(true);
             closeConnection();
         }
-        return results;
+        return check>0;
     }
 
 
@@ -118,10 +100,11 @@ public class Product_Dao implements Dao_Interface<Product>{
                 int sold = rs.getInt("sold");
                 BigDecimal totalrevenue = rs.getBigDecimal("TotalRevenue");
                 String SrcImg = rs.getString("SrcImg");
-                int DanhMuc = rs.getInt("Category_ID");
-                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,null));
+                int DanhMuc = rs.getInt("Category_ID");;
+                int Id_Seller = rs.getInt("Seller_ID");
+                list.add(new Product(ID,TenSP,soLuong,donGia,MoTa,SrcImg,sold,totalrevenue,DanhMuc,new User(Id_Seller,"")));
             }
-            rs.close();
+
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra "+e.getMessage());
         }finally {
@@ -199,11 +182,10 @@ public class Product_Dao implements Dao_Interface<Product>{
         Product product = new Product();
 
         String sql = "SELECT p.MaSP,p.TenSP,p.Price,p.Sold,p.TotalRevenue,p.SrcImg,u.Account_ID,u.FullName " +
-                " FROM Product p JOIN ProductSeller ps" +
-                " ON p.MaSP = ps.Product_ID" +
-                " AND Activity = 'ON'" +
+                " FROM Product p" +
+                " WHERE  Activity = 'ON'" +
                 " AND MaSP = ?" +
-                " JOIN Users u ON ps.Users_ID = u.Account_ID" ;
+                " JOIN Users u ON p.Seller_ID = u.Account_ID" ;
         try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,t.getID());
@@ -340,16 +322,15 @@ public class Product_Dao implements Dao_Interface<Product>{
         Object[] obj = new Object[4];
         openConnection();
         String sql = "SELECT CAST(SUM(Sold) AS INT) AS sold , CAST(SUM(TotalRevenue) AS DECIMAL) as total " +
-                "FROM Product p JOIN ProductSeller ps " +
-                "ON p.MaSP = ps.Product_ID " +
-                "AND ps.Users_ID = ?";
+                "FROM Product p " +
+                " WHERE p.Users_ID = ?";
 
         String sqlToday = "select COUNT(od.Order_ID) as totalorder,CAST(SUM(TongTien) AS DECIMAL) as totalMoney FROM orders od " +
                 "WHERE NgayLapHD = CONVERT(date, GETDATE()) " +
                 "AND od.Order_ID IN( " +
-                "SELECT Order_ID FROM OrderDetails odd JOIN ProductSeller ps " +
-                "ON odd.Product_ID = ps.Product_ID " +
-                "AND ps.Users_ID = ?)";
+                "SELECT Order_ID FROM OrderDetails odd JOIN Product p " +
+                "ON odd.Product_ID = p.MaSP " +
+                "AND p.Seller_ID = ?)";
         try(PreparedStatement statement = connection.prepareStatement(sql);
         PreparedStatement stmOderToday = connection.prepareStatement(sqlToday)){
             statement.setInt(1,u.getID());
@@ -414,13 +395,12 @@ public class Product_Dao implements Dao_Interface<Product>{
     {
         List<Product> list = new ArrayList<>();
 
-        String sql = "SELECT Product.* FROM Product INNER JOIN ProductSeller " +
-                "                ON Product.MaSP = ProductSeller.Product_ID" +
-                "                 AND ProductSeller.Users_ID =?" +
-                "                AND Product.TenSP LIKE ?" +
-                "                 AND Product.Activity = 'ON'" +
-                "                 ORDER BY MaSP" +
-                "                 OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
+        String sql = "SELECT Product.* FROM Product " +
+                "     WHERE Seller_ID =?" +
+                "     AND TenSP LIKE ?" +
+                "     AND Activity = 'ON'" +
+                "     ORDER BY MaSP" +
+                "     OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
         try(Connection connection = jdbcUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,u.getID());
@@ -455,10 +435,9 @@ public class Product_Dao implements Dao_Interface<Product>{
         List<Product> list = new ArrayList<>();
 
         String sql = "SELECT p.MaSP,p.TenSP,p.Price,p.Sold,p.TotalRevenue,p.SrcImg,u.Account_ID,u.FullName " +
-                " FROM Product p JOIN ProductSeller ps" +
-                " ON p.MaSP = ps.Product_ID" +
-                " AND Activity = 'ON'" +
-                " JOIN Users u ON ps.Users_ID = u.Account_ID" +
+                " FROM Product p " +
+                " WHERE Activity = 'ON'" +
+                " JOIN Users u ON p.Seller_ID = u.Account_ID" +
                 " ORDER BY TotalRevenue DESC" +
                 " OFFSET ? ROWS FETCH NEXT 10 ROWS ONLY  ";
         openConnection();
