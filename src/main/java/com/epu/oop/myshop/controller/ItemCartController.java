@@ -20,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class ItemCartController {
 
@@ -62,11 +63,11 @@ public class ItemCartController {
         item = it;
         try {
             if (!it.getProduct().getSrcImg().contains(":")) {
-                imgProduct.setImage(new Image(getClass().getResourceAsStream(it.getProduct().getSrcImg())));
+                imgProduct.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(it.getProduct().getSrcImg()))));
             } else
                 imgProduct.setImage(new Image(it.getProduct().getSrcImg()));
         } catch (Exception e) {
-            imgProduct.setImage(new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png")));
+            imgProduct.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/imgError.png"))));
             System.out.println("Lỗi: " + e.getMessage());
         }
 

@@ -31,7 +31,7 @@
          <font>
             <Font size="16.0" />
          </font></Label>
-      <Label fx:id="nameProduct" layoutX="130.0" layoutY="39.0" prefHeight="26.0" prefWidth="335.0" text="Label">
+      <Label fx:id="nameProduct" layoutX="130.0" layoutY="39.0" prefHeight="26.0" prefWidth="335.0" text="Để tránh điều này, bạn có thể bọc văn bản trong chiều rộng đã chỉ định mà bạn cần gọi phương thức setWrapText() " textAlignment="CENTER">
          <font>
             <Font name="Calibri Bold" size="17.0" />
          </font>

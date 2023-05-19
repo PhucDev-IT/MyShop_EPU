@@ -85,8 +85,8 @@ public class itemCartModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        itemCartModel itemCartModel = (itemCartModel) o;
-        return idCart == itemCartModel.idCart;
+        itemCartModel that = (itemCartModel) o;
+        return idCart == that.idCart;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class itemCartModel {
     public String toString() {
         return "itemCartModel{" +
                 "idCart=" + idCart +
-              //  ", product=" + product +
+                ", product=" + product +
                 ", User_ID=" + User_ID +
                 ", quantity=" + quantity +
                 ", choose=" + choose +

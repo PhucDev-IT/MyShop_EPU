@@ -447,6 +447,9 @@ public class UserProfileController implements Initializable {
         DonGia_txt.setText("");
         danhMuc_choisebox.setValue(null);
         moTa_txta.setText("");
+        SuaSP_btn.setDisable(true);
+        xoaSP_btn.setDisable(true);
+        ThemSP_btn.setDisable(false);
     }
 
     public String deleteChar(String giaBan) {
@@ -501,9 +504,6 @@ public class UserProfileController implements Initializable {
     }
 
     public void refreshDataInSell(Event e) {
-        SuaSP_btn.setDisable(true);
-        xoaSP_btn.setDisable(true);
-        ThemSP_btn.setDisable(false);
         row = 1;
         col = 0;
         clearTextData();
@@ -675,6 +675,7 @@ public class UserProfileController implements Initializable {
 
             if (product_dao.Update(pro_onclick) > 0) {
                 AlertNotification.showAlertSucces("", "Sản phẩm đã ngưng bán!");
+                clearTextData();
                 grid_BanHangForm.getChildren().clear();
                 row = 1;
                 listProducts.remove(pro_onclick);

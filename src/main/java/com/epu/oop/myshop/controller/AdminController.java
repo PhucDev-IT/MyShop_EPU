@@ -239,7 +239,7 @@ public class AdminController implements Initializable {
     private TextArea noiDung_txa;
 
     @FXML
-    private JFXButton them_btn;
+    private JFXButton addVoucher_btn;
 
     @FXML
     private ImageView imgVoucher;
@@ -285,6 +285,12 @@ public class AdminController implements Initializable {
     @FXML
     private TableColumn<VoucherModel, String> ColNoiDung;
 
+    @FXML
+    private JFXButton updateVoucher_btn;
+
+    @FXML
+    private JFXButton removeVoucher_btn;
+
     private List<VoucherModel> listAllVouchers = new ArrayList<>();
     //--------------------
     private String imgVoucherTemp;
@@ -295,9 +301,15 @@ public class AdminController implements Initializable {
     private VoucherModel voucher;
     private MyListener<VoucherModel> myListener_Voucher;
 
+
     public void clickChooseVoucher() {
         myListener_Voucher = t -> {
             voucher = t;
+            imgVoucherTemp = t.getImgVoucher();
+
+            updateVoucher_btn.setDisable(false);
+            addVoucher_btn.setDisable(true);
+            removeVoucher_btn.setDisable(false);
             showInformationVoucher();
         };
     }
@@ -321,6 +333,7 @@ public class AdminController implements Initializable {
             sotienGiam_txt.setText(App.numf.format(voucher.getSoTienGiam()));
         else
             sotienGiam_txt.setText("");
+
         App.formatter.format(voucher.getNgayKetThuc());
         ngayKTDate.setValue(voucher.getNgayKetThuc().toLocalDate());
         ngayBatDau_date.setValue(voucher.getNgayBatDau().toLocalDate());
@@ -328,7 +341,7 @@ public class AdminController implements Initializable {
         noiDung_txa.setText(voucher.getNoiDung());
         EmailUserVoucher_txt.setDisable(true);
         EmailUserVoucher_txt.setText(voucher.getUser().getEmail());
-        them_btn.setDisable(true);
+        addVoucher_btn.setDisable(true);
     }
 
     public void addImageVoucher() {
@@ -339,10 +352,12 @@ public class AdminController implements Initializable {
         listVouchers.clear();
         listVouchers = voucherDao.selectAllVoucherLeftTime();
         displayVoucherForm();
-        them_btn.setDisable(false);
         ramdomVoucher_btn.setDisable(false);
         EmailUserVoucher_txt.setDisable(false);
-
+        addVoucher_btn.setDisable(false);
+        removeVoucher_btn.setDisable(true);
+        updateVoucher_btn.setDisable(true);
+        imgVoucherTemp = null;
         setEmptyElement();
     }
 
@@ -684,7 +699,6 @@ public class AdminController implements Initializable {
             setDataProducts(listProduct.get(index));
             index++;
         }
-        System.out.println("ist Product: " + listProduct.size());
         SizeProduct.set(SizeProduct.get() + (listProduct.size() - SizeProduct.get()));
     }
 

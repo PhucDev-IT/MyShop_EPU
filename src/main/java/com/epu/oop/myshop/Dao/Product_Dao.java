@@ -118,7 +118,7 @@ public class Product_Dao implements Dao_Interface<Product>{
     //Lấy số lượng trang cho danh mục
     public int getNumbersPages(int idCate) throws SQLException {
         int result = 0;
-        String sql = "SELECT COUNT(*) as total FROM Product WHERE Category_ID = ?";
+        String sql = "SELECT COUNT(*) as total FROM Product WHERE Category_ID = ?  AND Activity = 'ON' ";
         openConnection();
         try(PreparedStatement statement = connection.prepareStatement(sql)){
 
@@ -323,7 +323,7 @@ public class Product_Dao implements Dao_Interface<Product>{
         openConnection();
         String sql = "SELECT CAST(SUM(Sold) AS INT) AS sold , CAST(SUM(TotalRevenue) AS DECIMAL) as total " +
                 "FROM Product p " +
-                " WHERE p.Users_ID = ?";
+                " WHERE p.Seller_ID = ?";
 
         String sqlToday = "select COUNT(od.Order_ID) as totalorder,CAST(SUM(TongTien) AS DECIMAL) as totalMoney FROM orders od " +
                 "WHERE NgayLapHD = CONVERT(date, GETDATE()) " +
@@ -430,14 +430,14 @@ public class Product_Dao implements Dao_Interface<Product>{
         return list;
     }
 
-    //Lấy tất cả product có phân trang
+    //Lấy tất cả product có phân trang(admin)
     public List<Product> selectAllProductPage(AtomicInteger lastIndex) throws SQLException {
         List<Product> list = new ArrayList<>();
 
         String sql = "SELECT p.MaSP,p.TenSP,p.Price,p.Sold,p.TotalRevenue,p.SrcImg,u.Account_ID,u.FullName " +
                 " FROM Product p " +
-                " WHERE Activity = 'ON'" +
                 " JOIN Users u ON p.Seller_ID = u.Account_ID" +
+                " WHERE Activity = 'ON'" +
                 " ORDER BY TotalRevenue DESC" +
                 " OFFSET ? ROWS FETCH NEXT 10 ROWS ONLY  ";
         openConnection();

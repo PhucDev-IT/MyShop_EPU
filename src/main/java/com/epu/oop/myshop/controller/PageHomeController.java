@@ -427,9 +427,7 @@ public class PageHomeController implements Initializable {
 
     /*
     - Mỗi lần chon 1 danh mục bất kỳ sẽ tính tổng số product thuộc danh mục  đó  để tiến hành phân trang và set số lượng cho pagi..
-    -B2: Truy vấn dữ liệu thuộc category vừa nhấn băt đầu với trang thứ nhất
-    -Mỗi khi nhấn sang 1 page mới sẽ clear data cũ và truy vấn sản phẩm thuộc trang tiếp theo, các  sản phẩm sẽ được set
-    lên UI của PageFactory của pagination.
+    -B2: Truy vấn dữ liệu thuộc category vừa nhấn - băt đầu với trang thứ nhất
      */
 
     //Tính số trang và lấy dữ liệu từ cachedRowSet để hiển thị lên GUI
@@ -681,8 +679,8 @@ public class PageHomeController implements Initializable {
                     listChooseItemCartModel.add(new itemCartModel(SelectedProduct, numbersBuyProduct));
                     numbersBuyProduct = Integer.parseInt(txtNumber.getText());
                     tongTien = SelectedProduct.getPrice().multiply(BigDecimal.valueOf(Long.parseLong(txtNumber.getText())));
-                    displayListProductOrderDetails(SelectedProduct, numbersBuyProduct);
                     showOderDetail();
+                    displayListProductOrderDetails(SelectedProduct, numbersBuyProduct);
                 }
             } else {
                 if (AlertNotification.showAlertConfirmation("Bạn chưa đăng nhập", "Đăng nhập để mua hàng?")) {
@@ -839,17 +837,16 @@ public class PageHomeController implements Initializable {
 
             ProductOrderDetails productDetails = fxmlLoader.getController();
             productDetails.setData(prod, number);
-            setDataGridPane(gridProdcut_OrderDetails, anchorPane, col, ++rowPro);
+            setDataGridPane(gridProdcut_OrderDetails, anchorPane, 0, ++rowPro);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //nameProdOrder_txt.setText(SelectedProduct.getTenSP());
-        //priceProOder_lb.setText(App.numf.format(SelectedProduct.getPrice()) + "đ");
-        numbersProduct.setText(txtNumber.getText());
     }
 
     public void showOderDetail() {
         paneOrderDetail.setVisible(true);
+        rowPro = 1;
+        gridProdcut_OrderDetails.getChildren().clear();
         //Lấy thông tin người dungf
         user = userDao.SelectByID(new User(Temp.account.getID(), ""));
         nameUserOder_lb.setText(user.getFullName());
@@ -968,9 +965,9 @@ public class PageHomeController implements Initializable {
     -Khi người dùng tích chọn product, nếu lần đầu tích thì sẽ đc thêm vào list và tính tiền
     -Khi hủy thì sẽ bị xóa khoit list và cập nhật lại tiền
     -Nếu có hành động tăng giảm số lượng thì duyệt vòng lặp để kiểm tra và cập nhật lại sô lượng + tính toán tiền
-    -Tông số lượng trước đó = tổng số lượng trước đó + (số lượng mới tăng - số luwognj trc đó trong list) nếu hành động tăng
+    -Số lượng mua hàng += số lượng mới của sản phẩm đã chọn
     -Tổng tiền =
-    -setSumItemCarrt(); ở mỗi if vì khi người dùng chưa chọn sp mà nhấn tăng hoặc giảm sẽ xảy ra exceptiom
+    -setSumItemCarrt(); ở mỗi if vì khi người dùng chưa chọn sp mà nhấn tăng hoặc giảm sẽ xảy ra exception
      */
     public void chooseItemCart() {
         myListenerItemCart = item -> {
@@ -987,6 +984,7 @@ public class PageHomeController implements Initializable {
                 setSumItemCarrt();
             }
         };
+
     }
 
     public void upDownItemCart() {
@@ -997,15 +995,12 @@ public class PageHomeController implements Initializable {
                     tongTien = tongTien.subtract(itm.getSumMoney());
                     listChooseItemCartModel.remove(itm);
                 }
-                System.out.println(listChooseItemCartModel);
                 updateGridItemcart(itm);
             } else {
-
                 numbersBuyProduct = 0;
                 tongTien = new BigDecimal("0");
                 System.out.println(listChooseItemCartModel.size());
                 for (itemCartModel it : listChooseItemCartModel) {
-                    System.out.println(it);
                     numbersBuyProduct += it.getQuantity();
                     tongTien = tongTien.add(it.getSumMoney());
                 }
@@ -1020,18 +1015,18 @@ public class PageHomeController implements Initializable {
         for (int i = 0; i < gridItemCart.getChildren().size(); i++) {
             AnchorPane anchorPane = (AnchorPane) gridItemCart.getChildren().get(i);
             itemCartModel it = (itemCartModel) anchorPane.getUserData();
-            if (it.getIdCart() == itm.getIdCart()) {
+
+            if (it.getProduct().getID() == itm.getProduct().getID()) {
                 indexToRemove = i;
                 break;
             }
         }
-
         // Xóa nút chứa sản phẩm cần xóa và cập nhật lại vị trí của các nút còn lại
         if (indexToRemove != -1) {
             gridItemCart.getChildren().remove(indexToRemove);
             for (int i = indexToRemove; i < gridItemCart.getChildren().size(); i++) {
                 AnchorPane anchorPane = (AnchorPane) gridItemCart.getChildren().get(i);
-                updateRowAndColumn(anchorPane, i + 2, gridItemCart);
+                updateRowAndColumn(anchorPane, i+1, gridItemCart);
             }
         }
     }
@@ -1040,15 +1035,6 @@ public class PageHomeController implements Initializable {
 
         gridPane.setColumnIndex(anchorPane, 0);
         gridPane.setRowIndex(anchorPane, index);
-        // set grid width
-        gridPane.setMinWidth(Region.USE_COMPUTED_SIZE);
-        gridPane.setPrefWidth(Region.USE_COMPUTED_SIZE);
-        gridPane.setMaxWidth(Region.USE_PREF_SIZE);
-
-        // set grid height
-        gridPane.setMinHeight(Region.USE_COMPUTED_SIZE);
-        gridPane.setPrefHeight(Region.USE_COMPUTED_SIZE);
-        gridPane.setMaxHeight(Region.USE_PREF_SIZE);
     }
 
     public void setSumItemCarrt() {
@@ -1084,7 +1070,7 @@ public class PageHomeController implements Initializable {
             itemCategory.setData(myListenerItemCart, it, eventMyListener);
 
             anchorPane.setUserData(it); //Lưu trữ các đối tượng tùy ý , và có thể truy cập lấy đối tượng đó ra xem
-            setDataGridPane(gridItemCart, anchorPane, 0, ++rowItemCart);
+            setDataGridPane(gridItemCart, anchorPane, 0,rowItemCart++);
         } catch (Exception e) {
             e.printStackTrace();
         }

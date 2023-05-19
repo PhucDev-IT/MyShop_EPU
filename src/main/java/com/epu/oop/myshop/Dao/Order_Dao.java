@@ -297,8 +297,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                     "FROM Product p INNER JOIN OrderDetails cthd " +
                     "ON p.MaSP = cthd.Product_ID " +
                     "INNER JOIN orders ON cthd.Order_ID = orders.Order_ID " +
-                    "JOIN ProductSeller ON p.MaSP = ProductSeller.Product_ID " +
-                    "JOIN Users ON ProductSeller.Users_ID = Users.Account_ID " +
+                    "JOIN Users ON p.Seller_ID = Users.Account_ID " +
                     "AND orders.Users_ID = ?" +
                     " ORDER BY orders.NgayLapHD DESC" +
                     " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";

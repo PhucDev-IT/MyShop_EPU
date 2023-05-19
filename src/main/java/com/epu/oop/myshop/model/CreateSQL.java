@@ -189,6 +189,7 @@ public class CreateSQL {
                 stm.executeUpdate(TriggerThree);
                 stm.executeUpdate(TriggerUpdateVoucher);
                 stm.executeUpdate(TriggerAddCart);
+                stm.executeUpdate(TriggerLockProduct);
 
                 connection.commit();
                 System.out.println("Tạo trigger thành công");
@@ -750,6 +751,23 @@ public class CreateSQL {
             " VALUES( @id, @id)" +
             "END";
 
+    //Khi bkhoasoa tài khoản thì các san phẩm đang baán sẽ bị thay đổi trạng thái để không được sellec
+    private final String TriggerLockProduct = "CREATE TRIGGER Trig_LockProduct_WhenLockAccount ON Account " +
+            "FOR UPDATE " +
+            "AS " +
+            "BEGIN " +
+            " DECLARE @Status NVARCHAR(6) " +
+            " IF EXISTS (SELECT ID FROM inserted WHERE Activity = 'ON') " +
+            "   SET @Status = 'ON' " +
+            " ELSE" +
+            "   SET @Status = 'LOCK' " +
+            "    " +
+            " UPDATE PRODUCT " +
+            " SET Activity = @Status " +
+            " WHERE Seller_ID = (SELECT ID FROM inserted) " +
+            "END";
+
+    //------------------------- STORE PROCEDURE---------------------------------------
     private final String proc_getProductOfPages = "CREATE PROC proc_getProductOfPages " +
             " @Category_ID INT," +
             " @Offset int, " +
