@@ -9,6 +9,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 public class ThreadImageV {
     private int currentIndex = 0;
     private ImageView imageView;
@@ -19,16 +21,16 @@ public class ThreadImageV {
         imageView = img;
     }
     private Image[] images = {
-            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-3.png")),
-            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-2.png")),
-            new Image(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-1.jpg")),
+            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-3.png"))),
+            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-2.png"))),
+            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/epu/oop/myshop/image/voucher-1.jpg"))),
     };
 
     public void start() {
-        // Set up the ImageView
+
         imageView.setImage(images[0]);
 
-        // Set up the Slider
+        // set silder
         Slider slider = new Slider(0, images.length - 1, 0);
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
@@ -39,7 +41,7 @@ public class ThreadImageV {
             updateImage();
         });
 
-        // Set up the Timeline for the Slideshow
+        // Set thời gian
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(4), event -> {
             currentIndex = (currentIndex + 1) % images.length;
@@ -54,7 +56,7 @@ public class ThreadImageV {
     }
 
     private void updateImage() {
-        // Apply a fade transition to the ImageView when updating the image
+
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), imageView);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);

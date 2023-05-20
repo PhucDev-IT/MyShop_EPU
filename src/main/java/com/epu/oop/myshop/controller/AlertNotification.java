@@ -8,6 +8,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class AlertNotification {
@@ -41,7 +42,7 @@ public class AlertNotification {
         alert.setContentText(content);
         alert.setWidth(60);
         alert.setHeight(15);
-        Image image = new Image(AlertNotification.class.getResourceAsStream("/com/epu/oop/myshop/image/icon_check.png"));
+        Image image = new Image(Objects.requireNonNull(AlertNotification.class.getResourceAsStream("/com/epu/oop/myshop/image/icon_check.png")));
         ImageView icon = new ImageView(image);
         icon.setFitHeight(48);
         icon.setFitWidth(48);
@@ -77,6 +78,7 @@ public class AlertNotification {
     public static String textInputDialog(String title, String content, String icon) {
         TextInputDialog textDialog = new TextInputDialog();
         textDialog.setTitle(title);
+        textDialog.setHeaderText("");
         textDialog.setContentText(content);
         //textDialog.setGraphic(new ImageView(new Image(icon)));
         Optional<String> result = textDialog.showAndWait();

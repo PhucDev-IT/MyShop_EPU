@@ -927,16 +927,16 @@ public class UserProfileController implements Initializable {
         } else {
 
             BigDecimal soTienRut = new BigDecimal(deleteChar(txtSoTienRut_RTForm.getText()));
-            soTienRut.add(phiRutTien);
+            soTienRut = soTienRut.add(phiRutTien);
 
             if (Temp.account.getMoney().compareTo(soTienRut) < 0) {
                 AlertNotification.showAlertWarning("", "Số dư không đủ!");
             } else {
-                String notification = "Số tiền bạn nhận được là: " + App.numf.format(soTienRut.subtract(phiRutTien));
+                String notification = "Số tiền bạn nhận được là: " + App.numf.format(soTienRut.subtract(phiRutTien))+" phí giao dịch: "+App.numf.format(phiRutTien);
                 if (AlertNotification.showAlertConfirmation(notification, "Bạn chắc chắn muốn rút?")) {
                     String pass = AlertNotification.textInputDialog("Rút tiền", "Nhập mật khẩu", "");
-                    if (Temp.account.getPassword().equals(pass)) {
-                        PaymentHistory paymentBank = new PaymentHistory("Rút tiền", "Rút về ngân hàng", soTienRut,
+                    if (pass!="" && Temp.account.getPassword().equals(pass)) {
+                        PaymentHistory paymentBank = new PaymentHistory("Rút tiền", "Rút về ngân hàng", soTienRut.subtract(phiRutTien),
                                 new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", user, null);
                         Temp.account.setMoney(Temp.account.getMoney().subtract(soTienRut));
 
@@ -945,8 +945,11 @@ public class UserProfileController implements Initializable {
                             AlertNotification.showAlertSucces("Rút tiền thành công", "");
                             refreshPayment();
                         } else {
+                            Temp.account.setMoney(Temp.account.getMoney().add(soTienRut));
                             AlertNotification.showAlertError("Có lỗi xảy ra, thử lại sau!", "");
                         }
+                    }else{
+                        AlertNotification.showAlertError("", "Mật khẩu không chính xác");
                     }
                 }
             }
@@ -1004,8 +1007,8 @@ public class UserProfileController implements Initializable {
                 BigDecimal soTienNap = new BigDecimal(deleteChar(txtNapTien.getText()));
                 PaymentHistory pm = new PaymentHistory("Nạp tiền", "Từ STK: " + bank.getSoTaiKhoan(), soTienNap, new Date(System.currentTimeMillis()),
                         "/com/epu/oop/myshop/image/profile/iconNapTien.png", user, null);
+                Temp.account.setMoney(Temp.account.getMoney().add(soTienNap));
                 if (account_dao.transferMoney(Temp.account, pm)) {
-                    Temp.account.setMoney(Temp.account.getMoney().add(soTienNap));
                     AlertNotification.showAlertSucces("Nạp tiền thành công", "Nhanh tay mua sắm thôi!...");
                     refreshPayment();
                 } else {
