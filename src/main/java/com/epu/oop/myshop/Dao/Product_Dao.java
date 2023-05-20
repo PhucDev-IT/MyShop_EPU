@@ -21,7 +21,7 @@ public class Product_Dao implements Dao_Interface<Product>{
 
     private Connection connection;
 
-    public Product_Dao(ConnectionPool jdbcUtil) {
+    private Product_Dao(ConnectionPool jdbcUtil) {
         this.jdbcUtil = jdbcUtil;
     }
 

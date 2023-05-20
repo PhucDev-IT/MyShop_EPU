@@ -186,7 +186,6 @@ public class CreateSQL {
 
                 stm.executeUpdate(TriggerOne);
                 stm.executeUpdate(TriggerTwo);
-                stm.executeUpdate(TriggerThree);
                 stm.executeUpdate(TriggerUpdateVoucher);
                 stm.executeUpdate(TriggerAddCart);
                 stm.executeUpdate(TriggerLockProduct);
@@ -454,7 +453,7 @@ public class CreateSQL {
                     String filePath = "/" + file.getPath().substring(file.getPath().indexOf("com")).replace('\\', '/');
 
                     int sold = random.nextInt(4921)+4;
-                    BigDecimal total = new BigDecimal(sold*543.7);
+                    BigDecimal total = new BigDecimal(sold*593.7);
                     Product product = new Product(0,nameWithoutExtension,random.nextInt(10000)+12,total,"Người bán không" +
                             " nói gì",filePath,sold,total.multiply(BigDecimal.valueOf(sold)),i, new User(random.nextInt(3) + 2,""));
 
@@ -721,14 +720,6 @@ public class CreateSQL {
             "    WHERE EXISTS (SELECT * FROM inserted WHERE inserted.Product_ID = Product.MaSP)" +
             "END";
 
-    private final String TriggerThree = "CREATE TRIGGER TRIG_Update_MoneyCustomer ON Orders " +
-            "FOR INSERT " +
-            "AS " +
-            "BEGIN " +
-            "    UPDATE Account " +
-            "    SET Currency = Currency - (SELECT ThanhTien FROM inserted) " +
-            "    WHERE Account.ID = (SELECT Users_ID FROM inserted) " +
-            "END";
 
     private final String TriggerUpdateVoucher = "CREATE TRIGGER Trig_UpdateVoucher ON Orders " +
             "FOR INSERT " +

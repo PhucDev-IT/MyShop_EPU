@@ -11,7 +11,7 @@ public class OrderDetails {
 
     private Product product;
 
-    private float quantity;
+    private int quantity;
 
     private BigDecimal price;
 
@@ -19,7 +19,7 @@ public class OrderDetails {
 
 
     public OrderDetails(){}
-    public OrderDetails(Product p, float soLuong, BigDecimal dongia){
+    public OrderDetails(Product p, int soLuong, BigDecimal dongia){
         this.product = p;
         this.quantity = soLuong;
         this.price = dongia;
@@ -53,11 +53,11 @@ public class OrderDetails {
     }
 
 
-    public float getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(float quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 

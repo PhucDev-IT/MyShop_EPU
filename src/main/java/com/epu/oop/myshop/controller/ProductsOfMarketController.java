@@ -55,7 +55,6 @@ public class ProductsOfMarketController {
         sold.setText(String.valueOf(prod.getSold()));
         maSP_lb.setText("0" + prod.getID());
         price.setText(App.numf.format(prod.getPrice()));
-
     }
 
 

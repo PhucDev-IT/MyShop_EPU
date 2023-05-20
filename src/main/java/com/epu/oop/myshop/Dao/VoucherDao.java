@@ -13,7 +13,7 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
     private final ConnectionPool jdbcUtil;
     private static VoucherDao instance;
 
-    public VoucherDao(ConnectionPool jdbcUtil) {
+    private VoucherDao(ConnectionPool jdbcUtil) {
         this.jdbcUtil = jdbcUtil;
     }
 

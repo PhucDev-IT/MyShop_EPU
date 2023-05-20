@@ -13,7 +13,7 @@ public class UserDao implements Dao_Interface<User> {
     private final ConnectionPool jdbcUtil;
     private static UserDao instance;
 
-    public UserDao(ConnectionPool jdbcUtil) {
+    private UserDao(ConnectionPool jdbcUtil) {
         this.jdbcUtil = jdbcUtil;
     }
 

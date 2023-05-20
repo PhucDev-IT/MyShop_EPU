@@ -1,10 +1,7 @@
 package com.epu.oop.myshop.controller;
 
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -46,7 +43,6 @@ public class AlertNotification {
         ImageView icon = new ImageView(image);
         icon.setFitHeight(48);
         icon.setFitWidth(48);
-
         alert.getDialogPane().setGraphic(icon);
         alert.showAndWait();
     }
@@ -75,15 +71,29 @@ public class AlertNotification {
 
     //----------------------------------------- Dialog------------------------------------------------
 
-    public static String textInputDialog(String title, String content, String icon) {
-        TextInputDialog textDialog = new TextInputDialog();
-        textDialog.setTitle(title);
-        textDialog.setHeaderText("");
-        textDialog.setContentText(content);
-        //textDialog.setGraphic(new ImageView(new Image(icon)));
-        Optional<String> result = textDialog.showAndWait();
-        if (result.isPresent()) {
-            return result.get();
+    public static String inputPassword(String title) {
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Nhập mật khẩu");
+
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("Vui lòng nhập mật khẩu của bạn");
+        alert.getDialogPane().setContent(passwordField);
+
+        Image image = new Image(Objects.requireNonNull(AlertNotification.class.getResourceAsStream("/com/epu/oop/myshop/image/icon-lock.png")));
+        ImageView icon = new ImageView(image);
+        icon.setFitHeight(48);
+        icon.setFitWidth(48);
+        alert.getDialogPane().setGraphic(icon);
+
+        // Hiển thị hộp thoại và chờ người dùng nhập mật khẩu
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Kiểm tra xem người dùng đã nhập mật khẩu hay chưa
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            String password = passwordField.getText();
+            return password;
         }
         return null;
     }

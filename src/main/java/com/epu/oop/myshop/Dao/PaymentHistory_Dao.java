@@ -16,7 +16,7 @@ public class PaymentHistory_Dao implements Dao_Interface<PaymentHistory>{
     private final ConnectionPool jdbcUtil;
     private static PaymentHistory_Dao instance;
 
-    public PaymentHistory_Dao(ConnectionPool jdbcUtil) {
+    private PaymentHistory_Dao(ConnectionPool jdbcUtil) {
         this.jdbcUtil = jdbcUtil;
     }
 

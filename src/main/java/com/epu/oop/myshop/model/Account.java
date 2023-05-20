@@ -3,9 +3,9 @@ package com.epu.oop.myshop.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashSet;
+
 import java.util.Objects;
-import java.util.Set;
+
 
 
 public class Account implements Serializable {
@@ -128,12 +128,13 @@ public class Account implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Account account)) return false;
-        return getID() == account.getID();
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return ID == account.ID;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getID());
+        return Objects.hash(ID);
     }
 }

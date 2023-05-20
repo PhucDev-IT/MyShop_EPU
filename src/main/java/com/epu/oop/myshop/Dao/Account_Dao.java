@@ -23,8 +23,8 @@ public class Account_Dao implements Dao_Interface<Account> {
         }
         return instance;
     }
-
-    public Account_Dao(ConnectionPool jdbcUtil) {
+    //Đảm bảo chỉ có 1 thể hiện duy nhất Account_Dao được tạo ra trong cả vòng đời c.trình
+    private Account_Dao(ConnectionPool jdbcUtil) {
 
         this.jdbcUtil = jdbcUtil;
     }

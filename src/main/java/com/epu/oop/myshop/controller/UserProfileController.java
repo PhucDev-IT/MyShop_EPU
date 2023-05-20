@@ -592,7 +592,6 @@ public class UserProfileController implements Initializable {
         }
         lastIndex.set(lastIndex.get() + (listProducts.size() - lastIndex.get()));
 
-        System.out.println("Number product: " + lastIndex.get() + " Grid: " + grid_BanHangForm.getChildren().size());
     }
 
     //Khi cuôộn sản phẩm trong bán sản phẩm
@@ -934,8 +933,10 @@ public class UserProfileController implements Initializable {
             } else {
                 String notification = "Số tiền bạn nhận được là: " + App.numf.format(soTienRut.subtract(phiRutTien))+" phí giao dịch: "+App.numf.format(phiRutTien);
                 if (AlertNotification.showAlertConfirmation(notification, "Bạn chắc chắn muốn rút?")) {
-                    String pass = AlertNotification.textInputDialog("Rút tiền", "Nhập mật khẩu", "");
-                    if (pass!="" && Temp.account.getPassword().equals(pass)) {
+                    String pass = AlertNotification.inputPassword("Rút tiền");
+                    if(pass==null){
+
+                    }else if (Temp.account.getPassword().equals(pass)) {
                         PaymentHistory paymentBank = new PaymentHistory("Rút tiền", "Rút về ngân hàng", soTienRut.subtract(phiRutTien),
                                 new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconRutTien.png", user, null);
                         Temp.account.setMoney(Temp.account.getMoney().subtract(soTienRut));
@@ -964,10 +965,12 @@ public class UserProfileController implements Initializable {
             AlertNotification.showAlertWarning("", "Vui lòng nhập đầy đủ thông tin");
         } else {
             BigDecimal soTienChuyen = new BigDecimal(deleteChar(soTienChuyen_txt.getText()));
-            if (Temp.account.getMoney().compareTo(soTienChuyen) >= 0) {
 
-                String pass = AlertNotification.textInputDialog("Chuyển tiền", "Nhập mật khẩu", "");
-                if (Temp.account.getPassword().equals(pass)) {
+            if (Temp.account.getMoney().compareTo(soTienChuyen) >= 0) {
+                String pass = AlertNotification.inputPassword("Chuyển tiền");
+                if(pass==null){
+                    return;
+                }else if (Temp.account.getPassword().equals(pass)) {
                     Account nguoiNhan = account_dao.SelectByID(new Account(0, taiKhoanNhan_txt.getText(), ""));
                     if (nguoiNhan == null) {
                         AlertNotification.showAlertWarning("Người dùng không tồn tại", "");
@@ -1001,9 +1004,11 @@ public class UserProfileController implements Initializable {
             AlertNotification.showAlertWarning("", "Nhập số tiền bạn muốn nạp");
         } else {
 
-            String pass = AlertNotification.textInputDialog("Nạp tiền", "Nhập mật khẩu", "");
+            String pass = AlertNotification.inputPassword("Nạp tiền");
+            if(pass==null){
+                return;
+            }else
             if (Temp.account.getPassword().equals(pass)) {
-
                 BigDecimal soTienNap = new BigDecimal(deleteChar(txtNapTien.getText()));
                 PaymentHistory pm = new PaymentHistory("Nạp tiền", "Từ STK: " + bank.getSoTaiKhoan(), soTienNap, new Date(System.currentTimeMillis()),
                         "/com/epu/oop/myshop/image/profile/iconNapTien.png", user, null);
@@ -1197,8 +1202,11 @@ public class UserProfileController implements Initializable {
     @FXML
     public void ChangePassword() {
         if (!isStringEmpty(Jtxt_Pass.getText())) {
-            String pass = AlertNotification.textInputDialog("Đổi mật khẩu", "Nhập mật khẩu hiện tại", "");
-            if (Temp.account.getPassword().equals(pass)) {
+            String pass = AlertNotification.inputPassword("Đổi mật khẩu");
+
+            if(pass==null){
+                return;
+            }else if (Temp.account.getPassword().equals(pass)) {
                 String oldPass = Temp.account.getPassword();
                 Temp.account.setPassword(Jtxt_Pass.getText());
                 if (account_dao.Update(Temp.account) > 0) {
@@ -1492,8 +1500,6 @@ public class UserProfileController implements Initializable {
         thread.start();
 
         task.setOnSucceeded(event -> {
-
-
             Platform.runLater(() -> {
                 imgloadingOne.setVisible(false);
                 imgLoadingTwo.setVisible(false);

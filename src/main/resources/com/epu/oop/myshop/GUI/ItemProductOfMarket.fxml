@@ -21,6 +21,9 @@
                <font>
                   <Font name="Calibri Bold" size="17.0" />
                </font>
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
             </Label>
             <Pane prefHeight="26.0" prefWidth="242.0">
                <VBox.margin>

@@ -18,7 +18,7 @@ public class ItemProductsInBanHang {
     private ImageView image;
 
     @FXML
-    private Text tenHang_text;
+    private Label tenHang_text;
 
     @FXML
     private Label SoLuong_label;

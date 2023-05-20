@@ -32,7 +32,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(urlScene));
-        Parent root = (Parent) loader.load();
+        Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.centerOnScreen();
         stage.setResizable(false);

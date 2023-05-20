@@ -19,7 +19,7 @@ public class MessengeDao implements Dao_Interface<Messenger> {
 
     private final ConnectionPool connectionPool;
 
-    public MessengeDao(ConnectionPool connectionPool) {
+    private MessengeDao(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

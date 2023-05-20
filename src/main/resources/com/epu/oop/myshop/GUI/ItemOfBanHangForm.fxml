@@ -3,15 +3,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#click" prefHeight="123.0" prefWidth="725.0" styleClass="item-product-ofBanHang" stylesheets="@../StyleCSS/Item.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.epu.oop.myshop.controller.ItemProductsInBanHang">
    <children>
       <ImageView fx:id="image" fitHeight="94.0" fitWidth="109.0" layoutX="10.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
-      <Text fx:id="tenHang_text" layoutX="140.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ÁO MỚI MUA CÒN ĐẸP" wrappingWidth="142.6708984375" />
       <Label fx:id="SoLuong_label" alignment="CENTER" layoutX="290.0" layoutY="45.0" prefHeight="21.0" prefWidth="76.0" text="0" />
       <Label fx:id="GiaBan_label" alignment="CENTER" layoutX="379.0" layoutY="45.0" prefHeight="21.0" prefWidth="101.0" text="0" />
       <Label fx:id="DaBan_Label" alignment="CENTER" layoutX="500.0" layoutY="46.0" prefHeight="21.0" prefWidth="76.0" text="0" />
       <Label fx:id="DoanhThu_Label" alignment="CENTER" layoutX="581.0" layoutY="46.0" prefHeight="21.0" prefWidth="143.0" text="0" />
+      <Label fx:id="tenHang_text" layoutX="140.0" layoutY="15.0" minHeight="100.0" prefHeight="21.0" prefWidth="143.0" text="ÁO MỚI MUA CÒN ĐẸP" wrapText="true" />
    </children>
 </AnchorPane>

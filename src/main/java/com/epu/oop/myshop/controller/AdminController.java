@@ -745,19 +745,9 @@ public class AdminController implements Initializable {
                 row++;
             }
 
-            grid_QLProduct.add(anchorPane, col++, row); //(child,column,row)
-            //set grid width
-            grid_QLProduct.setMinWidth(Region.USE_COMPUTED_SIZE);
-            grid_QLProduct.setPrefWidth(Region.USE_COMPUTED_SIZE);
-            grid_QLProduct.setMaxWidth(Region.USE_PREF_SIZE);
-
-            //set grid height
-            grid_QLProduct.setMinHeight(Region.USE_COMPUTED_SIZE);
-            grid_QLProduct.setPrefHeight(Region.USE_COMPUTED_SIZE);
-            grid_QLProduct.setMaxHeight(Region.USE_PREF_SIZE);
+            setDataGridPane(grid_QLProduct,anchorPane,col++,row);
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

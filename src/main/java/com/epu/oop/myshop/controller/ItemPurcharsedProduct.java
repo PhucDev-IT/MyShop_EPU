@@ -25,7 +25,7 @@ public class ItemPurcharsedProduct implements Initializable {
     private ImageView imgProduct;
 
     @FXML
-    private Text nameProduct_lb;
+    private Label nameProduct_lb;
 
     @FXML
     private Label SellerProduct_label;

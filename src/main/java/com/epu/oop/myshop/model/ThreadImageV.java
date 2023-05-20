@@ -17,7 +17,6 @@ public class ThreadImageV {
     private Timeline timeline = new Timeline();
 
     public ThreadImageV(ImageView img){
-        //Image[] =
         imageView = img;
     }
     private Image[] images = {
@@ -32,14 +31,14 @@ public class ThreadImageV {
 
         // set silder
         Slider slider = new Slider(0, images.length - 1, 0);
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setMajorTickUnit(1);
-        slider.setSnapToTicks(true);
-        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            currentIndex = (int) newVal.doubleValue();
-            updateImage();
-        });
+//        slider.setShowTickLabels(true);
+//        slider.setShowTickMarks(true);
+//        slider.setMajorTickUnit(1);
+//        slider.setSnapToTicks(true);
+//        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+//            currentIndex = (int) newVal.doubleValue();
+//            updateImage();
+//        });
 
         // Set thời gian
         timeline.setCycleCount(Animation.INDEFINITE);

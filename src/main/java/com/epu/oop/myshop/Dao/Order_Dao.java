@@ -15,7 +15,7 @@ public class Order_Dao implements Dao_Interface<Order> {
 
     private Connection connection;
 
-    public Order_Dao(ConnectionPool jdbcUtil) {
+    private Order_Dao(ConnectionPool jdbcUtil) {
         this.jdbcUtil = jdbcUtil;
     }
 
@@ -131,8 +131,8 @@ public class Order_Dao implements Dao_Interface<Order> {
                         connection.rollback();
                         System.out.println("Rolled back.");
                 }
-           // System.out.println("Lỗi: "+ ex.getMessage());
-            ex.printStackTrace();
+            System.out.println("Lỗi: "+ ex.getMessage());
+
             return false;
             } finally{
 
@@ -249,7 +249,7 @@ public class Order_Dao implements Dao_Interface<Order> {
         openConnection();
         try(PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery()){
-            while (rs.next()){
+            while (rs.next()) {
                 int ID = rs.getInt("Order_ID");
                 Date NgayLapHD = rs.getDate("NgayLapHD");
                 BigDecimal TongTien = rs.getBigDecimal("TongTien");
@@ -257,9 +257,8 @@ public class Order_Dao implements Dao_Interface<Order> {
                 BigDecimal ThanhTien = rs.getBigDecimal("ThanhTien");
                 int Users_ID = rs.getInt("Users_ID");
 
-                list.add(new Order(ID,NgayLapHD,TongTien,new VoucherModel(MaVoucher),ThanhTien,new User(Users_ID,"")));
+                list.add(new Order(ID, NgayLapHD, TongTien, new VoucherModel(MaVoucher), ThanhTien, new User(Users_ID, "")));
             }
-            statement.close();
         }catch (SQLException e){
             System.out.println("Có lỗi xảy ra "+e.getMessage());
         }finally {
@@ -314,7 +313,7 @@ public class Order_Dao implements Dao_Interface<Order> {
                 product.setSrcImg(rs.getString("SrcImg"));
                 obj[0] = product;
                 OrderDetails cthd = new OrderDetails();
-                cthd.setQuantity(rs.getFloat("Quantity"));
+                cthd.setQuantity(rs.getInt("Quantity"));
                 cthd.setPrice(rs.getBigDecimal("Price"));
                 obj[1] = cthd;
                 obj[2] = rs.getDate("NgayLapHD");

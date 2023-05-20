@@ -763,11 +763,11 @@
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font></JFXButton>
-                        <Text fx:id="nameProdInfor_txt" layoutX="167.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="212.6708984375">
+                        <Label fx:id="nameProdInfor_txt" layoutX="171.0" layoutY="43.0" minHeight="110.0" prefHeight="22.0" prefWidth="204.0" text="Label" wrapText="true">
                            <font>
                               <Font name="Calibri Bold" size="18.0" />
                            </font>
-                        </Text>
+                        </Label>
                      </children>
                   </Pane>
                   <AnchorPane fx:id="paneLoading" layoutX="41.0" layoutY="-63.0" prefHeight="723.0" prefWidth="1326.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-63.0">

@@ -11,7 +11,7 @@ public class Bank_Dao implements Dao_Interface<Bank> {
     private final ConnectionPool jdbcUtil;
     private static Bank_Dao instance;
 
-    public Bank_Dao(ConnectionPool jdbcUtil) {
+    private Bank_Dao(ConnectionPool jdbcUtil) {
         this.jdbcUtil = jdbcUtil;
     }
 

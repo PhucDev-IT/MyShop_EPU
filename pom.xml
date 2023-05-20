@@ -13,8 +13,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.9.1</junit.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.main-class>com.epu.oop.myshop.Main.App</project.main-class>
         <lib-folder>lib</lib-folder>
         <sqlserver.version>9.4.1.jre16</sqlserver.version>
@@ -105,7 +105,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>17</release>
+                    <release>11</release>
                 </configuration>
             </plugin>
 
@@ -146,7 +146,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Include non-modular dependencies like sqlite in the output -->
+            <!-- Include non-modular dependencies like sql in the output -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -162,7 +162,7 @@
                 </executions>
                 <configuration>
                     <artifactItems>
-                        <!-- Copy sqlite jar to jlink image -->
+                        <!-- Copy sql jar to jlink image -->
                         <artifactItem>
                             <groupId>com.microsoft.sqlserver</groupId>
                             <artifactId>mssql-jdbc</artifactId>

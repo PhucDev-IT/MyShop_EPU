@@ -22,7 +22,7 @@ public class ConnectionPool {
 
     public ConnectionPool(){
         // Khởi tạo HikariCP DataSource với các thông số cấu hình
-         config = new HikariConfig();
+        config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);

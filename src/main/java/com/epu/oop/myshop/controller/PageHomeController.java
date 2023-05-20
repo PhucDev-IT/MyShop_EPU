@@ -263,7 +263,7 @@ public class PageHomeController implements Initializable {
     private ImageView imgProdInfor;
 
     @FXML
-    private Text nameProdInfor_txt;
+    private Label nameProdInfor_txt;
 
     @FXML
     private Label priceProdInfor;
@@ -409,6 +409,7 @@ public class PageHomeController implements Initializable {
     private final ConnectionPool connectionPool = ConnectionPool.getInstance();
     private final Product_Dao product_Dao = Product_Dao.getInstance(connectionPool);
 
+    private final Account_Dao accountDao = Account_Dao.getInstance(connectionPool);
     private final MessengeDao messengeDao = MessengeDao.getInstance(connectionPool);
     private final VoucherDao voucherDao = VoucherDao.getInstance(connectionPool);
 
@@ -780,6 +781,7 @@ public class PageHomeController implements Initializable {
 
     public boolean PayProductAtHome(Order hoaDon, List<itemCartModel> list) throws SQLException {
         if (checkAddOrder = order_dao.OrderDetailsPayAtHome(hoaDon, list)) {
+            listvoucher.remove(voucherSelected);
             return true;
         } else {
             Platform.runLater(() -> AlertNotification.showAlertError("", "Có lỗi xảy ra"));
@@ -794,8 +796,10 @@ public class PageHomeController implements Initializable {
         } else {
             PaymentHistory paymentBank = new PaymentHistory("Mua Hàng", "Thanh toán cho MyShop", thanhTien,
                     new Date(System.currentTimeMillis()), "/com/epu/oop/myshop/image/iconThanhToan.jpg", user, null);
-            Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
+
             if (checkAddOrder = order_dao.OrderDetailsPayByBank(hoaDon, list, paymentBank)) {
+                Temp.account.setMoney(Temp.account.getMoney().subtract(thanhTien));
+                accountDao.Update(Temp.account);
                 listvoucher.remove(voucherSelected);
                 return true;
             } else {
@@ -1280,6 +1284,7 @@ public class PageHomeController implements Initializable {
             freeResources();
             ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/RegisterForm.fxml", "Đăng ký");
         }
+        slider.stop();
     }
 
     public void hideForm() {
@@ -1399,8 +1404,10 @@ public class PageHomeController implements Initializable {
         if (e.getSource() == imgAvatar) {
             freeResources();
             if (Temp.account.getPhanQuyen().equals("ADMIN")) {
+                slider.stop();
                 ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/AdminForm.fxml", "Quản lý phần mềm");
             } else {
+                slider.stop();
                 ConverForm.showForm((Stage) ((Node) e.getSource()).getScene().getWindow(), "/com/epu/oop/myshop/GUI/ProfileUser.fxml", "Hồ sơ");
             }
         } else if (e.getSource() == img_shopping_cart) {
@@ -1430,11 +1437,10 @@ public class PageHomeController implements Initializable {
         gridPane.setMaxHeight(Region.USE_PREF_SIZE);
     }
 
-
+    ThreadImageV slider;
     public void slider() {
-        ThreadImageV threadImageV;
-        threadImageV = new ThreadImageV(img_slider);
-        threadImageV.start();
+        slider = new ThreadImageV(img_slider);
+        slider.start();
     }
 
     @Override
@@ -1442,7 +1448,6 @@ public class PageHomeController implements Initializable {
         defaultForm();
         clickPage();
         showImage();
-
         setDataTopProduct();
         slider();
     }

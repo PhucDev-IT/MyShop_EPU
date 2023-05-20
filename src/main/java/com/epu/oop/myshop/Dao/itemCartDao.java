@@ -25,7 +25,7 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
         return instance;
     }
 
-    public itemCartDao(ConnectionPool connectionPool) {
+    private itemCartDao(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

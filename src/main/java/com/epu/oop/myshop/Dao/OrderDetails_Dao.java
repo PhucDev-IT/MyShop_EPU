@@ -17,7 +17,7 @@ public class OrderDetails_Dao implements Dao_Interface<OrderDetails> {
     private final ConnectionPool jdbcUtil;
     private static OrderDetails_Dao instance;
 
-    public OrderDetails_Dao(ConnectionPool jdbcUtil) {
+    private OrderDetails_Dao(ConnectionPool jdbcUtil) {
         this.jdbcUtil = jdbcUtil;
     }
 
