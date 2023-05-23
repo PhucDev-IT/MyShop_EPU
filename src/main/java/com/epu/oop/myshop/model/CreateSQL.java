@@ -15,11 +15,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateSQL {
     public static final String databaseName = "MyShop";
-
     private static final String url = "jdbc:sqlserver://localhost:1433;";
     public static final String urlConnect =  "jdbc:sqlserver://localhost:1433;databaseName="+databaseName;
     public static final String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     public static final String userName = "sa";
+
     public static final String password = "123456";
 
 
@@ -37,12 +37,9 @@ public class CreateSQL {
             } else {
                 return false;
             }
-        } catch (SQLException e) {
-            // Error occurred while connecting to the database
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }finally {
+        } finally {
            if(conn!=null)
            {
                conn.close();
@@ -103,7 +100,7 @@ public class CreateSQL {
             Statement stmt = conn.createStatement();
             String sql = "CREATE DATABASE "+databaseName;
 
-           stmt.executeUpdate(sql);
+           stmt.execute(sql);
             conn.commit();
 
             System.out.println("Tạo database thành công");
@@ -137,19 +134,18 @@ public class CreateSQL {
             connection.setAutoCommit(false);
             stm = connection.createStatement();
 
-            stm.executeUpdate(TblAccount);
-            stm.executeUpdate(TblUser);
-            stm.executeUpdate(TblBank);
-            stm.executeUpdate(TblCategory);
-            stm.executeUpdate(TblProduct);
-            stm.executeUpdate(Tblvoucher);
-            stm.executeUpdate(TblVoucherUser);
-            stm.executeUpdate(Tblorder);
-            stm.executeUpdate(TblOrderDetails);
-            stm.executeUpdate(TblPaymentHistory);
-            stm.executeUpdate(TblItemCart);
-            stm.executeUpdate(TblCartDetails);
-            stm.executeUpdate(tblMessenger);
+            stm.execute(TblAccount);
+            stm.execute(TblUser);
+            stm.execute(TblBank);
+            stm.execute(TblCategory);
+            stm.execute(TblProduct);
+            stm.execute(Tblvoucher);
+            stm.execute(TblVoucherUser);
+            stm.execute(Tblorder);
+            stm.execute(TblOrderDetails);
+            stm.execute(TblPaymentHistory);
+            stm.execute(TblItemCart);
+            stm.execute(tblMessenger);
             connection.commit();
 
             System.out.println("Tạo table thành công");
@@ -184,11 +180,10 @@ public class CreateSQL {
                 connection.setAutoCommit(false);
                 stm = connection.createStatement();
 
-                stm.executeUpdate(TriggerOne);
-                stm.executeUpdate(TriggerTwo);
-                stm.executeUpdate(TriggerUpdateVoucher);
-                stm.executeUpdate(TriggerAddCart);
-                stm.executeUpdate(TriggerLockProduct);
+                stm.execute(TriggerOne);
+                stm.execute(TriggerTwo);
+                stm.execute(TriggerUpdateVoucher);
+                stm.execute(TriggerLockProduct);
 
                 connection.commit();
                 System.out.println("Tạo trigger thành công");
@@ -224,13 +219,12 @@ public class CreateSQL {
             // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
             connection.setAutoCommit(false);
             stm = connection.createStatement();
-            stm.executeUpdate(indexUser);
-            stm.executeUpdate(indexOrder);
-            stm.executeUpdate(indexPayment);
-            stm.executeUpdate(indexProduct);
-            stm.executeUpdate(indexItemCart);
-            stm.executeUpdate(indexCartDetails);
-            stm.executeUpdate(indexMessenger);
+            stm.execute(indexUser);
+            stm.execute(indexOrder);
+            stm.execute(indexPayment);
+            stm.execute(indexProduct);
+            stm.execute(indexItemCart);
+            stm.execute(indexMessenger);
             connection.commit();
             System.out.println("Tạo index thành công");
         } catch (SQLException e) {
@@ -264,10 +258,10 @@ public class CreateSQL {
             // Chuyển đổi chế độ tự động commit thành false để bắt đầu một transaction
             connection.setAutoCommit(false);
             stm = connection.createStatement();
-            stm.executeUpdate(proc_getProductOfPages);
-            stm.executeUpdate(proc_PaymentHistory);
-            stm.executeUpdate(proc_SearchProduct);
-            stm.executeUpdate(proc_selectProd_User);
+            stm.execute(proc_getProductOfPages);
+            stm.execute(proc_PaymentHistory);
+            stm.execute(proc_SearchProduct);
+            stm.execute(proc_selectProd_User);
             connection.commit();
             System.out.println("Tạo Procedure thành công");
         } catch (SQLException e) {
@@ -449,12 +443,12 @@ public class CreateSQL {
             for (File file : listOfFiles) {
                 if (file.isFile()) {
                     String fileName = file.getName();
-                    String nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+                    String cutName = fileName.substring(0, fileName.lastIndexOf('.'));
                     String filePath = "/" + file.getPath().substring(file.getPath().indexOf("com")).replace('\\', '/');
 
-                    int sold = random.nextInt(4921)+4;
+                    int sold = random.nextInt(5921)+4;
                     BigDecimal total = new BigDecimal(sold*593.7);
-                    Product product = new Product(0,nameWithoutExtension,random.nextInt(10000)+12,total,"Người bán không" +
+                    Product product = new Product(0,cutName,random.nextInt(10000)+12,total,"Người bán không" +
                             " nói gì",filePath,sold,total.multiply(BigDecimal.valueOf(sold)),i, new User(random.nextInt(3) + 2,""));
 
                     try {
@@ -524,7 +518,7 @@ public class CreateSQL {
 
             if(i%2==0){
                  vc = new VoucherModel(result,i*3,null,i*2,"Tặng bạn mã voucher nhé","/com/epu/oop/myshop/image/voucher.png",
-                        new Date(System.currentTimeMillis()),new Date(2023,9,12));
+                        new Date(System.currentTimeMillis()),new Date(2026-1900,9,12));
             }else {
                  vc = new VoucherModel(result,0,new BigDecimal(i*10000),i*3,"Tặng bạn mã voucher nhé","/com/epu/oop/myshop/image/voucher.png",
                         new Date(System.currentTimeMillis()),new Date(2026-1900,9,12));
@@ -644,17 +638,13 @@ public class CreateSQL {
 
     private final String TblItemCart = "CREATE TABLE itemCart " +
             "( " +
-            " id_Cart INT PRIMARY KEY , " +
-            " Users_ID INT FOREIGN KEY REFERENCES Users(Account_ID) " +
-            ")";
-
-    private final String TblCartDetails = "CREATE TABLE CartDetails " +
-            "( " +
-            " id_Cart INT FOREIGN KEY REFERENCES itemCart(id_Cart)," +
+            " ID_Cart INT FOREIGN KEY REFERENCES Account(ID), " +
             " Product_ID INT  FOREIGN KEY REFERENCES Product(MaSP)," +
             " Quantity INT," +
-            " PRIMARY KEY(id_Cart,Product_ID) " +
+            " PRIMARY KEY(ID_Cart,Product_ID)" +
             ")";
+
+
     private final String tblMessenger = "CREATE TABLE Messenger " +
             "( " +
             " ID INT PRIMARY KEY IDENTITY, " +
@@ -685,9 +675,8 @@ public class CreateSQL {
 
 
     private final String indexItemCart = "CREATE INDEX idx_id_Cart ON itemCart(id_Cart) " +
-            "CREATE INDEX idx_User_ID ON itemCart(Users_ID)";
-    private final String indexCartDetails = "CREATE INDEX idx_product_ID ON CartDetails(Product_ID)" +
-            " CREATE INDEX idx_id_Cart ON CartDetails(id_Cart)";
+            " CREATE INDEX idx_product_ID ON itemCart(Product_ID)";
+
 
     private final String indexMessenger = "CREATE INDEX idx_Status ON Messenger(Statuss)" +
             " CREATE INDEX idx_sentDate ON Messenger(SentDate) " +
@@ -732,15 +721,7 @@ public class CreateSQL {
             "             WHERE Voucher.MaVoucher = (SELECT MaVoucher From inserted) " +
             " END " +
             "END";
-    //Mỗi người dùng chỉ có 1 giỏ hàng riêng tương ứng với 1 tài khoản, sử dụng chung ID
-    private final String TriggerAddCart = "CREATE TRIGGER add_Cart ON Users" +
-            " FOR Insert " +
-            "AS " +
-            "BEGIN " +
-            " DECLARE @id INT = (SELECT Account_ID FROM inserted)" +
-            " INSERT INTO itemCart(id_Cart,Users_ID)" +
-            " VALUES( @id, @id)" +
-            "END";
+
 
     //Khi bkhoasoa tài khoản thì các san phẩm đang baán sẽ bị thay đổi trạng thái để không được sellec
     private final String TriggerLockProduct = "CREATE TRIGGER Trig_LockProduct_WhenLockAccount ON Account " +

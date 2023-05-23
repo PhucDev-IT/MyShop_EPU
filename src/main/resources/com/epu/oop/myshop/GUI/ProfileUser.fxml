@@ -81,7 +81,7 @@
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></JFXButton>
-            <AnchorPane layoutX="63.0" layoutY="22.0" prefHeight="87.0" prefWidth="92.0" style="-fx-background-color: #DDDDDD;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
+            <AnchorPane layoutX="63.0" layoutY="22.0" prefHeight="87.0" prefWidth="92.0" style="-fx-background-color: #DDDDDD; -fx-border-radius: 10; -fx-background-radius: 10;" styleClass="Pane" stylesheets="@../StyleCSS/Profile.css">
                <children>
                   <ImageView fx:id="imgSP" fitHeight="87.0" fitWidth="92.0" layoutX="1.0" layoutY="-3.0" pickOnBounds="true" />
                </children>

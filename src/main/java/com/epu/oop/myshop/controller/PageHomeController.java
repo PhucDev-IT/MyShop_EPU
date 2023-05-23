@@ -447,7 +447,7 @@ public class PageHomeController implements Initializable {
         } else {
             lbNoData.setVisible(false);
 
-            pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1
+            pageSelected = 1;   //Ban đầu sẽ hiện danh sách ở page 1 và từ bản ghi số 1
 
             listProduct.addAll(product_Dao.getProductsByPage(keyCategory, pageSelected, maxProductsOfPage));
         }
@@ -1083,7 +1083,7 @@ public class PageHomeController implements Initializable {
     //Thêm vào giỏ hàng
     public void addItemCart() throws SQLException {
         if (Temp.account != null) {
-            itemCartModel itemCartModel = new itemCartModel(0, SelectedProduct, Temp.account.getID(), Integer.parseInt(txtNumber.getText()));
+            itemCartModel itemCartModel = new itemCartModel(Temp.account.getID(), SelectedProduct, Integer.parseInt(txtNumber.getText()));
             if (itemCart_dao.Insert(itemCartModel)) {
                 AlertNotification.showAlertSucces("", "Kiểm tra giỏ hàng để xem nhé bạn!");
             } else {

@@ -179,7 +179,6 @@ public class VoucherDao implements Dao_Interface<VoucherModel> {
                 "AND ( MaVoucher NOT IN (SELECT MaVoucher FROM orders " +
                 "                       WHERE Users_ID = ?" +
                 "                       AND MaVoucher IS NOT NULL) " +
-                " AND MaVoucher NOT IN (SELECT MaVoucher FROM VoucherUser)" +
                 " OR MaVoucher IN (SELECT Mavoucher FROM VoucherUser WHERE ID_User = ?))";
 
         try(Connection connection = jdbcUtil.getConnection();

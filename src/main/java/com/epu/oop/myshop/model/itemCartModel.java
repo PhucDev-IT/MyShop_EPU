@@ -8,7 +8,6 @@ public class itemCartModel {
 
     private Product product;
 
-    private int User_ID;
 
     private int quantity;
 
@@ -20,10 +19,9 @@ public class itemCartModel {
 
     }
 
-    public itemCartModel(int idCart, Product product, int user_ID, int quantity) {
+    public itemCartModel(int idCart, Product product, int quantity) {
         this.idCart = idCart;
         this.product = product;
-        User_ID = user_ID;
         this.quantity = quantity;
     }
 
@@ -46,14 +44,6 @@ public class itemCartModel {
 
     public void setProduct(Product product) {
         this.product = product;
-    }
-
-    public int getUser_ID() {
-        return User_ID;
-    }
-
-    public void setUser_ID(int user_ID) {
-        User_ID = user_ID;
     }
 
 
@@ -99,7 +89,6 @@ public class itemCartModel {
         return "itemCartModel{" +
                 "idCart=" + idCart +
                 ", product=" + product +
-                ", User_ID=" + User_ID +
                 ", quantity=" + quantity +
                 ", choose=" + choose +
                 ", SumMoney=" + SumMoney +

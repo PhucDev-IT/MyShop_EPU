@@ -48,15 +48,15 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
         String sql = "DECLARE @id INT = ? " +
                      " DECLARE @id_product INT = ?" +
                     " DECLARE @number INT = ? " +
-                "IF EXISTS (SELECT Product_ID FROM CartDetails WHERE Product_ID = @id_product and id_Cart = @id) " +
+                "IF EXISTS (SELECT Product_ID FROM itemCart WHERE Product_ID = @id_product and id_Cart = @id) " +
                 "BEGIN " +
-                " UPDATE CartDetails " +
+                " UPDATE itemCart " +
                 " SET Quantity += @number " +
                 " WHERE Product_ID = @id_product and id_Cart = @id " +
                 "END " +
                 "ELSE " +
                 "BEGIN " +
-                "  INSERT INTO CartDetails(id_Cart,Product_ID,Quantity) " +
+                "  INSERT INTO itemCart(id_Cart,Product_ID,Quantity) " +
                 "  VALUES(@id,@id_product,@number) " +
                 "END";
 
@@ -64,7 +64,7 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
             openConnection();
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, itemCartModel.getUser_ID());
+            statement.setInt(1, itemCartModel.getIdCart());
             statement.setInt(2, itemCartModel.getProduct().getID());
             statement.setInt(3, itemCartModel.getQuantity());
 
@@ -106,7 +106,7 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
 
     @Override
     public int Delete(itemCartModel itemCartModel) throws SQLException {
-        String sql = "DELETE FROM CartDetails WHERE id_Cart = ? AND Product_ID = ?";
+        String sql = "DELETE FROM itemCart WHERE id_Cart = ? AND Product_ID = ?";
 
         try{
             openConnection();
@@ -136,7 +136,7 @@ public class itemCartDao implements Dao_Interface<itemCartModel>{
     //Lấy tất cả sản phẩm trong giỏ hàng của user...
     public List<itemCartModel> getDataByUser(int idUser) throws SQLException {
         List<itemCartModel> list = new ArrayList<>();
-        String sql = "SELECT it.*,p.MaSP,p.SrcImg,p.TenSP,p.Quantity as soLuongTon,p.Price FROM CartDetails it JOIN Product p " +
+        String sql = "SELECT it.*,p.MaSP,p.SrcImg,p.TenSP,p.Quantity as soLuongTon,p.Price FROM itemCart it JOIN Product p " +
                 "ON it.Product_ID = p.MaSP " +
                 "AND id_Cart = ? " +
                 "AND p.Activity = 'ON' ";

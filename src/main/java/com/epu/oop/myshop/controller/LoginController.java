@@ -202,7 +202,7 @@ public class LoginController implements Initializable {
                     lb_runTime.setVisible(true);
                 });
 
-                for (int i = 10; i >= 0; i--) {
+                for (int i = 60; i >= 0; i--) {
                     if (isCancelled() || isStopped) { // Kiểm tra trạng thái của Task/Thread
                         break; // Nếu đã bị hủy hoặc dừng, thoát khỏi vòng lặp
                     }

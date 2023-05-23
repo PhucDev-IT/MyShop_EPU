@@ -27,7 +27,7 @@ public class setDataAppController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
                 cr.autoCreate();
                 Thread.sleep(500);
                 Platform.runLater(() -> {

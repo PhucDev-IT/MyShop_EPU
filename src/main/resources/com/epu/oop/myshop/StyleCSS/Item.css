@@ -26,19 +26,7 @@
 .shadow{
     -fx-effect: dropShadow(three-pass-box,rgba(0.0,0.0,0.0,0.0), 10.0 , 0.0 , 0.0 ,10.0);
 }
-.test{
 
-  -fx-outer-border: white;
-  -fx-body-color: linear-gradient(to bottom, #FAFAFA, #EAEAEA);
-  -fx-background-color: 
-       -fx-outer-border, 
-       -fx-body-color;
-  -fx-background-insets: 0.0, 6.0;
-  -fx-background-radius: 6.0px, 0.0px;
-  -fx-background-image: url('http://icons.iconarchive.com/icons/appicns/simplified-app/64/appicns-Chrome-icon.png');
-  -fx-background-repeat: no-repeat;
-  -fx-background-position: center;
-}
 .itemSearch{
 
     -fx-border-radius: 0px;
@@ -66,7 +54,7 @@
     -fx-border-color: white;
 }
 .item-product-ofBanHang{
-    -fx-background-color:  #CCCCCC;
+    -fx-background-color: #e3e2e2;
     -fx-border-radius:20;
     -fx-background-radius: 20px;
     -fx-border-color:red;
