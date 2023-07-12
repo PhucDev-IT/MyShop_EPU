@@ -1,0 +1,23 @@
+Thông tin: 
+- Project được xây dựng trên IDE Intelij
+- Sử dụng: JavaFx, SQLServer 2019
+- Có sử dụng HikariConfig để quản lý kết nối
+
+*Yêu cầu để run được app:
+- Setting SQLServer: 
+	Username: sa
+	Password: 123456
+
+- Thiết bị hoặc IDE có thể chạy được JAVAFX
+
+- Cần chuyển folder "Product" đến: \src\main\resources\com\epu\oop\myshop\image (để tự động thêm sản phẩm vào Database)
+
+* Sử dụng: 
+- Project sẽ run và kết nối đến Sql và thêm dữ liệu vào SQL
+- Đăng nhập với ADMIN:
+	username: admin
+	password: admin
+
+- Đăng nhập với thành viên:
+	username: myshop@gmail.com
+	password: 123456
